@@ -1,0 +1,567 @@
+<!--<%inherit file="layout.html" />-->
+<script src="/static/jsb/JS/Printerjsb.js" type="text/javascript"></script>
+<script src="/static/Lodop6.203_CLodop/LodopFuncs.js" type="text/javascript" charset="utf-8"></script>
+
+
+<style>
+	#customer {
+		width: 280px;
+		float: left;
+		height: 100%;
+	}
+
+	#balance {
+		float: left;
+		height: 100%;
+	}
+
+	.thediv {
+		color: #3c8fec !important;
+		padding-left: 10px;
+	}
+
+	a {
+		color: #0000ff;
+		text-decoration: underline;
+		cursor: pointer;
+	}
+
+	a:hover {
+		color: #0000ff;
+		text-decoration: underline;
+		cursor: pointer;
+	}
+
+	a:link {
+		color: #0000ff;
+		text-decoration: underline;
+		cursor: pointer;
+	}
+</style>
+
+<div id='balance'>
+	&nbsp;
+</div>
+<script type="text/javascript">
+
+    var Bid = Proxy.GetUrlParam("bid") || null;
+    var Bnm = Proxy.GetUrlParam("bnm") || null;
+    var Sn = Proxy.GetUrlParam("sn") || null;
+    var Divisions = [];
+    var rows = null;
+    var Loading = jQuery.Loading({Message: "数据加载中……", Timeout: 30});
+
+    function buildCtx(Node, Parent, Ctx) {
+        if (Parent != null && Parent != "" && Ctx[Parent]) {
+            var a = Ctx[Parent].slice();
+            Ctx[Node.ObjId] = a
+            Ctx[Node.ObjId].push(Node.ObjId)
+        } else if (Node.ObjId != null && Node.ObjId != "") {
+            Ctx[Node.ObjId] = [Node.ObjId];
+        }
+
+        if (Node.Children && Node.Children.length > 0) {
+            for (var i = 0; i < Node.Children.length; i++) {
+                if (Node.Children[i].Type == "L") continue;
+                buildCtx(Node.Children[i], Node.ObjId, Ctx);
+            }
+        }
+        return Ctx;
+    }
+
+    jQuery(document).ready(function () {
+
+
+        var CCRUD, PCRUD;
+        var Cid;
+        var Cnm;
+        var Pf = null;
+        var Rights = "CUD";
+
+        function LoadData() {
+            PCRUD.View.Grid.Query();
+        };
+
+        GBindings.push({
+            Code: 'ZDYSH', Records: [
+                {name: "重点户(50000吨)", value: [1]},
+                {name: "重点户(10000吨)", value: [1, 2]}
+            ]
+        });
+
+
+        if (window["GCtx"] && GCtx.customer) {
+            //特定客户
+            jQuery("#customer").hide();
+            Cid = GCtx.customer._id;
+            Cnm = GCtx.customer.nm;
+            Pf = GCtx.customer.pf || "";
+            $("#balance").width($(window).width());
+        }
+        else {
+            $("#balance").width($(window).width() - $("#customer").width() - 20);
+            CCRUD = jQuery.CRUD('#customer',
+                {
+                    View: {Form: {}, Pagination: {displayMsg: ""}},
+                    Behavior: {
+                        AfterQuery: function (Filters, Orders) {
+                            Cid = null;
+                            Cnm = null;
+                            Pf = null;
+                            PCRUD.View.Grid.Query();
+                            return true;
+                        },
+                        Grid: {
+                            AfterRowClick: function (Row) {
+                                Cid = Row._id;
+                                Cnm = Row.nm;
+                                Pf = Row.pf || "";
+                                PCRUD.View.Grid.Query();
+                            }
+                        }
+                    },
+                    Service: {Path: "biz/", Target: "customer", Base: "../"}
+                },
+                {
+                    "Bindings": [],
+                    "FrozenColumns": [[]],
+                    "Columns": [
+                        [
+                            {"align": "center", "colspan": 1, "field": "sn", "hidden": false, "rowspan": 1, "title": "客户编号", "width": 60},
+                            {"align": "center", "colspan": 1, "field": "nm", "hidden": false, "rowspan": 1, "title": "客户名称", "width": 130}
+                        ]
+                    ],
+                    "Form": [],
+                    "Properties": [],
+                    "Quicks": [],
+                    "Rights": "",
+                    "Target": "customer",
+                    "Title": "客户列表",
+                    ExportName: "客户列表"
+                });
+
+            CCRUD.View.Button.Hide(["filter", "order", "column", "export"])
+            CCRUD.View.TopContainer.find("span.line").remove();
+        }
+
+        if (getUrlParam('right') != 'R') {
+            Rights = "CUD";
+        } else {
+            Rights = "";
+        }
+
+        PCRUD = jQuery.CRUD('#balance',
+            {
+                View: {
+                    AfterRender: function () {
+                        this.Button.Hide(["filter"]);
+                        setTimeout(function () {
+                            BindGSerach(PCRUD, "biguser._id");
+                            $("span[qfield='biguser.sn'],span[qfield='biguser.nm'],span[qfield='biguser.watermeterusns'] ").keydown(function (event) {
+                                if (event.which == 13)
+                                    $("[command=query]").click();
+                            });
+                        }, 100);
+
+                        // if (getUrlParam("right")=="R"){
+                        jQuery(".custom_container").html("<span></span>");
+                        jQuery.ajax({
+                            type: "POST",
+                            data: JSON.stringify({tp: 'D'}),
+                            url: "../hd/biguser/tree.json",
+                            contentType: "application/json",
+                            dataType: "json",
+                            success: function (Result) {
+                                if (Result.Code == 0) {
+                                    var Divs = Result.Response;
+
+                                    var DS = buildCtx(Divs, null, {});
+                                    //生成底部分区
+                                    jQuery(".custom_container").Divs(
+                                        {
+                                            titleName: "当前区域",
+                                            data: Result.Response,
+                                            idField: "ObjId",
+                                            nameField: "Name",
+                                            childrenField: "Children",
+                                            onClick: function (Ele, Type, Arr) {
+
+                                                if (Type == "all") {
+                                                    Divisions = [];
+                                                }
+                                                else {
+                                                    Divisions = Arr;
+                                                }
+                                                CurrentIndex = null;
+                                                Loading.Show();
+                                                LoadData();
+                                            }
+                                        });
+
+                                    Divisions = [];
+                                    CurrentIndex = null;
+                                }
+                            },
+                            error: function (ex) {
+                            }
+                        });
+                        // }
+
+                        if (Bid) {
+                            this.Button.Hide(["order", "column", "confirm", "insert", "reset"]);
+                        } else {
+                            this.Button.Hide(["order", "column", "confirm"]);
+                        }
+                        jQuery("button[command=insert]").click(function () {
+                            var config = {
+                                Title: "新增", Url: "/jsb/waterbalancereport.html",
+                                Width: 890, Height: 555, CloseButton: true
+                            };
+                            Dialog(config, {cid: Cid, cnm: Cnm}, function (Result) {
+                                if (Result) {
+                                    Dialog({Title: "提示", Type: window.top.MyDialog.Types.Message, Icon: window.top.MyDialog.Icons.Info, Message: "新增完成", AutoClose: 3}, null, null);
+                                    PCRUD.View.Grid.InsertRow(Result, 0);
+                                    PCRUD.View.Grid.Query();
+                                }
+                                $("button[command=insert]").removeClass("selected");
+                            });
+                        });
+
+
+                        $(".right_container").prepend('<button id="btn-print" class="" type="button">打印</button>');
+
+                        $("#btn-print").on("click", function () {
+
+                            var selRow = PCRUD.View.Grid.CurrentRow;
+                            if (selRow) {
+                                var config = {
+                                    Title: "打印文件选择", Url: "/jsb/printsphfile.html",
+                                    Width: 320, Height: 100, CloseButton: true
+                                };
+                                Dialog(config, {itype: selRow.checkview}, function (Result) {
+
+                                    if (Result == "申请受理通知书") {
+
+                                        newRecord = selRow;
+                                        newRecord.cyear = new Date(selRow.regdt * 1000).FormatString('yyyy');
+                                        newRecord.cmonth = new Date(selRow.regdt * 1000).FormatString('MM');
+                                        newRecord.cday = new Date(selRow.regdt * 1000).FormatString('dd');
+
+//									newRecord.pyear = new Date().FormatString("yyyy");
+//									newRecord.pmonth = new Date().FormatString("MM");
+//									newRecord.pday = new Date().FormatString("dd");
+                                        newRecord.pyear = newRecord.cyear;
+                                        newRecord.pmonth = newRecord.cmonth;
+                                        newRecord.pday = newRecord.cday;
+                                        if ((newRecord.w.toString().length) == 1) {
+
+                                            newRecord.w = "00" + newRecord.w.toString();
+                                        }
+                                        if ((newRecord.w.toString().length) == 2) {
+                                            newRecord.w = "0" + newRecord.w.toString();
+                                        }
+
+                                        jQuery.Printer().Print({
+                                            Title: "申请受理通知书",
+                                            Body: Content_Print_Word(newRecord),
+                                            Body_word: Content_Print_Word(newRecord),
+                                            Style: Style_Print
+                                        });
+
+
+                                    } else if (Result == "测试报告合格通知书") {
+                                        var selRow1 = $.extend(true, {}, selRow);
+                                        var test = selRow1.biguser.sn;
+                                        if (rows != null) {
+                                            for (var i = 0; i < rows.length; i++) {
+                                                if (rows[i].wnum == selRow1.wnum && rows[i].biguser.sn != test) {
+                                                    test += "," + rows[i].biguser.sn;
+                                                }
+                                            }
+                                        }
+
+                                        selRow1.biguser.sn = test;
+                                        newRecord = selRow1;
+                                        newRecord.cyear = new Date(selRow.checkdt * 1000).FormatString('yyyy');
+                                        newRecord.cmonth = new Date(selRow.checkdt * 1000).FormatString('MM');
+                                        newRecord.cday = new Date(selRow.checkdt * 1000).FormatString('dd');
+
+                                        newRecord.pyear = newRecord.cyear;
+                                        newRecord.pmonth = newRecord.cmonth;
+                                        newRecord.pday = newRecord.cday;
+                                        if ((newRecord.w.toString().length) == 1) {
+
+                                            newRecord.w = "00" + newRecord.w.toString();
+                                        }
+                                        if ((newRecord.w.toString().length) == 2) {
+                                            newRecord.w = "0" + newRecord.w.toString();
+                                        }
+
+
+                                        jQuery.Printer().Print({
+                                            Title: "测试报告合格通知书",
+                                            Body: Content_Print_Word1(newRecord),
+                                            Body_word: Content_Print_Word1(newRecord),
+                                            Style: Style_Print
+                                        });
+
+                                    }
+
+
+                                })
+
+
+                            }
+
+                        });
+
+
+                        jQuery("button[command=update]").click(function () {
+                            var selRow = PCRUD.View.Grid.CurrentRow;
+                            var config = {
+                                Title: "编辑", Url: "/jsb/waterbalancereport.html",
+                                Width: 890, Height: 555, CloseButton: true
+                            };
+                            if (selRow) {
+                                Dialog(config, {row: selRow, cid: Cid, cnm: Cnm}, function (Result) {
+                                    if (Result) {
+                                        Dialog({Title: "提示", Type: window.top.MyDialog.Types.Message, Icon: window.top.MyDialog.Icons.Info, Message: "编辑完成", AutoClose: 3}, null, null);
+                                        PCRUD.View.Grid.UpdateRow(Result);
+                                    }
+                                    $("button[command=update]").removeClass("selected");
+                                });
+                            }
+                            else {
+                                Dialog({Title: "提示", Type: window.top.MyDialog.Types.Message, Icon: window.top.MyDialog.Icons.Info, Message: "请选择要编辑的报告"}, null, null);
+                            }
+                        });
+
+
+                    },
+                    Form: {
+                        AfterClear: function () {
+
+                        },
+                        AfterSet: function (Record, IsNew) {
+
+                        },
+                        AfterGet: function (Record, IsNew, Validates) {
+
+                        },
+                        AfterEnable: function () {
+                        },
+                        AfterDisable: function () {
+                        }
+                    }
+                },
+                Behavior: {
+                    BeforeQuery: function (Filters, Orders) {
+                        if (Cid) {
+                            Filters.Clear(["bid"]);
+                            if (Bid) {
+                                Filters.Merge([{Field: "bid", Operate: "=", Value: Bid, Relation: "and"}]);
+                            }
+                            Filters.Clear(['biguser.did']);
+                            if (Divisions.length > 0) {
+                                Filters.Merge([{Field: "biguser.did", Operate: "in", Value: Divisions, Relation: "and"}]);
+                            }
+                            for (var i = 0; i < Filters.length; i++) {
+                                if (Filters[i].Field == "biguser.ckuser") {
+                                    Filters.Clear(['biguser.ckuser']);
+                                    var arr = String(Filters[i].Value).split(",");
+                                    var arr2 = [];
+                                    for (var j = 0; j < arr.length; j++) {
+                                        arr2.push(Number(arr[j]));
+                                    }
+                                    Filters.Merge([{Field: "biguser.ckuser", Operate: "in", Value: arr2, Relation: "and"}]);
+                                }
+                            }
+                            Filters.Merge([{Field: "cid", Operate: "=", Value: Cid, Relation: "and"}]);
+                            Filters.Merge([{Field: "state", Operate: "!=", Value: -1, Relation: "and"}]);
+                            Orders.Merge([{Field: "w", Relation: "and"}]);
+                            PCRUD.View.Button.Enable(["reset", "filter", "order", "column", "insert", "export"]);
+                            Loading.Show();
+                            return true;
+                        }
+                        else {
+                            PCRUD.View.Button.Disable(["reset", "filter", "order", "column", "insert", "export"]);
+                            return false;
+                        }
+                    },
+                    AfterQuery: function (Result) {
+                        rows = Result.rows;
+                        Loading.Hide();
+                        return true;
+                    },
+                    BeforeSave: function (Result, Callback) {
+                        Result.cid = Cid;
+                        Result.cnm = Cnm;
+                        return true;
+                    },
+                    AfterSave: function (Result) {
+                        return Result.Code == 0;
+                    },
+                    AfterDelete: function (Result) {
+                        return Result.Code == 0;
+                    }
+                },
+                Service: {
+                    Path: "jsb/",
+                    Target: "waterbalance",
+                    Base: "../"
+                }
+            },
+            {
+                "Bindings": GBindings,
+                "FrozenColumns": [[]],
+                "Columns": [
+                    [
+                        {"align": "center", "colspan": 1, "field": "year", "hidden": false, "rowspan": 1, "title": "年度", "width": 80},
+                        {
+                            "align": "center", "colspan": 1, "field": "biguser.sn", "hidden": false, "rowspan": 1, "title": "用户编码", "width": 100, formatter: function (value, row, index, sn, nm, id) {
+                            return BiguserFormatter(value, row, index, "biguser.sn", "biguser.nm", "biguser._id")
+                        }
+                        },
+                        {"align": "center", "colspan": 1, "field": "biguser.nm", "hidden": false, "rowspan": 1, "title": "单位名称", "width": 200},
+                        //{ "align": "center", "colspan": 1, "field": "w", "hidden": false, "rowspan": 1, "title": "报告书编号", "width": 80 },
+                        {"align": "center", "colspan": 1, "field": "wnum", "hidden": false, "rowspan": 1, "title": "报告书编号", "width": 80},
+                        {"align": "center", "colspan": 1, "field": "biguser.ysxz.parent.nm", "hidden": false, "rowspan": 1, "title": "用水性质", "width": 80},
+                        {"align": "center", "colspan": 1, "field": "areanm", "hidden": false, "rowspan": 1, "title": "所属地区", "width": 80},
+                        {"align": "center", "colspan": 1, "field": "test", "hidden": false, "rowspan": 1, "title": "测试单位", "width": 120},
+                        {"align": "center", "colspan": 1, "field": "finishdate", "hidden": false, "rowspan": 1, "title": "完成时间", "width": 120, formatter: DateFormatter},
+                        {"align": "center", "colspan": 1, "field": "regdt", "hidden": false, "rowspan": 1, "title": "申请时间", "width": 120, formatter: DateFormatter},
+                        {"align": "center", "colspan": 1, "field": "checkdt", "hidden": false, "rowspan": 1, "title": "审查时间", "width": 120, formatter: DateFormatter},
+                        {"align": "center", "colspan": 1, "field": "ckenddt", "hidden": false, "rowspan": 1, "title": "截至有效日期", "width": 120, formatter: DateFormatter},
+
+                        {
+                            "align": "center", "colspan": 1, "field": "pic1", "hidden": false, "rowspan": 1, "title": "水平衡测试报告", "width": 120, formatter: function (V, R, I) {
+                            var FNM = R['w2'];
+                            return FileFormatter(V, R, I, FNM, false);
+                        }
+                        }
+//					,
+//                    {
+//                        "align": "center", "colspan": 1, "field": "pic2", "hidden": false, "rowspan": 1, "title": "供水管网平面图", "width": 120, formatter: function (V, R, I) {
+//                            var FNM = R['year'] + '年度' + GetRowValue(R, 'biguser.nm') + '供水管网平面图';
+//                            return FileFormatter(V, R, I, FNM, false);
+//                        }
+//                    },
+//                    {
+//                        "align": "center", "colspan": 1, "field": "pic3", "hidden": false, "rowspan": 1, "title": "供水计量平面图", "width": 120, formatter: function (V, R, I) {
+//                            var FNM = R['year'] + '年度' + GetRowValue(R, 'biguser.nm') + '供水计量平面图';
+//                            return FileFormatter(V, R, I, FNM, false);
+//                        }
+//                    }
+                    ]
+                ],
+                "Form": [],
+                "Properties": [
+                    {"Name": "年度", "Field": "year", "Unique": 0, "ShowType": "datetime", "DataType": "String", "Ext": "yyyy", "FilterEnabled": true, "Frozen": false, "Hidden": false, "OrderEnabled": true},
+                    {"Name": "单位名称", "Field": "biguser.nm", "Unique": 0, "ShowType": "text", "DataType": "String", "Ext": "", "FilterEnabled": true, "Frozen": false, "Hidden": false, "OrderEnabled": true},
+                    {"Name": "用户编码", "Field": "biguser.sn", "Unique": 0, "ShowType": "text", "DataType": "String", "Ext": "", "FilterEnabled": true, "Frozen": false, "Hidden": false, "OrderEnabled": true},
+                    {"Name": "用水性质", "Field": "biguser.ysxz.parent._id", "Unique": 0, "ShowType": "combotree", "DataType": "String", "Ext": "YSXZTREE2", "FilterEnabled": true, "Frozen": false, "Hidden": false, "OrderEnabled": true},
+                    {"Name": "所属地区", "Field": "biguser.division._id", "Unique": 0, "ShowType": "combo", "DataType": "String", "Ext": "DIVISION", "FilterEnabled": true, "Frozen": false, "Hidden": false, "OrderEnabled": true},
+                    {"Name": "测试单位", "Field": "test", "Unique": 0, "ShowType": "text", "DataType": "String", "Ext": "", "FilterEnabled": true, "Frozen": false, "Hidden": false, "OrderEnabled": true},
+                    {"Name": "完成时间", "Field": "finishdate", "Unique": 0, "ShowType": "datetime", "DataType": "Number", "Ext": "yyyy-MM-dd", "FilterEnabled": true, "Frozen": false, "Hidden": false, "OrderEnabled": true},
+                    {"Name": "用户名", "Field": "biguser.nm", "Unique": 0, "ShowType": "text", "DataType": "String", "Ext": "", "FilterEnabled": true, "Frozen": false, "Hidden": false, "OrderEnabled": true},
+                    {"Name": "重点用水户", "Field": "biguser.ckuser", "Unique": 0, "ShowType": "combo", "DataType": "Array", "Ext": "ZDYSH", "FilterEnabled": false, "Frozen": false, "Hidden": false, "OrderEnabled": false},
+                    {"Name": "客户代码", "Field": "biguser.watermeterusns", "Unique": 0, "ShowType": "text", "DataType": "String", "Ext": "", "FilterEnabled": true, "Frozen": false, "Hidden": false, "OrderEnabled": true}
+                ],
+                Quicks: [
+                    {Ext: "{Format:\"yyyy\"}", Field: "year", Label: "年度", Type: "QDatetime", Value: new Date().FormatString('yyyy')},
+                    {Type: "QText", Label: '用户编码', Field: 'biguser.sn', Width: 85},
+                    {Type: "QText", Label: '用户名称', Field: 'biguser.nm', Width: 85},
+                    {Type: "QText", Label: '客户代码', Field: 'biguser.watermeterusns', Width: 85},
+                    {Ext: "ZDYSH", Source: "ZDYSH", Field: "biguser.ckuser", Label: "重点用水户", Type: "QCombox", TextField: "name", ValueField: "value", Width: 100}
+
+                ],
+                "Rights": Rights,
+                "Target": "waterbalance",
+                "Title": "",
+                ExportName: Bnm == null ? "水平衡报告" : decodeURI(Bnm) + "（" + Sn + ") - " + "水平衡报告"
+            });
+    });
+
+    function links(value, row, index) {
+        if (value) {
+            var view = "查看";
+            if (value.toLocaleLowerCase().indexOf("txt") > -1 || value.toLocaleLowerCase().indexOf("doc") > -1 || value.toLocaleLowerCase().indexOf("docx") > -1 || value.toLocaleLowerCase().indexOf("xls") > -1 || value.toLocaleLowerCase().indexOf("xlsx") > -1) {
+                view = "点击下载";
+            }
+            return "<a href='" + value + "?download=true&filename=asdf.aa'>" + view + "</a>";
+        }
+        return "";
+    }
+
+
+    var Style_Print = jQuery.GetTemplate(function () {
+		/*
+		 .s{text-indent:2em;font-size:16pt;font-family:'仿宋_GB2312';line-height:36px;}
+		 .d{line-height:36px;text-align:right;font-family:'仿宋_GB2312';font-size:16pt;}
+		 strong{
+		 font-size:16pt;font-family:'黑体';font-weight:bold;TEXT-DECORATION: underline;
+
+		 }
+		 b{
+		 font-size:16pt;font-family:'黑体';font-weight:bold;
+
+		 }
+		 */
+    });
+
+    var Content_Print_Word = template.compile(jQuery.GetTemplate(function () {
+		/*
+
+		 <div style="padding-left:90px;padding-right:50px;margin-top:120px;">
+		 <div style="font-size:18pt;font-family:'华文中宋';text-align:center;line-height:36px">武汉市计划用水节约用水办公室</div>
+		 <div style="font-size:18pt;font-family:'华文中宋';text-align:center;line-height:36px">行政确认申请受理通知书</div>
+
+		 <div style="font-size:16pt;font-family:'仿宋_GB2312';text-align:center;line-height:50px">武节水行政确认<b>{{year}}</b>第（<b>{{w}}</b>）号</div>
+
+
+		 <div style="width:564px;font-size:16pt;font-family:'黑体';line-height:36px;"> {{biguser.nm}}： </div>
+		 <div class="s" style="width:564px;text-align:justify; text-justify:inter-ideograph;"  >
+		 本办于<strong>{{cyear}}</strong>年<strong>{{cmonth}}</strong>月<strong>{{cday}}</strong>日收到你单位提出的水平衡测试报告书确认申请（或者补正材料）。申请材料清单如下：</div>
+
+		 <table style="font-size:16pt;font-family:'仿宋_GB2312';"><tr><td style="width:40px">&nbsp;</td><td style="width:500px; padding-top:5pt;  border-bottom:solid 1px black">
+		 1.《武汉市水平衡测试验收备案表》</td></tr></table>
+		 <table style="font-size:16pt;font-family:'仿宋_GB2312';"><tr><td style="width:40px">&nbsp;</td><td style="width:500px; padding-top:5pt;  border-bottom:solid 1px black">
+		 2.《水平衡测试报告书》（送审）</td></tr></table>
+
+
+		 <div class="s" style="width:544px;text-align:justify; text-justify:inter-ideograph;"  >
+		 经审查，你单位提交的水平衡测试报告书确认材料（及补正材料）齐全，根据《武汉市水平衡测试实施办法》第七条有关规定，现予受理，我办将在三个工作日内组织技术审查，请做好相关准备工作。
+		 </div>
+
+		 <div class="s">特此通知。</div>
+		 <div class="s">联系人： <b> 赵海峰</b></div>
+		 <div class="s">电话/传真：  88185987</div>
+		 <div class="d">武汉市计划用水节约用水办公室</div>
+		 <div class="d" style="margin-right:60px;" ><b>{{pyear}}</b>年<b>{{pmonth}}</b>月<b>{{pday}}日</b></div>
+		 </div>
+		 */
+    }), {
+        escape: false
+    });
+
+
+    var Content_Print_Word1 = template.compile(jQuery.GetTemplate(function () {
+		/*
+
+		 <div style="padding-left:90px;padding-right:50px;margin-top:120px;">
+		 <div style="font-size:18pt;font-family:'华文中宋';text-align:center;line-height:50px">水平衡测试报告合格通知书</div>
+		 <div style="width:564px;font-size:16pt;font-family:'黑体';line-height:36px;"> {{biguser.nm}}： </div>
+		 <div class="s" style="width:564px;text-align:justify; text-justify:inter-ideograph;"  >
+		 本办于<strong>{{cyear}}</strong>年<strong>{{cmonth}}</strong>月<strong>{{cday}}</strong>日受理你单位的水平衡测试报告书确认申请(用户编码：{{biguser.sn}})，按照《武汉市水平衡测试实施办法》（武水规〔2016〕1号）相关要求进行了技术审查，根据审查小组意见，本报告符合《企业水平衡测试通则》要求，审查合格，水平衡测试报告书编号为：<strong>{{year}}-{{w}}</strong>。
+		 </div>
+		 <div class="s">特此通知。</div>
+		 <div class="d">武汉市计划用水节约用水办公室</div>
+		 <div class="d" style="margin-right:60px;" ><b>{{pyear}}</b>年<b>{{pmonth}}</b>月<b>{{pday}}日</b></div>
+		 </div>
+		 */
+    }), {
+        escape: false
+    });
+
+
+</script>
