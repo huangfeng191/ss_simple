@@ -514,6 +514,7 @@ function seEnable(container) {
 
 ; (function ($, undefined) {
     $.fn.hdform = function (method) {
+        
         if ($.fn.hdform[method]) {
             return $.fn.hdform[method].apply(this, Array.prototype.slice.call(arguments, 1));
         }

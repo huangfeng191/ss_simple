@@ -45,39 +45,39 @@ hdform : form =[ {"Inputs":[]},{"Buttons":[]},{"Html":""}]
 								   {{if Cell.Field}}
 									   <td class="label" field_label="{{Cell.Field}}" rowspan="{{Cell.RowSpan}}" colspan="1">{{#Cell.Name}}</td>
 									   <td class="content" field_input={{Cell.Field}} rowspan="{{Cell.RowSpan}}" colspan="{{Cell.ColSpan * 2 - 1}}">
-										    <div class='wrap'>
-												{{if Cell.ShowType == "textarea"}}
-														<textarea
-												{{else}}
-												       <input 
-												{{/if}}
-												class="{{if Cell.ShowType == "datetime"}}Wdate {{else if Cell.ShowType == "upload" || Cell.ShowType == "text" || Cell.ShowType == "gispos" || Cell.ShowType == "gisarea" }}easyui-validatebox {{/if}}default{{if Cell.Class}}{{ Cell.Class}}{{/if}}"
-												field="{{Cell.Field}}" valuetype="{{Cell.DataType}}" showtype="{{Cell.ShowType}}"
-												type="{{if Cell.ShowType == "password"}}password{{else if Cell.ShowType == "combocheck"}}combo{{else if Cell.ShowType == "checkbox"}}checkbox{{else}}text{{/if}}"
-												// 验证
-												{{if Cell.Validate && Cell.Validate.length > 0}} validator="{{Cell.Validate}}"
-												{{else if Cell.ShowType == "datetime" && Cell.DataType == "Number"}} validator="{Valids:{regexp:['为必填项','^([0-9]+(.[0-9]+)?){{if !Cell.Required}}?{{/if}}$']},Message:'{{Cell.Name}}'}"
-												{{else if Cell.DataType == "Number"}} validator="{Valids:{regexp:['必须为数值','^[\\-\\+]?([0-9]+(.[0-9]+)?){{if !Cell.Required}}?{{/if}}$']},Message:'{{Cell.Name}}'}"
-												{{else if Cell.DataType == "Phone"}} validator="{Valids:{regexp:['必须为有效的电话号码','^((?:0?(13|15|18|14)[0-9][0-9]{8})|(?:([0-9]{3,4}\-)?[0-9]{6,8})){{if !Cell.Required}}?{{/if}}$']},Message:'{{Cell.Name}}'}"
-												{{else if Cell.DataType == "IP"}} validator="{Valids:{regexp:['必须为有效IP地址','^((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){{if !Cell.Required}}?{{/if}}$']},Message:'{{Cell.Name}}'}"
-												{{else if Cell.DataType == "EMail"}} validator="{Valids:{regexp:['必须为有效的邮箱地址','^([\\w-]+@[\\w-]+\\.(com|net|org|edu|mil|tv|biz|info)){{if !Cell.Required}}?{{/if}}$']},Message:'{{Cell.Name}}'}"
-												{{else if Cell.Required}} validator="{Valids:{regexp:['为必填项','^(.|\n)+$']},Message:'{{Cell.Name}}'}"
-												{{/if}}
+											    <div class='wrap'>
+													{{if Cell.ShowType == "textarea"}}
+															<textarea
+													{{else}}
+													       <input 
+													{{/if}}
+    													class="{{if Cell.ShowType == "datetime"}}Wdate {{else if Cell.ShowType == "upload" || Cell.ShowType == "text" || Cell.ShowType == "gispos" || Cell.ShowType == "gisarea" }}easyui-validatebox {{/if}}default{{if Cell.Class}}{{ Cell.Class}}{{/if}}"
+    													field="{{Cell.Field}}" valuetype="{{Cell.DataType}}" showtype="{{Cell.ShowType}}"
+    													type="{{if Cell.ShowType == "password"}}password{{else if Cell.ShowType == "combocheck"}}combo{{else if Cell.ShowType == "checkbox"}}checkbox{{else}}text{{/if}}"
+    													// 验证
+    													{{if Cell.Validate && Cell.Validate.length > 0}} validator="{{Cell.Validate}}"
+    													{{else if Cell.ShowType == "datetime" && Cell.DataType == "Number"}} validator="{Valids:{regexp:['为必填项','^([0-9]+(.[0-9]+)?){{if !Cell.Required}}?{{/if}}$']},Message:'{{Cell.Name}}'}"
+    													{{else if Cell.DataType == "Number"}} validator="{Valids:{regexp:['必须为数值','^[\\-\\+]?([0-9]+(.[0-9]+)?){{if !Cell.Required}}?{{/if}}$']},Message:'{{Cell.Name}}'}"
+    												{{else if Cell.DataType == "Phone"}} validator="{Valids:{regexp:['必须为有效的电话号码','^((?:0?(13|15|18|14)[0-9][0-9]{8})|(?:([0-9]{3,4}\-)?[0-9]{6,8})){{if !Cell.Required}}?{{/if}}$']},Message:'{{Cell.Name}}'}"
+    												{{else if Cell.DataType == "IP"}} validator="{Valids:{regexp:['必须为有效IP地址','^((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){{if !Cell.Required}}?{{/if}}$']},Message:'{{Cell.Name}}'}"
+    												{{else if Cell.DataType == "EMail"}} validator="{Valids:{regexp:['必须为有效的邮箱地址','^([\\w-]+@[\\w-]+\\.(com|net|org|edu|mil|tv|biz|info)){{if !Cell.Required}}?{{/if}}$']},Message:'{{Cell.Name}}'}"
+    												{{else if Cell.Required}} validator="{Valids:{regexp:['为必填项','^(.|\n)+$']},Message:'{{Cell.Name}}'}"
+    												{{/if}}
 
-												{{if Cell.Holder}} placeholder="{{Cell.Holder}}" {{/if}}
-												{{if Cell.MaxLength}} maxlength="{{Cell.MaxLength}}" {{/if}}
+    												{{if Cell.Holder}} placeholder="{{Cell.Holder}}" {{/if}}
+    												{{if Cell.MaxLength}} maxlength="{{Cell.MaxLength}}" {{/if}}
 
-												{{if Cell.ShowType == "combo" || Cell.ShowType == "combocheck" || Cell.ShowType == "combotree"}} source="{{Cell.Ext}}" style="{{Cell.Style}}"
+    												{{if Cell.ShowType == "combo" || Cell.ShowType == "combocheck" || Cell.ShowType == "combotree"}} source="{{Cell.Ext}}" style="{{Cell.Style}}"
 
-												{{else if Cell.ShowType == "datetime"}} onclick="new WdatePicker({skin:'default',readOnly:true,isShowToday:false,dateFmt:'{{Cell.Ext}}'})" format="{{Cell.Ext}}"  style="{{Cell.Style}}"
-												{{else if Cell.ShowType == "textarea"}} style="resize:none;{{Cell.Style||Cell.Ext}}"
-												{{else if Cell.ShowType == "text"}} style="{{Cell.Style||Cell.Ext}}"
-												{{else if Cell.ShowType == "upload" || Cell.ShowType == "text" || Cell.ShowType == "gispos" || Cell.ShowType == "gisarea"}} style="{{Cell.Style||Cell.Ext}}"{{/if}}
+    												{{else if Cell.ShowType == "datetime"}} onclick="new WdatePicker({skin:'default',readOnly:true,isShowToday:false,dateFmt:'{{Cell.Ext}}'})" format="{{Cell.Ext}}"  style="{{Cell.Style}}"
+    												{{else if Cell.ShowType == "textarea"}} style="resize:none;{{Cell.Style||Cell.Ext}}"
+    												{{else if Cell.ShowType == "text"}} style="{{Cell.Style||Cell.Ext}}"
+    												{{else if Cell.ShowType == "upload" || Cell.ShowType == "text" || Cell.ShowType == "gispos" || Cell.ShowType == "gisarea"}} style="{{Cell.Style||Cell.Ext}}"{{/if}}
 
-												{{if Cell.Required}} require="require"{{/if}}
-												{{if Cell.Id}} id="{{Cell.Id}}"{{/if}}
+    												{{if Cell.Required}} require="require"{{/if}}
+    												{{if Cell.Id}} id="{{Cell.Id}}"{{/if}}
 
-												{{if Cell.Editable === false}} editable="editable"{{/if}}
+    												{{if Cell.Editable === false}} editable="editable"{{/if}}
 
 												{{if Cell.ShowType == "textarea"}} ></textarea>
 												{{else if Cell.ShowType == "upload"}} readonly="readonly" /><button type="button" cmd="upload" class="upload">...</button>
