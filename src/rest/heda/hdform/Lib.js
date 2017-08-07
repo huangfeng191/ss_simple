@@ -3,7 +3,7 @@
 /// <reference path="../../Scripts/CRUD/hUpload.htm" />
 /// <reference path="../../Scripts/CRUD/hUpload.htm" />
 /// <reference path="../../Scripts/CRUD/hUpload.htm" />
-String.prototype.trim = function () {
+String.prototype.trim = function() {
     return this.replace(/^\s |\s $/g, '');
 }
 
@@ -16,6 +16,7 @@ function ToSingle(Id, Name) {
     href += '&_title=' + encodeURIComponent(Name);
     window.top.location.hash = "#!" + href;
 };
+
 function BiguserFormatter(value, row, index, idfield, nmfield) {
     var id = GetRowValue(row, idfield);
     var name = GetRowValue(row, nmfield);
@@ -29,6 +30,7 @@ function BiguserFormatter(value, row, index, idfield, nmfield) {
         return "";
     }
 }
+
 function ToSingleBiguser(Id, Name) {
     var href = '/water/analysis.html?id=' + Id;
     href += '&_title=' + encodeURIComponent(Name);
@@ -52,6 +54,7 @@ function LicenceFormatter(value, row, index, idfield, snfield, color) {
         return "";
     }
 }
+
 function GetRowValue(row, field) {
     try {
         return eval("row['" + field.replace(/\./g, "']['") + "']");
@@ -60,12 +63,14 @@ function GetRowValue(row, field) {
 
 function ShowLicence(id) {
     var config = {
-        Title: "许可证明细", Url: "/water/dlglicence.html",
-        Width: 800, Height: 600, CloseButton: true
+        Title: "许可证明细",
+        Url: "/water/dlglicence.html",
+        Width: 800,
+        Height: 600,
+        CloseButton: true
     };
-    Dialog(config, { id: id }, function (Result) {
-        if (Result) {
-        }
+    Dialog(config, { id: id }, function(Result) {
+        if (Result) {}
     });
 }
 //时间戳转换为日期格式
@@ -87,8 +92,7 @@ function ValidFormatter(value, row, index) {
         } else {
             return new Date(value * 1000).FormatString('yyyy-MM-dd');
         }
-    }
-    else {
+    } else {
         return value;
     }
 }
@@ -103,17 +107,16 @@ function setField(Object, Field, Value) {
         if (!Cur) {
             if (Field.charAt(0) == "[") {
                 Cur = Object[F] = [];
-            }
-            else {
+            } else {
                 Cur = Object[F] = {};
             }
         }
         setField(Cur, Field.replace(/^(\.|\[|\]\.)/, ""), Value);
-    }
-    else {
+    } else {
         Object[Field] = Value;
     }
 }
+
 function getField(Object, Field) {
     var fieldRegexp = new RegExp("\\.|\\[|\\]\\.");
     if (fieldRegexp.test(Field)) {
@@ -121,12 +124,10 @@ function getField(Object, Field) {
         var Cur = Object[F];
         if (Cur) {
             return getField(Cur, Field.replace(new RegExp("^" + F + "(\\.|\\[|\\]\\.)"), ""));
-        }
-        else {
+        } else {
             return null;
         }
-    }
-    else if (Object && Object.hasOwnProperty(Field)) {
+    } else if (Object && Object.hasOwnProperty(Field)) {
         return Object[Field];
     } else {
         return '';
@@ -135,76 +136,64 @@ function getField(Object, Field) {
 
 //模拟CRUD表单验证
 function formValidate(isUpdate, currentRow, container) {
-    var Validators =
-			{
-			    Result: [],
-			    Method:
-				{
-				    length: function (Message, Min, Max) {
-				        if (typeof (Min) === "number" && typeof (Max) === "number" && (this.length < Min || this.length > Max)) {
-				            Validators.Result.push("<span style='color:red;'>" + Message + "</span>长度必须在" + Min + "至" + Max + "之间");
-				            return false;
-				        }
-				        else if (typeof (Min) === "number" && this.length < Min) {
-				            Validators.Result.push("<span style='color:red;'>" + Message + "</span>长度不能小于" + Min);
-				            return false;
-				        }
-				        else if (typeof (Max) === "number" && this.length > Max) {
-				            Validators.Result.push("<span style='color:red;'>" + Message + "</span>长度不能大于" + Max);
-				            return false;
-				        }
-				        else {
-				            return true;
-				        }
-				    },
-				    range: function (Message, Min, Max) {
-				        if (this.length > 0 && !isNaN(Number(this))) {
-				            var N = Number(this);
-				            if (typeof (Min) === "number" && typeof (Max) === "number" && (N < Min || N > Max)) {
-				                Validators.Result.push("<span style='color:red;'>" + Message + "</span>数值必须在" + Min + "至" + Max + "之间");
-				                return false;
-				            }
-				            else if (typeof (Min) === "number" && N < Min) {
-				                Validators.Result.push("<span style='color:red;'>" + Message + "</span>数值不能小于" + Min);
-				                return false;
-				            }
-				            else if (typeof (Max) === "number" && N > Max) {
-				                Validators.Result.push("<span style='color:red;'>" + Message + "</span>数值不能大于" + Max);
-				                return false;
-				            }
-				            else {
-				                return true;
-				            }
-				        }
-				        else if (this.length > 0) {
-				            Validators.Result.push("<span style='color:red;'>" + Message + "</span>不是有效的数值格式");
-				            return false;
-				        }
-				        else {
-				            return true;
-				        }
-				    },
-				    digits: function (Message, Digits) {
-				        if (this.length > 0 && !isNaN(Number(this)) && this.indexOf(".") != -1 && this.length - this.indexOf(".") - 1 > Digits) {
-				            Validators.Result.push("<span style='color:red;'>" + Message + "</span>小数位数不能大于" + Digits);
-				            return false;
-				        }
-				        else {
-				            return true;
-				        }
-				    },
-				    regexp: function (Message, MessageExt, Exp) {
-				        var Regx = new RegExp(Exp);
-				        if (!Regx.test(this)) {
-				            Validators.Result.push("<span style='color:red;'>" + Message + "</span>" + MessageExt);
-				            return false;
-				        }
-				        else {
-				            return true;
-				        }
-				    }
-				}
-			};
+    var Validators = {
+        Result: [],
+        Method: {
+            length: function(Message, Min, Max) {
+                if (typeof(Min) === "number" && typeof(Max) === "number" && (this.length < Min || this.length > Max)) {
+                    Validators.Result.push("<span style='color:red;'>" + Message + "</span>长度必须在" + Min + "至" + Max + "之间");
+                    return false;
+                } else if (typeof(Min) === "number" && this.length < Min) {
+                    Validators.Result.push("<span style='color:red;'>" + Message + "</span>长度不能小于" + Min);
+                    return false;
+                } else if (typeof(Max) === "number" && this.length > Max) {
+                    Validators.Result.push("<span style='color:red;'>" + Message + "</span>长度不能大于" + Max);
+                    return false;
+                } else {
+                    return true;
+                }
+            },
+            range: function(Message, Min, Max) {
+                if (this.length > 0 && !isNaN(Number(this))) {
+                    var N = Number(this);
+                    if (typeof(Min) === "number" && typeof(Max) === "number" && (N < Min || N > Max)) {
+                        Validators.Result.push("<span style='color:red;'>" + Message + "</span>数值必须在" + Min + "至" + Max + "之间");
+                        return false;
+                    } else if (typeof(Min) === "number" && N < Min) {
+                        Validators.Result.push("<span style='color:red;'>" + Message + "</span>数值不能小于" + Min);
+                        return false;
+                    } else if (typeof(Max) === "number" && N > Max) {
+                        Validators.Result.push("<span style='color:red;'>" + Message + "</span>数值不能大于" + Max);
+                        return false;
+                    } else {
+                        return true;
+                    }
+                } else if (this.length > 0) {
+                    Validators.Result.push("<span style='color:red;'>" + Message + "</span>不是有效的数值格式");
+                    return false;
+                } else {
+                    return true;
+                }
+            },
+            digits: function(Message, Digits) {
+                if (this.length > 0 && !isNaN(Number(this)) && this.indexOf(".") != -1 && this.length - this.indexOf(".") - 1 > Digits) {
+                    Validators.Result.push("<span style='color:red;'>" + Message + "</span>小数位数不能大于" + Digits);
+                    return false;
+                } else {
+                    return true;
+                }
+            },
+            regexp: function(Message, MessageExt, Exp) {
+                var Regx = new RegExp(Exp);
+                if (!Regx.test(this)) {
+                    Validators.Result.push("<span style='color:red;'>" + Message + "</span>" + MessageExt);
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        }
+    };
 
     //初始化验证结果
     Validators.Result = [];
@@ -221,8 +210,7 @@ function formValidate(isUpdate, currentRow, container) {
         var ValueType = Ele.attr("valuetype");
         if (Ele.attr("hidden") != "hidden" && Ele.attr("validator")) {
             Valid = eval('(' + Ele.attr("validator") + ')');
-        }
-        else {
+        } else {
             Valid = null;
         }
 
@@ -272,13 +260,11 @@ function formValidate(isUpdate, currentRow, container) {
                 if (Validators.Method[Key].apply(Value, Vld)) {
                     //验证通过，移除标红和标黄
                     Ele.removeClass("sign_red").removeClass("sign_yellow");
-                }
-                else {
+                } else {
                     //验证失败，增加标红或标黄
                     if (Ele.attr("require") === "require") {
                         Ele.addClass("sign_red");
-                    }
-                    else {
+                    } else {
                         Ele.addClass("sign_yellow");
                     }
                 }
@@ -290,8 +276,7 @@ function formValidate(isUpdate, currentRow, container) {
                 {
                     if (Value.length > 0 && !isNaN(Number(Value))) {
                         setField(Record, Field, Number(Value));
-                    }
-                    else {
+                    } else {
                         delete Record[Field];
                     }
                 }
@@ -305,8 +290,7 @@ function formValidate(isUpdate, currentRow, container) {
                             Value = true;
                         }
                         setField(Record, Field, Value);
-                    }
-                    else {
+                    } else {
                         delete Record[Field];
                     }
                 }
@@ -323,11 +307,11 @@ function formValidate(isUpdate, currentRow, container) {
     if (Validators.Result && Validators.Result.length) {
         Dialog({ Title: "提示", Type: window.top.MyDialog.Types.Message, Icon: window.top.MyDialog.Icons.Info, Message: Validators.Result }, null, null);
         return null;
-    }
-    else {
+    } else {
         return Record;
     }
 }
+
 function setValue(Record, container) {
     for (var i = 0, Eles = jQuery(container), len = Eles.length; i < len; i++) {
         var Ele = jQuery(Eles[i]);
@@ -339,8 +323,7 @@ function setValue(Record, container) {
                 {
                     if (Value != null) {
                         Ele.combobox("setValue", Value);
-                    }
-                    else if (Ele.attr("require") == "require") {
+                    } else if (Ele.attr("require") == "require") {
                         var Items = Ele.combobox("getData");
                         if (Items.length > 0) {
                             /* if (V && V.BindingDefaults && V.BindingDefaults[Ele.attr("source")])
@@ -352,12 +335,10 @@ function setValue(Record, container) {
                             Ele.combobox("setValue", Items[0].value);
                             }*/
                             Ele.combobox("setValue", Items[0].value);
-                        }
-                        else {
+                        } else {
                             Ele.combobox("clear");
                         }
-                    }
-                    else {
+                    } else {
                         Ele.combobox("clear");
                     }
                 }
@@ -366,8 +347,7 @@ function setValue(Record, container) {
                 {
                     if (Value != null) {
                         Ele.combotree("setValue", Value);
-                    }
-                    else if (Ele.attr("require") == "require") {
+                    } else if (Ele.attr("require") == "require") {
                         var Items = Ele.combotree("getData");
                         //if (Items.length > 0) {
                         //    Ele.combotree("setValue", Items[0].value);
@@ -375,8 +355,7 @@ function setValue(Record, container) {
                         //else {
                         //    Ele.combotree("clear");
                         //}
-                    }
-                    else {
+                    } else {
                         Ele.combotree("clear");
                     }
                 }
@@ -385,8 +364,7 @@ function setValue(Record, container) {
                 {
                     if (Value != null) {
                         Ele.combobox("setValues", Value);
-                    }
-                    else if (Ele.attr("require") == "require") {
+                    } else if (Ele.attr("require") == "require") {
                         var Items = Ele.combobox("getData");
                         if (Items.length > 0) {
                             /*    if (V && V.BindingDefaults && V.BindingDefaults[Ele.attr("source")])
@@ -398,12 +376,10 @@ function setValue(Record, container) {
                             Ele.combobox("setValues", [Items[0].value]);
                             }*/
                             Ele.combobox("setValues", [Items[0].value]);
-                        }
-                        else {
+                        } else {
                             Ele.combobox("clear");
                         }
-                    }
-                    else {
+                    } else {
                         Ele.combobox("clear");
                     }
                 }
@@ -413,8 +389,7 @@ function setValue(Record, container) {
                     if (Value == "1") {
                         //Ele.prop("checked", "checked");
                         Ele[0].checked = true;
-                    }
-                    else {
+                    } else {
                         //Ele.removeProp("checked");
                         Ele[0].checked = false;
                     }
@@ -425,12 +400,10 @@ function setValue(Record, container) {
                     if (Value) {
                         if (Ele.attr("valuetype") == "Number") {
                             Ele.val(new Date(Value * 1000).FormatString(Ele.attr("format")));
-                        }
-                        else {
+                        } else {
                             Ele.val(Value);
                         }
-                    }
-                    else {
+                    } else {
                         Ele.val("");
                     }
                 }
@@ -439,8 +412,7 @@ function setValue(Record, container) {
                 {
                     if (Value != null) {
                         Ele.val(Value);
-                    }
-                    else {
+                    } else {
                         Ele.val("");
                     }
                 }
@@ -448,6 +420,7 @@ function setValue(Record, container) {
         }
     }
 }
+
 function setDisable(container) {
     for (var i = 0, Eles = jQuery(container), len = Eles.length; i < len; i++) {
         var Ele = jQuery(Eles[i]);
@@ -478,6 +451,7 @@ function setDisable(container) {
         }
     }
 }
+
 function seEnable(container) {
     for (var i = 0, Eles = jQuery(container), len = Eles.length; i < len; i++) {
         var Ele = jQuery(Eles[i]);
@@ -512,20 +486,19 @@ function seEnable(container) {
 }
 /***************************FORM END**********************************/
 
-; (function ($, undefined) {
-    $.fn.hdform = function (method) {
-        
+;
+(function($, undefined) {
+    $.fn.hdform = function(method) {
+
         if ($.fn.hdform[method]) {
             return $.fn.hdform[method].apply(this, Array.prototype.slice.call(arguments, 1));
-        }
-        else if (typeof method === "object" || !method) {
+        } else if (typeof method === "object" || !method) {
             return initialize.apply(this, arguments);
-        }
-        else {
+        } else {
             $.error("Method " + method + " does not exist on jQuery.hdform");
         }
     };
-    $.fn.hdform.Get = function () {
+    $.fn.hdform.Get = function() {
         var opts = $(this).data("hdform");
         if (opts && opts.BeforeGet) {
             opts.BeforeGet(opts);
@@ -540,7 +513,7 @@ function seEnable(container) {
         }
         return record;
     };
-    $.fn.hdform.Set = function (record) {
+    $.fn.hdform.Set = function(record) {
         var opts = $(this).data("hdform");
         if (opts && opts.BeforeSet) {
             opts.BeforeSet(record, opts);
@@ -551,7 +524,7 @@ function seEnable(container) {
             opts.AfterSet(record, opts);
         }
     };
-    $.fn.hdform.Enable = function (Fields) {
+    $.fn.hdform.Enable = function(Fields) {
         opts = this.data("hdform");
         if (opts.BeforeEnable) {
             opts.BeforeEnable(Fields);
@@ -597,8 +570,7 @@ function seEnable(container) {
                     }
                 }
             }
-        }
-        else {
+        } else {
             //不指定字段，全部清空
             for (var i = 0, Eles = this.find("div.group [field]"), len = Eles.length; i < len; i++) {
                 var Ele = jQuery(Eles[i]);
@@ -637,7 +609,7 @@ function seEnable(container) {
         }
         //return this;
     };
-    $.fn.hdform.Disable = function (Fields) {
+    $.fn.hdform.Disable = function(Fields) {
         opts = this.data("hdform");
         if (opts.BeforeDisable) {
             opts.BeforeDisable(Fields);
@@ -683,8 +655,7 @@ function seEnable(container) {
                     }
                 }
             }
-        }
-        else {
+        } else {
             //不指定字段，全部清空
             for (var i = 0, Eles = this.children(".form_container").children(".group:not(.html)").find("[field]:not(.datagrid-view [field])"), len = Eles.length; i < len; i++) {
                 var Ele = jQuery(Eles[i]);
@@ -723,7 +694,7 @@ function seEnable(container) {
         }
         //return this;
     };
-    $.fn.hdform.Clear = function (Fields) {
+    $.fn.hdform.Clear = function(Fields) {
         opts = this.data("hdform");
         if (opts.BeforeClear) {
             opts.BeforeClear(Fields);
@@ -741,8 +712,7 @@ function seEnable(container) {
                                 var Items = Ele.combobox("getData");
                                 if (Items.length > 0) {
                                     Ele.combobox("setValue", Items[0].value);
-                                }
-                                else {
+                                } else {
                                     Ele.combobox("clear");
                                 }
                             }
@@ -752,8 +722,7 @@ function seEnable(container) {
                                 var Items = Ele.combobox("getData");
                                 if (Items.length > 0) {
                                     Ele.combobox("setValues", [Items[0].value]);
-                                }
-                                else {
+                                } else {
                                     Ele.combobox("clear");
                                 }
                             }
@@ -782,8 +751,7 @@ function seEnable(container) {
                     }
                 }
             }
-        }
-        else {
+        } else {
             //不指定字段，全部清空
             for (var i = 0, Eles = this.children(".form_container").children(".group:not(.html)").find("[field]:not(.datagrid-view [field])"), len = Eles.length; i < len; i++) {
                 var Ele = jQuery(Eles[i]);
@@ -795,8 +763,7 @@ function seEnable(container) {
                             var Items = Ele.combobox("getData");
                             if (Items.length > 0) {
                                 Ele.combobox("setValue", Items[0].value);
-                            }
-                            else {
+                            } else {
                                 Ele.combobox("clear");
                             }
                         }
@@ -807,8 +774,7 @@ function seEnable(container) {
                             if (Items.length > 0) {
 
                                 Ele.combobox("setValues", [Items[0].value]);
-                            }
-                            else {
+                            } else {
                                 Ele.combobox("clear");
                             }
                         }
@@ -842,8 +808,9 @@ function seEnable(container) {
         }
 
     };
+    var FormContainer = this.FormContainer||$(".my_dialog");
     var defaults = $.fn.hdform.defaults = {
-        Temp: template.compile(jQuery.GetTemplate(function () {
+        Temp: template.compile(jQuery.GetTemplate(function() {
             /*
 
                    {{each Form as Group g}}
@@ -961,13 +928,13 @@ function seEnable(container) {
         ],
         QuickBtn: true,
         Cmds: {
-            upload: function (dom, Target) {
-                jQuery(jQuery("#ifm_upload")[0].contentWindow.document.getElementById("file")).change(function () {
+            upload: function(dom, Target) {
+                jQuery(jQuery("#ifm_upload")[0].contentWindow.document.getElementById("file")).change(function() {
                     if (jQuery("#ifm_upload")[0].contentWindow.document.getElementById("file").value.length > 0) {
                         jQuery("#ifm_upload")[0].contentWindow.document.forms[0].submit();
                     }
                 });
-                jQuery("#ifm_upload").unbind("load").load(function () {
+                jQuery("#ifm_upload").unbind("load").load(function() {
                     if (this.contentWindow.location.pathname == "/upload") {
                         var Result = Proxy.Json.ToObject(this.contentWindow.document.body.innerHTML);
                         Target.val(Result.name);
@@ -976,16 +943,17 @@ function seEnable(container) {
                 });
                 jQuery("#ifm_upload")[0].contentWindow.document.getElementById("file").click();
             },
-            confirm: function (dom, e) {
+            confirm: function(dom, e) {
                 //return dom.hdform("Get");
             },
-            cancel: function (dom, e) {
+            cancel: function(dom, e) {
                 dom.hdform("Clear");
             },
             gispos: null,
             gisarea: null
         }
     };
+
     function initialize(options) {
         var opts = $.extend(true, {}, defaults, options);
         if (jQuery("#ifm_upload").length == 0) {
@@ -994,7 +962,7 @@ function seEnable(container) {
         if (opts.QuickBtn) {
             opts.Form.push({ Buttons: opts.DefaultBtns });
         }
-        return this.each(function () {
+        return this.each(function() {
             var hdform = $(this);
             if (opts.BeforeRender) {
                 opts.BeforeRender(hdform);
@@ -1033,8 +1001,9 @@ function seEnable(container) {
             }
         });
     };
+
     function BindCmd(tar) {
-        tar.find("button[cmd],button[command]").on("click", function (Evt) {
+        tar.find("button[cmd],button[command]").on("click", function(Evt) {
             if (!$(this).hasClass("disabled")) {
                 var Target = $(this).parents("td").find("input");
                 var cmd = $(this).attr("cmd") || $(this).attr("command");
@@ -1045,9 +1014,10 @@ function seEnable(container) {
             }
         });
     };
+
     function BindComboBoxes(Sources, Container) {
         for (var i = 0, len = Sources.length; i < len; i++) {
-            Container.find("[source=" + Sources[i].Code + "]").addClass("combox-complete").each(function (idx, ele) {
+            Container.find("[source=" + Sources[i].Code + "]").addClass("combox-complete").each(function(idx, ele) {
                 Combo = jQuery(ele);
                 var Type = Combo.attr("showtype");
                 var Items = Sources[i].Records;
@@ -1060,22 +1030,20 @@ function seEnable(container) {
                         multiple: true,
                         height: 26,
                         width: 154,
-                        formatter: function (Row) { return "<div class='combocheckbox'>" + Row.name + "</div>"; }
+                        formatter: function(Row) { return "<div class='combocheckbox'>" + Row.name + "</div>"; }
                     });
-                }
-                else if (Type == "combotree") {
+                } else if (Type == "combotree") {
                     Combo.combotree({
                         lines: true,
                         height: 26,
                         data: Items,
-                        onBeforeSelect: function (Node) {
+                        onBeforeSelect: function(Node) {
                             if (Node.iconCls == "std") {
                                 return false;
                             }
                         }
                     });
-                }
-                else {
+                } else {
                     if (Combo.attr("require") != "require" && Items.length > 0 && Items[0].name != "[未设置]") {
                         Items.unshift({ name: "[未设置]", value: (Combo.attr("datatype") == "Number" ? 0 : "") });
                     }
@@ -1087,7 +1055,7 @@ function seEnable(container) {
             });
         }
 
-        Container.find("[source]").each(function (i, ele) {
+        Container.find("[source]").each(function(i, ele) {
             if (!$(this).hasClass("combox-complete")) {
                 $(this).combobox({ valueField: 'value', textField: 'name', data: [], editable: false, height: 26 });
                 //V.ShowMessage("缺少代码为“" + jQuery(ele).attr("source") + "”的绑定数据源");
