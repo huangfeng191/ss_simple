@@ -4,11 +4,13 @@ import Mystock from '../customs/mystock/index.vue'
 import Mycolor from '../customs/mystock/getcolor.vue'
 // 测试 js
 import Test from '../soon/test.vue'
+// 测试 nouse
+import Cs from '../nouse/cs.vue'
 
 
 export default{
 	routes:[
-		{path:'/home', component:Home},
+		{path:'/cs', component:Cs},
 		{path:'/news', component:News},
 		{path:'/test', component:Test},
 		{path:'/mystock', component:Mystock},
