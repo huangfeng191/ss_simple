@@ -1,7 +1,8 @@
 
 
 var mongoose = require('mongoose'),
-    DB_URL = 'mongodb://localhost:27017/mystock';
+    // DB_URL = 'mongodb://localhost:27017/mystock';
+    DB_URL = 'mongodb://ff:fengfeng123!@101.132.39.57:3335/mystock?authSource=admin'; 
 
 /**
  * 连接

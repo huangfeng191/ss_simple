@@ -88,13 +88,23 @@
 				</el-col>
 			</el-col>
 			<el-col :span="6">
-				<el-input
-						type="textarea"
-						autosize
-						placeholder="请输入内容"
-						:autosize="{ minRows: 3}"
-						v-model="aae013">
-				</el-input>
+				<div>
+                    <el-input
+                        type="textarea"
+                        autosize
+                        placeholder="请输入内容"
+                        :autosize="{ minRows: 3}"
+                        v-model="aae013">
+                </el-input>            
+                <el-input
+                        type="textarea"
+                        autosize
+                        placeholder="请输入内容"
+                        :autosize="{ minRows: 3}"
+                        :value="addrall"
+                        >
+                </el-input>            
+                </div>
 			</el-col>
 		</el-row>
 	</div>
@@ -143,6 +153,11 @@
                 width: 250,
                 height: 400,
 
+            }
+        },
+        computed:{
+            addrall:function(){
+                return 11;
             }
         },
         methods: {
