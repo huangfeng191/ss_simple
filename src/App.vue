@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+        <router-link to="/position">position</router-link>
         <router-link to="/cs">cs</router-link>
         <router-link to="/test">test</router-link>
         <router-link to="/mycolor">获取颜色</router-link>

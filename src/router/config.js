@@ -6,11 +6,12 @@ import Mycolor from '../customs/mystock/getcolor.vue'
 import Test from '../soon/test.vue'
 // 测试 nouse
 import Cs from '../nouse/cs.vue'
-
+import Position from '../rest/css/position.vue'
 
 export default{
 	routes:[
 		{path:'/cs', component:Cs},
+        {path:'/position', component:Position},
 		{path:'/news', component:News},
 		{path:'/test', component:Test},
 		{path:'/mystock', component:Mystock},
