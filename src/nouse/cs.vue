@@ -1,17 +1,16 @@
 <template>
-    <div id="cs">
-        <div class="simple" :class="cssObject">
-            对象模式
-        </div>
-        <div class="simple" :class="{a:testBoolean}">
-            对象模式(布尔值，可通过计算获得)
-        </div>
-        <div class="simple" :class="cssStr.split(' ')">
-            类数组模式
-        </div>
-        <div class="simple" :class="['c',1==1?'a':'b']">
-            数组模式(切记类需要加**'')
-            可用三元运算符
+    <div id="ipadanalysis1">
+        <div class="header">
+            <div style="width:20%;height:100%;float:left;background:yellow;"></div>
+            <div style="width:80%;float:left;position:relative;">
+                <div class="div0">
+                    <el-menu :default-active="activeIndex2" class="el-menu-demo" mode="horizontal">
+                        <el-menu-item index="1">基本信息</el-menu-item>
+                        <el-menu-item index="2">登记表</el-menu-item>
+                        <el-menu-item index="3">分户台账</el-menu-item>
+                    </el-menu>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -19,43 +18,50 @@
 export default {
     data() {
         return {
-            cssObject: {
-                "a": true, //对象模式， key 就是样式
-                "b": true
-            },
-            testBoolean: true,
-            cssStr: "b c" // css 用函数， 其实就是 数组模式
+            activeIndex2: '1'
         };
     },
-    methods: {
-
-    },
-
-    watch: {
-
-    },
+    methods: {},
+    watch: {},
     mounted() {
-
+        //16为body 的margin
+        $("#ipadanalysis1").height($(window).height()-25-16);
     }
 };
 </script>
 <style lang="less">
-#cs {
-    .a {
-        background-color: red;
-    }
-    .b {
-        background-color: blue;
-    }
-   
-    .c {
-        border: 2px black solid;
-    }
-    .simple {
-        width: 100px;
-        height: 100px;
-        color: white;
-        font-size:14px;
+#ipadanalysis1 {
+    background-color: #B8C5D6;
+    .header {
+        .div0 {
+            width: 56%;
+            position: absolute;
+            top: 55px;
+        }
+        .el-menu-demo {
+
+            
+            background-color: #0389DA;
+            color: white!important;
+            border-bottom: 0px solid #f7f7f7;
+            border-right: 0px solid #f7f7f7;
+            .el-menu-item {
+                line-height: 71px;
+                height: 71px;
+                margin-right: 12%;
+                color: white!important;
+            }
+            .is-active {
+                border-bottom: 8px solid #6CDB00!important;
+                
+               
+            }
+        }
+
+
+        height: 126px;
+        width: 100%;
+        background-color: #0389DA;
     }
 }
 </style>
