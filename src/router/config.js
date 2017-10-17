@@ -7,11 +7,13 @@ import Test from '../soon/test.vue'
 // 测试 nouse
 import Cs from '../nouse/cs.vue'
 import Position from '../rest/css/position.vue'
+import Css from '../rest/css/css.vue'
 
 export default{
 	routes:[
 		{path:'/cs', component:Cs},
         {path:'/position', component:Position},
+        {path:'/css', component:Css},
 		{path:'/news', component:News},
 		{path:'/test', component:Test},
 		{path:'/mystock', component:Mystock},
