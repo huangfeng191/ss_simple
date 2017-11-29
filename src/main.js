@@ -19,7 +19,7 @@ new Vue({
        msg: 'Welcome to Your Vue.js App',
       "sss": "main_"
     }
-  }, 
+  },
 
     /**
   template: '<App/>',
@@ -29,4 +29,3 @@ new Vue({
   template: "<App :sss='sss'/>",
   components: { App }
 })
-
