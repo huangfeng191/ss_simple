@@ -67,6 +67,13 @@ export default {
                 param: {
 
                 }
+            },{
+                value: 'toDict',
+                label: 'toDict',
+                template: ' "":"${0:nm}", ',
+                param: {
+
+                }
             }, {
                 value: 'crudinputOne',
                 label: 'crudinputOne',
