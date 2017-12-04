@@ -21,8 +21,8 @@ hdform : form =[ {"Inputs":[]},{"Buttons":[]},{"Html":""}]
 			<div group="{{Group.Code}}" class="group {{if Group.Html}}html{{/if}}">
 				{{if Group.Title&&Form.length > 1}}
 					<div class="title"><span>{{#Group.Title}}</span></div>
-				{{/if}}                   
-				
+				{{/if}}
+
 				{{if Group.Html }}
 					{{#Group.Html}}
 				{{else if Group.Grid &&Group.Grid.Id }}
@@ -38,8 +38,8 @@ hdform : form =[ {"Inputs":[]},{"Buttons":[]},{"Html":""}]
 
 					<table style="{{Group.Style}}">
                          //inputs 解析
-						{{each Group.Inputs as Row r}}          
-							<tr>                             
+						{{each Group.Inputs as Row r}}
+							<tr>
 
 								{{each Row as Cell c}}
 								   {{if Cell.Field}}
@@ -49,7 +49,7 @@ hdform : form =[ {"Inputs":[]},{"Buttons":[]},{"Html":""}]
 												{{if Cell.ShowType == "textarea"}}
 														<textarea
 												{{else}}
-												       <input 
+												       <input
 												{{/if}}
 												class="{{if Cell.ShowType == "datetime"}}Wdate {{else if Cell.ShowType == "upload" || Cell.ShowType == "text" || Cell.ShowType == "gispos" || Cell.ShowType == "gisarea" }}easyui-validatebox {{/if}}default{{if Cell.Class}}{{ Cell.Class}}{{/if}}"
 												field="{{Cell.Field}}" valuetype="{{Cell.DataType}}" showtype="{{Cell.ShowType}}"
@@ -103,14 +103,14 @@ hdform : form =[ {"Inputs":[]},{"Buttons":[]},{"Html":""}]
 
 							</tr>
 						{{/each}}
-						{{if Group.Blank}}                              
+						{{if Group.Blank}}
 						    <tr style="height:{{Group.Blank}}px"><td></td></tr>          //空
 						{{/if}}
 					</table>
 				{{/if}}
 			</div>
 		</div>
-	{{/if}}                   
+	{{/if}}
 {{/each}}
 
                    */
