@@ -1,256 +1,463 @@
 <template>
-    <div id="tojson">
-        <el-row>
-            <el-col :span="7">
-                <el-select @change="selectTp"  class="selfw" v-model="selectd" multiple filterable allow-create placeholder="请选择文章标签">
-                    <el-option   v-for="item in types" :key="item.value" :label="item.label" :value="item.value">
-                    </el-option>
-                </el-select>
-            </el-col>
-            <el-col :span="8">
-                <el-input class="selfw" @change="changeTemplate" type="textarea" :autosize="{ minRows: 2}" placeholder="template" v-model="template">
-                </el-input>
-            </el-col>
-            <el-col :span="8">
-                <el-input class="selfw" type="textarea" :autosize="{ minRows: 2}" placeholder="param" v-model="param">
-                </el-input>
-            </el-col>
-        </el-row>
-                <el-row class="content">
-            <el-col :span="4">
-                <el-input class="selfw" type="textarea" :autosize="{ minRows: 10}" placeholder="原始" v-model="proto">
-                </el-input>
-            </el-col>
-            <el-col :span="10" v-for="r in selectDetail">
-                <el-input class="selfw" type="textarea" :autosize="{ minRows: 10}" :placeholder="r.label" v-model="r.tempV">
-                </el-input>
-            </el-col>
-        </el-row>
+  <div id="tojson">
+    <el-row>
+      <el-col :span="7">
+        <el-select @change="selectTp" class="selfw" v-model="selectd" multiple filterable allow-create placeholder="请选择文章标签">
+          <el-option v-for="item in types" :key="item.value" :label="item.label" :value="item.value">
+          </el-option>
+        </el-select>
+      </el-col>
+      <el-col :span="8">
+        <el-input class="selfw" @change="changeTemplate" type="textarea" :autosize="{ minRows: 2}" placeholder="template" v-model="template">
+        </el-input>
+      </el-col>
+      <el-col :span="8">
+        <el-input class="selfw" type="textarea" :autosize="{ minRows: 2}" placeholder="param" v-model="param">
+        </el-input>
+      </el-col>
+    </el-row>
+    <el-row class="content">
+      <el-col :span="4">
+        <el-input class="selfw" type="textarea" :autosize="{ minRows: 10}" placeholder="原始" v-model="proto">
+        </el-input>
+      </el-col>
+      <el-col :span="10" v-for="r in selectDetail">
+        <el-input class="selfw" type="textarea" :autosize="{ minRows: 10}" :placeholder="r.label" v-model="r.tempV">
+        </el-input>
+      </el-col>
+    </el-row>
 
-        <el-row style="margin-top:30px;">
-            <el-col :span="7">
-                 <el-input class="selfw" type="textarea" :rows="2" placeholder="aparts" v-model="aparts">
-                </el-input>
-            </el-col>
-            <el-col :span="8">
-                <el-input class="selfw" type="textarea" :autosize="{ minRows: 2}"  placeholder="template" v-model="selectTemplates">
-                </el-input>
-            </el-col>
-           
-        </el-row>
+    <el-row style="margin-top:30px;">
+      <el-col :span="7">
+        <el-input class="selfw" type="textarea" :rows="2" placeholder="aparts" v-model="aparts">
+        </el-input>
+      </el-col>
+      <el-col :span="8">
+        <el-input class="selfw" type="textarea" :autosize="{ minRows: 2}" placeholder="template" v-model="selectTemplates">
+        </el-input>
+      </el-col>
 
+    </el-row>
 
-    </div>
+  </div>
 </template>
 <style lang="less">
 #tojson {
+  .selfw {
+    width: 90%;
+  }
+  .content {
+    margin-top: 120px;
     .selfw {
-        width: 90%
+      width: 98%;
     }
-    .content {
-        margin-top: 120px;
-        .selfw {
-            width: 98%
-        }
-    }
+  }
 }
 </style>
 <script>
 export default {
-    data() {
-        return {
-            selectd: ['crudcol',"crudinputOne"],
-            types: [{
-                value: 'crudcol',
-                label: 'crudcol',
-                template: '{ "field": "${0:nm}"    ,  "title": "${1:nm}", "align": "center", "halign": "center", "colspan": 1, "hidden": false, "rowspan": 1, "width": 100 },',
-                param: {
-
+  data() {
+    return {
+      selectd: ['VUECRUDCOL', 'VUECRUDInputTwo'],
+      types: [
+        {
+          value: 'VUECRUDCOL',
+          label: 'VUECRUDCOL',
+          template: '{ title: "${2:nm}", data: "${0:code}", width: 130,${3} },',
+          param: [
+            {
+              k: '3',
+              v: [
+                {
+                  k: 'replace',
+                  v: {
+                    d: 'format:"yyyy-MM-dd"',
+                    c: 'format:"XXX"',
+                    s: 'format:"H0002"'
+                  }
                 }
-            },{
-                value: 'toDict',
-                label: 'toDict',
-                template: ' "":"${0:nm}", ',
-                param: {
-
+              ]
+            }
+          ]
+        },
+        {
+          value: 'VUECRUDInputOne',
+          label: 'VUECRUDInputOne',
+          template:
+            '{title: "${2:nm}",data: "${0:code}",required: true,dataType: "${1}",showType: "${3:text}"},',
+          fix: [
+            {
+              k: 'both',
+              v: [{ k: 'replace', v: [{ '/^{/': '[{', '/},$/': '}],' }] }]
+            }
+          ],
+          // 参数为1维数组的原因是 我希望顺序执行规则 ,采用 k v 对象方式是为了以后扩展方便
+          param: [
+            {
+              k: '1',
+              v: [
+                {
+                  // 元素值， 变化后值
+                  k: 'replace',
+                  v: { string: 'String', int: 'Number', int64: 'Number' }
                 }
-            }, {
-                value: 'crudinputOne',
-                label: 'crudinputOne',
-                template: '  [{ "Field": "${0:nm}", "Name": "${1:nm}",ShowType: "${2:text}",  DataType: "${3:String}", Ext: "${4}", "Required": true, RowSpan: 1, ColSpan: 1 },],',
-                param: {
-                    to2:{
-                        "日期":"datetime",
-                        "选择框":"combo",
-                    },
-
-                    "2":{
-                        "datetime":["","","","Number","yyyy-MM-dd"],
-                        "combo":["","","","String","SSSSS"],
-                        "textarea":["","","","",""],
-                        "upload":["","","","",""],
-                    }
-                }
-            
+              ]
             },
             {
-                value: 'crudinputTw0',
-                label: 'crudinputTw0',
-                template: 
-           '[  { "Field": "${0}", "Name": "${1}", ShowType: "text",  DataType: "${2:String}",Ext: "", "Required": true, RowSpan: 1, ColSpan: 1 ,Unit:""},\n'+
-'   { "Field": "${3}", "Name": "${4}", ShowType: "text",Ext: "", DataType: "${5:String}",   "Required": true, RowSpan: 1, ColSpan: 1 ,Unit:""},],'
-                  
-            },
-             {
-                value: 'json',
-                label: 'json'
-            }],
-            template: '',
-            param: "",
-            aparts: " ,",
-            proto: "", 
-            lastSelect:""
-            //up data
-            //dowm for show
-
-        };
-    },
-    methods: {
-        getTemp(){
-            debugger
-        },
-        changeTemplate(){
-            var self=this;
-            if(self.selectd.length>0){
-                $.each(self.types,function(i,v){
-                    if(v.value==self.selectd[0]){
-                        v["template"]=self.template;
-                    }
-
-                })
-              
-
-            }
-        },
-        selectTp(values) {
-            if(!values[0]){
-                return
-            }
-            debugger
-            var self=this;
-            var o={}
-            $.each(self.types, function(index, v) {
-                o[v.value] = v
-            });
-            self.template=o[values[0]].template;
-            self.param=JSON.stringify(o[values[0]].param) ;
-        },
-
-    },
-    computed: {
-        selectTemplates:function(){
-            var self=this;
-            var o={}
-            $.each(self.types, function(index, v) {
-                o[v.value] = v
-            });
-            var a=[]
-             $.each(self.selectd, function(i, v) { // 循环选中模板
-            a.push(o[v].template);
-
-            })
-
-            return a.join("\n")
-        },
-        selectDetail: function() {
-            var self = this;
-            var reg = /\$\{{1}[0-9a-zA-Z\_:]+\}{1}/g
-            var re = /\$\{{1}([0-9]):?([0-9a-zA-Z\_]*)\}{1}/
-            var o = {};
-            var a = []
-            var a1 = []
-            // 获取模板对象
-            $.each(self.types, function(index, v) {
-                o[v.value] = v
-            });
-
-            // 需要转换的数据
-            if (self.proto) {
-
-                $.each(self.proto.split("\n"), function(i, v) {
-                    if (v) {
-                        a1.push(v.split(eval("/[" + self.aparts + "]/ ")).filter(function(x) {
-                            if (x) return true;
-                        }));
-                    }
-                });
-            }
-
-            $.each(self.selectd, function(i, v) { // 循环选中模板
-
-                var temp = []
-                o[v]["tempV"] = [] // 更改值
-
-                if (o[v].template) {
-                    
-
-                    // 循环生成记录
-                    $.each(a1, function(a1i, a1v) {
-                        o[v]["tempV"].push(
-                            o[v].template.replace(reg, function(str) {
-                                if (str.match(re)) {
-                                    
-                                    if(a1v[str.match(re)[1]]!=undefined &&a1v[str.match(re)[1]]!=""){
-                                        
-                       //                  if(o[v]["param"] &&o[v]["param"]["to"+str.match(re)[1]]){ no Ok
-                       //                      debugger
-                       //                      if(o[v]["param"]["to"+str.match(re)[1]][a1v[str.match(re)[1]]]){
-                       
-                       // o[v]["param"][str.match(re)[1]]    [o[v]["param"]["to"+str.match(re)[1]][a1v[str.match(re)[1]]]]   [str.match(re)[1]]
-
-                       //                      }
-                                           
-                       //                  }
-
-                                        return a1v[str.match(re)[1]]
-                                    }
-                                    // 填写默认值
-                                    return str.match(re)[2]
-                                } else {
-                                    return ""
-                                }
-
-                            })
-                        )
-
-
-                    })
-
-
-
-
-
-
+              k: '3',
+              v: [
+                {
+                  k: 'replace',
+                  v: { d: 'datetime', c: 'combo', t: 'text', s: 'switch' }
+                },
+                {
+                  k: 'append',
+                  v: {
+                    datetime: '",format:"yyyy-MM-dd',
+                    combo: '",format:"XXX'
+                  }
                 }
+              ]
+            }
+          ]
+        },
+        {
+          value: 'VUECRUDInputTwo',
+          label: 'VUECRUDInputTwo',
+          template:
+            '{title: "${2:nm}",data: "${0:code}",required: true,dataType: "${1}",showType: "${3:text}"},',
+          fix: [
+            // single double both ,end 修理行数据 在行的位置添加
+            {
+              k: 'double',
+              v: [{ k: 'replace', v: [{ '/^{/': '[{' }] }]
+            },
+            {
+              k: 'single',
+              v: [{ k: 'replace', v: [{ '/},$/': '}],' }] }]
+            },
+            {
+              k: 'end',
+              v: [{ k: 'replace', v: [{ '/},$/': '}],' }] }]
+            }
+          ],
+          // 参数为1维数组的原因是 我希望顺序执行规则 ,采用 k v 对象方式是为了以后扩展方便
+          param: [
+            {
+              k: '1',
+              v: [
+                {
+                  // 元素值， 变化后值
+                  k: 'replace',
+                  v: { string: 'String', int: 'Number', int64: 'Number' }
+                }
+              ]
+            },
+            {
+              k: '3',
+              v: [
+                {
+                  k: 'replace',
+                  v: { d: 'datetime', c: 'combo', t: 'text', s: 'switch' }
+                },
+                {
+                  k: 'append',
+                  v: {
+                    datetime: '",format:"yyyy-MM-dd',
+                    combo: '",format:"XXX'
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {// 暂未生效
+          value: 'goModel',
+          label: 'goModel',
+          template: '${0} *${1} `json:"${0}" xorm:"${11}"`',
+          param: [
+            {
+              k: '0',
+              v: [
+                {
+                  //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
+                  k: 'transfer',
+                  v: { capitalize: true }
+                }
+              ]
+            },
+            {
+              k: '1',
+              v: [
+                {
+                  //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
+                  k: 'replace',
+                  v: { float64: 'float64' }
+                }
+              ]
+            },
+            // 暂未生效
+            // {
+            //   k: '11',
+            //   v: [
+            //     {
+            //       //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
+            //       k: 'copy',
+            //       v: { '1': true }
+            //     },
+            //     {
+            //       //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
+            //       k: 'replace',
+            //       v: { int: 'INT(11)', int64: 'BIGINT(20)', float64: 'DOUBLE' }
+            //     }
+            //   ]
+            // }
+          ]
+        },
 
-            o[v]["tempV"]=o[v]["tempV"].join("\n");
-                
-                a.push(o[v])
-
-            });
-            // a 默认模板规则
-
-
-
-
-
-
-            return a
+        {
+          value: 'crudcol',
+          label: 'crudcol',
+          template:
+            '{ "field": "${0:nm}"    ,  "title": "${1:nm}", "align": "center", "halign": "center", "colspan": 1, "hidden": false, "rowspan": 1, "width": 100 },',
+          param: {}
+        },
+        {
+          value: 'toDict',
+          label: 'toDict',
+          template: ' "":"${0:nm}", ',
+          param: {}
+        },
+        {
+          value: 'crudinputOne',
+          label: 'crudinputOne',
+          template:
+            '  [{ "Field": "${0:nm}", "Name": "${1:nm}",ShowType: "${2:text}",  DataType: "${3:String}", Ext: "${4}", "Required": true, RowSpan: 1, ColSpan: 1 },],',
+          param: {}
+        },
+        {
+          value: 'crudinputTw0',
+          label: 'crudinputTw0',
+          template:
+            '[  { "Field": "${0}", "Name": "${1}", ShowType: "text",  DataType: "${2:String}",Ext: "", "Required": true, RowSpan: 1, ColSpan: 1 ,Unit:""},\n' +
+            '   { "Field": "${3}", "Name": "${4}", ShowType: "text",Ext: "", DataType: "${5:String}",   "Required": true, RowSpan: 1, ColSpan: 1 ,Unit:""},],'
+        },
+        {
+          value: 'json',
+          label: 'json',
+          template: '{"${0}":"${1}"},'
         }
-    },
-    watch: {},
-    mounted() {
-        $("#tojson").height($(window).height());
+      ],
+      template: '',
+      param: '',
+      aparts: ' ,	',
+      proto: '',
+      lastSelect: ''
+      //up data
+      //dowm for show
     }
-};
+  },
+  methods: {
+    getTemp() {},
+    changeTemplate() {
+      var self = this
+      if (self.selectd.length > 0) {
+        $.each(self.types, function(i, v) {
+          if (v.value == self.selectd[0]) {
+            v['template'] = self.template
+          }
+        })
+      }
+    },
+    selectTp(values) {
+      if (!values[0]) {
+        return
+      }
+
+      var self = this
+      var o = {}
+      $.each(self.types, function(index, v) {
+        o[v.value] = v
+      })
+      self.template = o[values[0]].template
+      self.param = JSON.stringify(o[values[0]].param)
+    },
+    capitalize(str) {
+      // 正则法
+      str = str.toLowerCase()
+      var reg = /\b(\w)|\s(\w)/g //  \b判断边界\s判断空格
+      return str.replace(reg, function(m) {
+        return m.toUpperCase()
+      })
+    }
+  },
+  computed: {
+    selectTemplates: function() {
+      var self = this
+      var o = {}
+      $.each(self.types, function(index, v) {
+        o[v.value] = v
+      })
+      var a = []
+      $.each(self.selectd, function(i, v) {
+        // 循环选中模板
+        a.push(o[v].template)
+      })
+
+      return a.join('\n')
+    },
+    selectDetail: function() {
+      var self = this
+      // var reg = /\$\{{1}[0-9a-zA-Z\_:]+\}{1}/g
+      // var re = /\$\{{1}([0-9]):?([0-9a-zA-Z\_]*)\}{1}/
+      var reg = /\$\{{1}[0-9a-zA-Z\_\/:]+\}{1}/g
+      // 单个参数处理正则
+      // "${1:nm/String/g}" 第一部分0 匹配值，第二部分1 key ,第三部分2  默认值,  第四部分3正则 , 第五部分4输入字符串
+      // ["${1:nm/String/g}", "1", "nm", "/String/g", index: 0, input: "${1:nm/String/g}"]
+      var re = /\$\{{1}([0-9])+:?([0-9a-zA-Z\_]*)(\/{1}[0-9a-zA-Z\_\/]*||'')\}{1}/
+      var o = {}
+      var a = []
+      // 二维数组    [  行[需要替换对象]]
+      var a1 = []
+      // 获取模板对象
+      $.each(self.types, function(index, v) {
+        o[v.value] = v
+      })
+
+      // 需要转换的数据
+      if (self.proto) {
+        $.each(self.proto.split('\n'), function(i, v) {
+          if (v) {
+            a1.push(
+              v.split(eval('/[' + self.aparts + ']/ ')).filter(function(x) {
+                if (x) return true
+              })
+            )
+          }
+        })
+      }
+
+      $.each(self.selectd, function(i, v) {
+        // 循环选中模板
+
+        var temp = []
+        o[v]['tempV'] = [] // 更改值,既每个模板的返回值
+
+        if (o[v].template) {
+          // 循环生成记录
+          $.each(a1, function(a1i, a1v) {
+            let oneRow = o[v].template.replace(reg, function(str) {
+              // 对每个匹配项 进行 处理(没一项的返回值)
+              let s = ''
+
+              if (str.match(re)) {
+                // "${1:nm/String/g}" 第一部分0 匹配值，第二部分1 key ,第三部分2  默认值,  第四部分3正则 , 第五部分4输入字符串
+                if (
+                  a1v[str.match(re)[1]] != undefined &&
+                  a1v[str.match(re)[1]] != ''
+                ) {
+                  s = a1v[str.match(re)[1]]
+                } else {
+                  s = str.match(re)[2]
+                }
+                //  正则暂时不启用
+                // if(str.match(re)[3]){
+                //
+                //     s.match(str.match(re)[3])
+                // }
+                // 每一项返回值进行二次处理
+                if (o[v].param) {
+                  $.each(o[v].param, function(ip, vp) {
+                    // 同一序号处理完成后再处理其他序号
+                    if (str.match(re)[1] == vp.k) {
+                      $.each(vp.v, function(vi, vv) {
+                        // 参数的replace 功能
+                        if (vv.k == 'replace') {
+                          $.each(vv.v, function(vvVk, vvVv) {
+                            if (s == vvVk) {
+                              s = vvVv
+                            }
+                          })
+                        }
+                        if (vv.k == 'transfer') {
+                          $.each(vv.v, function(vvVk, vvVv) {
+                            if (vvVk == 'capitalize' && vvVv) {
+                              s = self.capitalize(s)
+                            }
+                          })
+                        }
+                        if (vv.k == 'append') {
+                          $.each(vv.v, function(vvVk, vvVv) {
+                            if (s == vvVk) {
+                              s += vvVv
+                            }
+                          })
+                        }
+                      })
+                    }
+                  })
+                }
+                return s
+              } else {
+                return ''
+              }
+            })
+            if (o[v].fix) {
+              $.each(o[v].fix, function(oi, ov) {
+                if ((ov.k == 'single' || ov.k == 'both') && a1i % 2 == 1) {
+                  // 单双行处理
+                  $.each(ov.v, function(ovi, ovv) {
+                    if (ovv.k == 'replace') {
+                      $.each(ovv.v, function(ovvVk, ovvVv) {
+                        $.each(ovvVv, function(k2, v2) {
+                          oneRow = oneRow.replace(eval(k2), v2)
+                        })
+                      })
+                    }
+                  })
+                }
+                if ((ov.k == 'double' || ov.k == 'both') && a1i % 2 == 0) {
+                  // 单双行处理
+                  $.each(ov.v, function(ovi, ovv) {
+                    if (ovv.k == 'replace') {
+                      $.each(ovv.v, function(ovvVk, ovvVv) {
+                        $.each(ovvVv, function(k2, v2) {
+                          oneRow = oneRow.replace(eval(k2), v2)
+                        })
+                      })
+                    }
+                  })
+                }
+                if (ov.k == 'end' && a1i == a1.length - 1) {
+                  // 单双行处理
+                  $.each(ov.v, function(ovi, ovv) {
+                    if (ovv.k == 'replace') {
+                      $.each(ovv.v, function(ovvVk, ovvVv) {
+                        $.each(ovvVv, function(k2, v2) {
+                          oneRow = oneRow.replace(eval(k2), v2)
+                        })
+                      })
+                    }
+                  })
+                }
+              })
+            }
+            o[v]['tempV'].push(oneRow)
+          })
+        }
+
+        o[v]['tempV'] = o[v]['tempV'].join('\n')
+
+        a.push(o[v])
+      })
+      // a 默认模板规则
+
+      return a
+    }
+  },
+  watch: {},
+  mounted() {
+    $('#tojson').height($(window).height())
+  }
+}
 </script>
