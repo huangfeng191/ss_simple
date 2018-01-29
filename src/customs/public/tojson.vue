@@ -57,8 +57,8 @@
 <script>
 export default {
   data() {
-    return {
-      selectd: ['VUECRUDCOL', 'VUECRUDInputTwo'],
+    return {//
+      selectd: ['VUECRUDCOL', 'VUECRUDInputTwo','goModel','goStruct'],
       types: [
         {
           value: 'VUECRUDCOL',
@@ -174,7 +174,7 @@ export default {
         {// 暂未生效
           value: 'goModel',
           label: 'goModel',
-          template: '${0} *${1} `json:"${0}" xorm:"${11}"`',
+          template: '${0} *${1} `json:"${10}" xorm:"${11}"` //${2}',
           param: [
             {
               k: '0',
@@ -196,22 +196,69 @@ export default {
                 }
               ]
             },
-            // 暂未生效
-            // {
-            //   k: '11',
-            //   v: [
-            //     {
-            //       //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
-            //       k: 'copy',
-            //       v: { '1': true }
-            //     },
-            //     {
-            //       //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
-            //       k: 'replace',
-            //       v: { int: 'INT(11)', int64: 'BIGINT(20)', float64: 'DOUBLE' }
-            //     }
-            //   ]
-            // }
+             {
+              k: '10',
+              v: [
+                {
+                  //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
+                  k: 'copy',
+                  v: { '0': true }
+                }
+              ]
+            },
+            {
+              k: '11',
+              v: [
+                {
+                  //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
+                  k: 'copy',
+                  v: { '1': true }
+                },
+                {
+                  //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
+                  k: 'replace',
+                  v: { int: 'INT(11)', int64: 'BIGINT(20)', float64: 'DOUBLE' }
+                }
+              ]
+            }
+          ]
+        },{// 暂未生效
+          value: 'goStruct',
+          label: 'goStruct',
+          template: '${0} *${1} `json:"${10}"`',
+          param: [
+            {
+              k: '0',
+              v: [
+                {
+                  //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
+                  k: 'transfer',
+                  v: { capitalize: true }
+                }
+              ]
+            },
+            {
+              k: '1',
+              v: [
+                {
+                  //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
+                  k: 'replace',
+                  v: { float64: 'float64' }
+                }
+              ]
+            },
+                 {
+              k: '10',
+              v: [
+                {
+                  //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
+                  k: 'copy',
+                  v: { '0': true }
+                }
+              ]
+            },
+              
+       
           ]
         },
 
@@ -314,7 +361,7 @@ export default {
       // 单个参数处理正则
       // "${1:nm/String/g}" 第一部分0 匹配值，第二部分1 key ,第三部分2  默认值,  第四部分3正则 , 第五部分4输入字符串
       // ["${1:nm/String/g}", "1", "nm", "/String/g", index: 0, input: "${1:nm/String/g}"]
-      var re = /\$\{{1}([0-9])+:?([0-9a-zA-Z\_]*)(\/{1}[0-9a-zA-Z\_\/]*||'')\}{1}/
+      var re = /\$\{{1}([0-9]+):?([0-9a-zA-Z\_]*)(\/{1}[0-9a-zA-Z\_\/]*||'')\}{1}/
       var o = {}
       var a = []
       // 二维数组    [  行[需要替换对象]]
@@ -349,7 +396,7 @@ export default {
             let oneRow = o[v].template.replace(reg, function(str) {
               // 对每个匹配项 进行 处理(没一项的返回值)
               let s = ''
-
+debugger
               if (str.match(re)) {
                 // "${1:nm/String/g}" 第一部分0 匹配值，第二部分1 key ,第三部分2  默认值,  第四部分3正则 , 第五部分4输入字符串
                 if (
@@ -379,6 +426,19 @@ export default {
                             }
                           })
                         }
+
+                        if (vv.k == 'copy') {
+                          $.each(vv.v, function(vvVk, vvVv) {
+                            //---
+                            
+                            if (vvVk&&a1v[vvVk]!=undefined) {
+debugger
+                              s = a1v[vvVk]
+                            }
+                          })
+                        }
+
+
                         if (vv.k == 'transfer') {
                           $.each(vv.v, function(vvVk, vvVv) {
                             if (vvVk == 'capitalize' && vvVv) {
