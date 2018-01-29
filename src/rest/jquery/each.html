@@ -15,9 +15,9 @@
     $.fn.hdform = function (methods) {
 //    此处this 是一个数组对象
         var k = this;
-        debugger
+        
         return this.each(function (i, v) {
-            debugger
+            
         })
 
     }
@@ -27,13 +27,16 @@
     };
 
     $(function () {
-        debugger
+        
         // 相当于类的静态方法
         $.each($("input"), function (i, v) {
             this.value = i;
 
         });
-        debugger
+        $("input").on("click",function(){
+            debugger
+            alert(this.value);
+        })
     })
 
 
