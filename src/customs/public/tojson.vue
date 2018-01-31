@@ -334,7 +334,6 @@ export default {
             //     'transfer',  ( capitalize 首字母大写 ，upperSnake 驼峰)
             //   'replace'  根据输入文本替换成其他文本
             //  'copy' 从其他输入复制
-
             {
               k: '0',
               v: [
@@ -510,7 +509,6 @@ export default {
 
       return a.join('\n')
     },
-
     selectDetail: function() {
       var self = this
       // var reg = /\$\{{1}[0-9a-zA-Z\_:]+\}{1}/g
