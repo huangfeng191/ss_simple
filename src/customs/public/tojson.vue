@@ -57,8 +57,9 @@
 <script>
 export default {
   data() {
-    return {//
-      selectd: ['VUECRUDCOL', 'VUECRUDInputTwo','goModelAll','goStruct'],
+    return {
+      //
+      selectd: ['VUECRUDCOL', 'VUECRUDInputTwo', 'goModelAll', 'goStruct'],
       types: [
         {
           value: 'VUECRUDCOL',
@@ -171,7 +172,8 @@ export default {
             }
           ]
         },
-        {// 暂未生效
+        {
+          // 暂未生效
           value: 'goModel',
           label: 'goModel',
           template: '${0} *${1} `json:"${10}" xorm:"${11}"` //${2}',
@@ -196,7 +198,7 @@ export default {
                 }
               ]
             },
-             {
+            {
               k: '10',
               v: [
                 {
@@ -217,14 +219,19 @@ export default {
                 {
                   //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
                   k: 'replace',
-                  v: { int: 'INT(11)', int64: 'BIGINT(20)', float64: 'DOUBLE', string: 'VARCHAR(256)' }
+                  v: {
+                    int: 'INT(11)',
+                    int64: 'BIGINT(20)',
+                    float64: 'DOUBLE',
+                    string: 'VARCHAR(256)'
+                  }
                 }
               ]
             }
-          ],
-
+          ]
         },
-        {// 暂未生效
+        {
+          // 暂未生效
           value: 'goModelAll',
           label: 'goModelAll',
           template: '${0} *${1} `json:"${10}" xorm:"${11}"` //${2}',
@@ -249,7 +256,7 @@ export default {
                 }
               ]
             },
-             {
+            {
               k: '10',
               v: [
                 {
@@ -270,30 +277,49 @@ export default {
                 {
                   //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
                   k: 'replace',
-                  v: { int: 'INT(11)', int64: 'BIGINT(20)', float64: 'DOUBLE', string: 'VARCHAR(256)' }
+                  v: {
+                    int: 'INT(11)',
+                    int64: 'BIGINT(20)',
+                    float64: 'DOUBLE',
+                    string: 'VARCHAR(256)'
+                  }
                 }
               ]
             }
           ],
           fix: [
             // single double both ,end 修理行数据 在行的位置添加
-           
+
             {
               k: 'first',
-              v: [{ k: 'replace', v: [{ '/^/': `type XXX struct {\nBean       \`xorm:"extends"\`\n`
-               }] }]
+              v: [
+                {
+                  k: 'replace',
+                  v: [
+                    {
+                      '/^/': `type XXX struct {\nBean       \`xorm:"extends"\`\n`
+                    }
+                  ]
+                }
+              ]
             },
             {
               k: 'end',
               v: [{ k: 'replace', v: [{ '/$/': '\n}' }] }]
             }
-          ],
+          ]
         },
-        {// 
+        {
+          //
           value: 'goStruct',
           label: 'goStruct',
           template: '${0} *${1} `json:"${10}"`',
           param: [
+            // 对 模板 进行正则处理 ，匹配的项可
+            //     'transfer',  ( capitalize 首字母大写 ，upperSnake 驼峰)
+            //   'replace'  根据输入文本替换成其他文本
+            //  'copy' 从其他输入复制
+              
             {
               k: '0',
               v: [
@@ -314,7 +340,7 @@ export default {
                 }
               ]
             },
-                 {
+            {
               k: '10',
               v: [
                 {
@@ -323,23 +349,39 @@ export default {
                   v: { '0': true }
                 }
               ]
+            }
+          ],
+          fix: [
+            // single double both ,end 修理行数据 在行的位置添加
+
+            {
+              k: 'first',
+              v: [
+                {
+                  k: 'replace',
+                  v: [
+                    {
+                      '/^/': `type XXX struct {\n`
+                    }
+                  ]
+                }
+              ]
             },
-              
-       
+            {
+              k: 'end',
+              v: [{ k: 'replace', v: [{ '/$/': '\n}' }] }]
+            }
           ]
         },
         {
           value: 'rowToArray',
           label: 'rowToArray',
-          template:
-            '"${0}",',
-          param: {
-
-          },
+          template: '"${0}",',
+          param: {},
           fix: [
             // fix ，param  可以考虑引入参数
             // single double both ,end 修理行数据 在行的位置添加
-           
+
             {
               k: 'first',
               v: [{ k: 'replace', v: [{ '/^/': '[' }] }]
@@ -349,6 +391,18 @@ export default {
               v: [{ k: 'replace', v: [{ '/,$/': ']' }] }]
             }
           ],
+          // 暂未使用
+          fixParam:{
+            "${a}":{
+              "value":"aaa",
+               roles:[
+                {
+                  k: 'transfer',
+                  v: { capitalize: true }
+                }
+               ]
+            }
+          }
         },
         {
           value: 'crudcol',
@@ -424,7 +478,21 @@ export default {
       return str.replace(reg, function(m) {
         return m.toUpperCase()
       })
-    }
+    },
+      // 含_-首字母大写 (暂时未使用)
+    upperSnake: function(str) {
+       let self=this;
+      
+      let s = []
+      $.each(str.split(/[\_-]/), function(k, v) {
+        debugger
+        s.push(
+          self.capitalize(v))
+       
+      })
+      debugger
+      return s.join('')
+    },
   },
   computed: {
     selectTemplates: function() {
@@ -441,6 +509,7 @@ export default {
 
       return a.join('\n')
     },
+  
     selectDetail: function() {
       var self = this
       // var reg = /\$\{{1}[0-9a-zA-Z\_:]+\}{1}/g
@@ -484,7 +553,7 @@ export default {
             let oneRow = o[v].template.replace(reg, function(str) {
               // 对每个匹配项 进行 处理(没一项的返回值)
               let s = ''
-debugger
+              debugger
               if (str.match(re)) {
                 // "${1:nm/String/g}" 第一部分0 匹配值，第二部分1 key ,第三部分2  默认值,  第四部分3正则 , 第五部分4输入字符串
                 if (
@@ -518,14 +587,13 @@ debugger
                         if (vv.k == 'copy') {
                           $.each(vv.v, function(vvVk, vvVv) {
                             //---
-                            
-                            if (vvVk&&a1v[vvVk]!=undefined) {
-debugger
+
+                            if (vvVk && a1v[vvVk] != undefined) {
+                              debugger
                               s = a1v[vvVk]
                             }
                           })
                         }
-
 
                         if (vv.k == 'transfer') {
                           $.each(vv.v, function(vvVk, vvVv) {
