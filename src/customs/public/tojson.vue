@@ -58,23 +58,25 @@
 export default {
   data() {
     return {
-      
       // param 对 template 进行处理，绑定proto(用户输入)
-      //param  是对${...}单个模板 输入项进行操作， 支持操作  [{k:"1",v: [ 规则]}] 
-            //  对 模板 进行正则处理 ，匹配的项可 [{}]
-            //  'transfer',  ( capitalize 首字母大写 ，upperSnake 驼峰)  { k: 'transfer', v: { capitalize: true } }
-              
-            //  'replace'  根据输入文本替换成其他文本        { k: 'replace', v: { d: 'format:"yyyy-MM-dd"', c: 'format:"XXX"', s: 'format:"H0002"' } }
-           
-            //  'append'     v: { datetime: '",format:"yyyy-MM-dd', combo: '",format:"XXX' }
-            
-            //   'copy' 从其他输入复制
+      //param  是对${...}单个模板 输入项进行操作， 支持操作  [{k:"1",v: [ 规则]}]
+      //  对 模板 进行正则处理 ，匹配的项可 [{}]
+      //  'transfer',  ( capitalize 首字母大写 ，upperSnake 驼峰)  { k: 'transfer', v: { capitalize: true } }
 
-      // fix 对行进行操作， 在 param 对行进行处理的时候，在行头，行尾替换、转换处理 
-      //      fix: single double both ,end 修理行数据 在行的位置添加
-      //      k  规则名称， v 规则详细
-      //      在 param 对行进行处理的时候，在行头，行位替换、转换处理
-      // fixparam 对fix 添加参数应用
+      //  'replace'  根据输入文本替换成其他文本        { k: 'replace', v: { d: 'format:"yyyy-MM-dd"', c: 'format:"XXX"', s: 'format:"H0002"' } }
+
+      //  'append'     v: { datetime: '",format:"yyyy-MM-dd', combo: '",format:"XXX' }
+
+      //   'copy' 从其他输入复制
+
+      // fix 对行进行操作， 在 param 对行进行处理的时候，在行头，行尾替换、转换处理
+      // fix :{ roles:[规则] ,params:{ 参数 }}
+      //      roles:  single double both , first end 修理行数据 在行的位置添加
+      //  { k: 'both', v: [{ k: 'replace', v: [{ '/^{/': '[{', '/},$/': '}],' }] }] }
+      //               k  规则名称， v 规则详细
+      //               在 param 对行进行处理的时候，在行头，行位替换、转换处理
+      // 在读取的时候 处理 param
+
       selectd: ['VUECRUDCOL', 'VUECRUDInputTwo', 'goModelAll', 'goStruct'],
       types: [
         {
@@ -102,12 +104,14 @@ export default {
           label: 'VUECRUDInputOne',
           template:
             '{title: "${2:nm}",data: "${0:code}",required: true,dataType: "${1}",showType: "${3:text}"},',
-          fix: [
-            {
-              k: 'both',
-              v: [{ k: 'replace', v: [{ '/^{/': '[{', '/},$/': '}],' }] }]
-            }
-          ],
+          fix: {
+            roles: [
+              {
+                k: 'both',
+                v: [{ k: 'replace', v: [{ '/^{/': '[{', '/},$/': '}],' }] }]
+              }
+            ]
+          },
           // 参数为1维数组的原因是 我希望顺序执行规则 ,采用 k v 对象方式是为了以后扩展方便
           param: [
             {
@@ -143,21 +147,23 @@ export default {
           label: 'VUECRUDInputTwo',
           template:
             '{title: "${2:nm}",data: "${0:code}",required: true,dataType: "${1}",showType: "${3:text}"},',
-          fix: [
-            // single double both ,end 修理行数据 在行的位置添加
-            {
-              k: 'double',
-              v: [{ k: 'replace', v: [{ '/^{/': '[{' }] }]
-            },
-            {
-              k: 'single',
-              v: [{ k: 'replace', v: [{ '/},$/': '}],' }] }]
-            },
-            {
-              k: 'end',
-              v: [{ k: 'replace', v: [{ '/},$/': '}],' }] }]
-            }
-          ],
+          fix: {
+            roles: [
+              // single double both ,end 修理行数据 在行的位置添加
+              {
+                k: 'double',
+                v: [{ k: 'replace', v: [{ '/^{/': '[{' }] }]
+              },
+              {
+                k: 'single',
+                v: [{ k: 'replace', v: [{ '/},$/': '}],' }] }]
+              },
+              {
+                k: 'end',
+                v: [{ k: 'replace', v: [{ '/},$/': '}],' }] }]
+              }
+            ]
+          },
           // 参数为1维数组的原因是 我希望顺序执行规则 ,采用 k v 对象方式是为了以后扩展方便
           param: [
             {
@@ -198,7 +204,6 @@ export default {
               k: '0',
               v: [
                 {
-                  //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
                   k: 'transfer',
                   v: { capitalize: true }
                 }
@@ -208,7 +213,6 @@ export default {
               k: '1',
               v: [
                 {
-                  //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
                   k: 'replace',
                   v: { float64: 'float64' }
                 }
@@ -218,7 +222,6 @@ export default {
               k: '10',
               v: [
                 {
-                  //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
                   k: 'copy',
                   v: { '0': true }
                 }
@@ -228,7 +231,6 @@ export default {
               k: '11',
               v: [
                 {
-                  //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
                   k: 'copy',
                   v: { '1': true }
                 },
@@ -256,7 +258,6 @@ export default {
               k: '0',
               v: [
                 {
-                  //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
                   k: 'transfer',
                   v: { capitalize: true }
                 }
@@ -266,7 +267,6 @@ export default {
               k: '1',
               v: [
                 {
-                  //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
                   k: 'replace',
                   v: { float64: 'float64' }
                 }
@@ -276,7 +276,6 @@ export default {
               k: '10',
               v: [
                 {
-                  //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
                   k: 'copy',
                   v: { '0': true }
                 }
@@ -286,12 +285,10 @@ export default {
               k: '11',
               v: [
                 {
-                  //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
                   k: 'copy',
                   v: { '1': true }
                 },
                 {
-                  //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
                   k: 'replace',
                   v: {
                     int: 'INT(11)',
@@ -303,27 +300,29 @@ export default {
               ]
             }
           ],
-          fix: [
-            // single double both ,end 修理行数据 在行的位置添加
+          fix: {
+            roles: [
+              // single double both ,end 修理行数据 在行的位置添加
 
-            {
-              k: 'first',
-              v: [
-                {
-                  k: 'replace',
-                  v: [
-                    {
-                      '/^/': `type XXX struct {\nBean       \`xorm:"extends"\`\n`
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              k: 'end',
-              v: [{ k: 'replace', v: [{ '/$/': '\n}' }] }]
-            }
-          ]
+              {
+                k: 'first',
+                v: [
+                  {
+                    k: 'replace',
+                    v: [
+                      {
+                        '/^/': `type XXX struct {\nBean       \`xorm:"extends"\`\n`
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                k: 'end',
+                v: [{ k: 'replace', v: [{ '/$/': '\n}' }] }]
+              }
+            ]
+          }
         },
         {
           //
@@ -335,12 +334,11 @@ export default {
             //     'transfer',  ( capitalize 首字母大写 ，upperSnake 驼峰)
             //   'replace'  根据输入文本替换成其他文本
             //  'copy' 从其他输入复制
-              
+
             {
               k: '0',
               v: [
                 {
-                  //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
                   k: 'transfer',
                   v: { capitalize: true }
                 }
@@ -350,7 +348,6 @@ export default {
               k: '1',
               v: [
                 {
-                  //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
                   k: 'replace',
                   v: { float64: 'float64' }
                 }
@@ -360,64 +357,54 @@ export default {
               k: '10',
               v: [
                 {
-                  //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
                   k: 'copy',
                   v: { '0': true }
                 }
               ]
             }
           ],
-          fix: [
-            // single double both ,end 修理行数据 在行的位置添加
+          fix: {
+            roles: [
+              // single double both ,end 修理行数据 在行的位置添加
 
-            {
-              k: 'first',
-              v: [
-                {
-                  k: 'replace',
-                  v: [
-                    {
-                      '/^/': `type XXX struct {\n`
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              k: 'end',
-              v: [{ k: 'replace', v: [{ '/$/': '\n}' }] }]
-            }
-          ]
+              {
+                k: 'first',
+                v: [
+                  {
+                    k: 'replace',
+                    v: [
+                      {
+                        '/^/': `type XXX struct {\n`
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                k: 'end',
+                v: [{ k: 'replace', v: [{ '/$/': '\n}' }] }]
+              }
+            ]
+          }
         },
         {
           value: 'rowToArray',
           label: 'rowToArray',
           template: '"${0}",',
           param: {},
-          fix: [
-            // fix ，param  可以考虑引入参数
-           
+          fix: {
+            roles: [
+              // fix ，param  可以考虑引入参数
 
-            {
-              k: 'first',
-              v: [{ k: 'replace', v: [{ '/^/': '[' }] }]
-            },
-            {
-              k: 'end',
-              v: [{ k: 'replace', v: [{ '/,$/': ']' }] }]
-            }
-          ],
-          // 暂未使用
-          fixParam:{
-            "${a}":{
-              "value":"aaa",
-               roles:[
-                {
-                  k: 'transfer',
-                  v: { capitalize: true }
-                }
-               ]
-            }
+              {
+                k: 'first',
+                v: [{ k: 'replace', v: [{ '/^/': '[' }] }]
+              },
+              {
+                k: 'end',
+                v: [{ k: 'replace', v: [{ '/,$/': ']' }] }]
+              }
+            ]
           }
         },
         {
@@ -495,20 +482,18 @@ export default {
         return m.toUpperCase()
       })
     },
-      // 含_-首字母大写 (暂时未使用)
+    // 含_-首字母大写 (暂时未使用)
     upperSnake: function(str) {
-       let self=this;
-      
+      let self = this
+
       let s = []
       $.each(str.split(/[\_-]/), function(k, v) {
         debugger
-        s.push(
-          self.capitalize(v))
-       
+        s.push(self.capitalize(v))
       })
       debugger
       return s.join('')
-    },
+    }
   },
   computed: {
     selectTemplates: function() {
@@ -525,7 +510,7 @@ export default {
 
       return a.join('\n')
     },
-  
+
     selectDetail: function() {
       var self = this
       // var reg = /\$\{{1}[0-9a-zA-Z\_:]+\}{1}/g
@@ -635,7 +620,7 @@ export default {
               }
             })
             if (o[v].fix) {
-              $.each(o[v].fix, function(oi, ov) {
+              $.each(o[v].fix.roles, function(oi, ov) {
                 if ((ov.k == 'single' || ov.k == 'both') && a1i % 2 == 1) {
                   // 单双行处理
                   $.each(ov.v, function(ovi, ovv) {
