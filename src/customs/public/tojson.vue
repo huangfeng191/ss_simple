@@ -7,21 +7,22 @@
           </el-option>
         </el-select>
       </el-col>
+       <el-col :span="8">
+        <el-input class="selfw" type="textarea" :autosize="{ minRows: 2}" placeholder="fixparam" v-model="fixparam">
+        </el-input>
+      </el-col>
       <el-col :span="8">
         <el-input class="selfw" @change="changeTemplate" type="textarea" :autosize="{ minRows: 2}" placeholder="template" v-model="template">
         </el-input>
       </el-col>
-      <el-col :span="8">
-        <el-input class="selfw" type="textarea" :autosize="{ minRows: 2}" placeholder="param" v-model="param">
-        </el-input>
-      </el-col>
+     
     </el-row>
     <el-row class="content">
       <el-col :span="4">
         <el-input class="selfw" type="textarea" :autosize="{ minRows: 10}" placeholder="原始" v-model="proto">
         </el-input>
       </el-col>
-      <el-col :span="10" v-for="r in selectDetail">
+      <el-col :span="10" v-for="r in selectDetail" :key="r.value">
         <el-input class="selfw" type="textarea" :autosize="{ minRows: 10}" :placeholder="r.label" v-model="r.tempV">
         </el-input>
       </el-col>
@@ -61,7 +62,7 @@ export default {
       // param 对 template 进行处理，绑定proto(用户输入)
       //param  是对${...}单个模板 输入项进行操作， 支持操作  [{k:"1",v: [ 规则]}]
       //  对 模板 进行正则处理 ，匹配的项可 [{}]
-      //  'transfer',  ( capitalize 首字母大写 ，upperSnake 驼峰)  { k: 'transfer', v: { capitalize: true } }
+      //  'transfer',  ( capitalize 首字母大写 ，snake 驼峰)  { k: 'transfer', v: { capitalize: true } }
 
       //  'replace'  根据输入文本替换成其他文本        { k: 'replace', v: { d: 'format:"yyyy-MM-dd"', c: 'format:"XXX"', s: 'format:"H0002"' } }
 
@@ -74,10 +75,10 @@ export default {
       //      roles:  single double both , first end 修理行数据 在行的位置添加
       //  { k: 'both', v: [{ k: 'replace', v: [{ '/^{/': '[{', '/},$/': '}],' }] }] }
       //               k  规则名称， v 规则详细
-      //               在 param 对行进行处理的时候，在行头，行位替换、转换处理
+      //  param 逻辑跟行处理的逻辑一致
       // 在读取的时候 处理 param
-
-      selectd: ['VUECRUDCOL', 'VUECRUDInputTwo', 'goModelAll', 'goStruct'],
+// 'VUECRUDCOL', 'VUECRUDInputTwo', 'goModelAll', 'goStruct'
+      selectd: [ 'VUECRUDCOL', 'VUECRUDInputTwo', 'goModelAll', 'goStruct'],
       types: [
         {
           value: 'VUECRUDCOL',
@@ -110,6 +111,9 @@ export default {
                 k: 'both',
                 v: [{ k: 'replace', v: [{ '/^{/': '[{', '/},$/': '}],' }] }]
               }
+            ],
+            param:[
+
             ]
           },
           // 参数为1维数组的原因是 我希望顺序执行规则 ,采用 k v 对象方式是为了以后扩展方便
@@ -301,6 +305,7 @@ export default {
             }
           ],
           fix: {
+ 
             roles: [
               // single double both ,end 修理行数据 在行的位置添加
 
@@ -311,7 +316,7 @@ export default {
                     k: 'replace',
                     v: [
                       {
-                        '/^/': `type XXX struct {\nBean       \`xorm:"extends"\`\n`
+                        '/^/': 'type ${0:table_name} struct {\nBean       \`xorm:"extends"\`\n'
                       }
                     ]
                   }
@@ -321,6 +326,17 @@ export default {
                 k: 'end',
                 v: [{ k: 'replace', v: [{ '/$/': '\n}' }] }]
               }
+            ],
+            param:[
+            {
+              k: '0',
+              v: [
+                {
+                  k: 'transfer',
+                  v: { snake: true }
+                }
+              ]
+            },
             ]
           }
         },
@@ -331,7 +347,7 @@ export default {
           template: '${0} *${1} `json:"${10}"`',
           param: [
             // 对 模板 进行正则处理 ，匹配的项可
-            //     'transfer',  ( capitalize 首字母大写 ，upperSnake 驼峰)
+            //     'transfer',  ( capitalize 首字母大写 ，snake 驼峰)
             //   'replace'  根据输入文本替换成其他文本
             //  'copy' 从其他输入复制
             {
@@ -373,7 +389,7 @@ export default {
                     k: 'replace',
                     v: [
                       {
-                        '/^/': `type XXX struct {\n`
+                        '/^/': 'type ${0:struct_name} struct {\n'
                       }
                     ]
                   }
@@ -383,6 +399,17 @@ export default {
                 k: 'end',
                 v: [{ k: 'replace', v: [{ '/$/': '\n}' }] }]
               }
+            ],
+               param:[
+            {
+              k: '0',
+              v: [
+                {
+                  k: 'transfer',
+                  v: { snake: true }
+                }
+              ]
+            },
             ]
           }
         },
@@ -393,8 +420,6 @@ export default {
           param: {},
           fix: {
             roles: [
-              // fix ，param  可以考虑引入参数
-
               {
                 k: 'first',
                 v: [{ k: 'replace', v: [{ '/^/': '[' }] }]
@@ -441,6 +466,7 @@ export default {
       ],
       template: '',
       param: '',
+      fixparam:'',
       aparts: ' ,	',
       proto: '',
       lastSelect: ''
@@ -461,6 +487,7 @@ export default {
       }
     },
     selectTp(values) {
+      debugger
       if (!values[0]) {
         return
       }
@@ -473,6 +500,7 @@ export default {
       self.template = o[values[0]].template
       self.param = JSON.stringify(o[values[0]].param)
     },
+    // 首字母大写
     capitalize(str) {
       // 正则法
       str = str.toLowerCase()
@@ -480,18 +508,162 @@ export default {
       return str.replace(reg, function(m) {
         return m.toUpperCase()
       })
-    },
-    // 含_-首字母大写 (暂时未使用)
-    upperSnake: function(str) {
+    }, 
+    // 含_-驼峰命名法
+    snake: function(str) {
       let self = this
-
       let s = []
       $.each(str.split(/[\_-]/), function(k, v) {
-        debugger
         s.push(self.capitalize(v))
       })
-      debugger
       return s.join('')
+    },
+        // temp 选中的单个模板
+    //row 需要转换的数据 ， i 第几行（重写需要） o 其他对象
+    rowTransfer: function(temp,  irow,row,len, o) {
+      let self=this;
+      
+      // 找出可替换变量
+      var reg = /\$\{{1}[0-9a-zA-Z\_\/:]+\}{1}/g
+      // 对每个变量进行处理
+      var re = /\$\{{1}([0-9]+):?([0-9a-zA-Z\_]*)(\/{1}[0-9a-zA-Z\_\/]*||'')\}{1}/
+      // 单个参数处理正则
+      // "${1:nm/String/g}" 第一部分0 匹配值，第二部分1 key ,第三部分2  默认值,  第四部分3正则 , 第五部分4输入字符串
+      // ["${1:nm/String/g}", "1", "nm", "/String/g", index: 0, input: "${1:nm/String/g}"]
+
+            let oneRow = temp.template.replace(reg, function(str) {
+          // 对每个匹配项 进行 处理(没一项的返回值)
+          let s = ''
+          
+          if (str.match(re)) {
+            // "${1:nm/String/g}" 第一部分0 匹配值，第二部分1 key ,第三部分2  默认值,  第四部分3正则 , 第五部分4输入字符串
+            if (
+              row[str.match(re)[1]] != undefined &&
+              row[str.match(re)[1]] != ''
+            ) {
+              s = row[str.match(re)[1]]
+            } else {
+              s = str.match(re)[2]
+            }
+            //  正则暂时不启用
+            // if(str.match(re)[3]){
+            //
+            //     s.match(str.match(re)[3])
+            // }
+            // 每一项返回值进行二次处理
+            if (temp.param) {
+              $.each(temp.param, function(ip, vp) {
+                // 同一序号处理完成后再处理其他序号
+                if (str.match(re)[1] == vp.k) {
+                  $.each(vp.v, function(vi, vv) {
+                    // 参数的replace 功能
+                    if (vv.k == 'replace') {
+                      $.each(vv.v, function(vvVk, vvVv) {
+                        if (s == vvVk) {
+                          s = vvVv
+                        }
+                      })
+                    }
+
+                    if (vv.k == 'copy') {
+                      $.each(vv.v, function(vvVk, vvVv) {
+                        //---
+
+                        if (vvVk && row[vvVk] != undefined) {
+                          
+                          s = row[vvVk]
+                        }
+                      })
+                    }
+
+                    if (vv.k == 'transfer') {
+                      $.each(vv.v, function(vvVk, vvVv) {
+                        if (vvVk == 'capitalize' && vvVv) {
+                          s = self.capitalize(s)
+                        }
+                        if (vvVk == 'snake' && vvVv) {
+                          
+                          s = self.snake(s)
+                        }
+                      })
+                    }
+                    if (vv.k == 'append') {
+                      $.each(vv.v, function(vvVk, vvVv) {
+                        if (s == vvVk) {
+                          s += vvVv
+                        }
+                      })
+                    }
+                  })
+                }
+              })
+            }
+            return s 
+          } else {
+            return '' 
+          }
+        })
+  
+ 
+
+
+       if (temp.fix) {
+              $.each(temp.fix.roles, function(oi, ov) {
+                if ((ov.k == 'single' || ov.k == 'both') && irow % 2 == 1) {
+                  // 单双行处理
+                  $.each(ov.v, function(ovi, ovv) {
+                    if (ovv.k == 'replace') {
+                      $.each(ovv.v, function(ovvVk, ovvVv) {
+                        $.each(ovvVv, function(k2, v2) {
+                          oneRow = oneRow.replace(eval(k2), v2)
+                        })
+                      })
+                    }
+                  })
+                }
+                if ((ov.k == 'double' || ov.k == 'both') && irow % 2 == 0) {
+                  // 单双行处理
+                  $.each(ov.v, function(ovi, ovv) {
+                    if (ovv.k == 'replace') {
+                      $.each(ovv.v, function(ovvVk, ovvVv) {
+                        $.each(ovvVv, function(k2, v2) {
+                          oneRow = oneRow.replace(eval(k2), v2)
+                        })
+                      })
+                    }
+                  })
+                }
+                if (ov.k == 'end' && irow == len - 1) {
+                  // 单双行处理
+                  $.each(ov.v, function(ovi, ovv) {
+                    if (ovv.k == 'replace') {
+                      $.each(ovv.v, function(ovvVk, ovvVv) {
+                        $.each(ovvVv, function(k2, v2) {
+                          oneRow = oneRow.replace(eval(k2), v2)
+                        })
+                      })
+                    }
+                  })
+                }
+                if (ov.k == 'first' && irow == 0) {
+                  // 单双行处理
+                  $.each(ov.v, function(ovi, ovv) {
+                    if (ovv.k == 'replace') {
+                      $.each(ovv.v, function(ovvVk, ovvVv) {
+                        $.each(ovvVv, function(k2, v2) {
+                          oneRow = oneRow.replace(eval(k2), v2)
+                        })
+                      })
+                    }
+                  })
+                }
+              })
+            }
+
+
+ 
+
+      return oneRow
     }
   },
   computed: {
@@ -511,23 +683,18 @@ export default {
     },
     selectDetail: function() {
       var self = this
-      // var reg = /\$\{{1}[0-9a-zA-Z\_:]+\}{1}/g
-      // var re = /\$\{{1}([0-9]):?([0-9a-zA-Z\_]*)\}{1}/
-      var reg = /\$\{{1}[0-9a-zA-Z\_\/:]+\}{1}/g
-      // 单个参数处理正则
-      // "${1:nm/String/g}" 第一部分0 匹配值，第二部分1 key ,第三部分2  默认值,  第四部分3正则 , 第五部分4输入字符串
-      // ["${1:nm/String/g}", "1", "nm", "/String/g", index: 0, input: "${1:nm/String/g}"]
-      var re = /\$\{{1}([0-9]+):?([0-9a-zA-Z\_]*)(\/{1}[0-9a-zA-Z\_\/]*||'')\}{1}/
+      
       var o = {}
       var a = []
-      // 二维数组    [  行[需要替换对象]]
-      var a1 = []
+     
       // 获取模板对象
       $.each(self.types, function(index, v) {
         o[v.value] = v
       })
-
-      // 需要转换的数据
+      
+      var a1 = []
+      // 二维数组    [  行[需要替换对象]] a1
+      // 需要转换的数据 
       if (self.proto) {
         $.each(self.proto.split('\n'), function(i, v) {
           if (v) {
@@ -545,135 +712,28 @@ export default {
 
         var temp = []
         o[v]['tempV'] = [] // 更改值,既每个模板的返回值
-
         if (o[v].template) {
           // 循环生成记录
           $.each(a1, function(a1i, a1v) {
-            let oneRow = o[v].template.replace(reg, function(str) {
-              // 对每个匹配项 进行 处理(没一项的返回值)
-              let s = ''
-              debugger
-              if (str.match(re)) {
-                // "${1:nm/String/g}" 第一部分0 匹配值，第二部分1 key ,第三部分2  默认值,  第四部分3正则 , 第五部分4输入字符串
-                if (
-                  a1v[str.match(re)[1]] != undefined &&
-                  a1v[str.match(re)[1]] != ''
-                ) {
-                  s = a1v[str.match(re)[1]]
-                } else {
-                  s = str.match(re)[2]
-                }
-                //  正则暂时不启用
-                // if(str.match(re)[3]){
-                //
-                //     s.match(str.match(re)[3])
-                // }
-                // 每一项返回值进行二次处理
-                if (o[v].param) {
-                  $.each(o[v].param, function(ip, vp) {
-                    // 同一序号处理完成后再处理其他序号
-                    if (str.match(re)[1] == vp.k) {
-                      $.each(vp.v, function(vi, vv) {
-                        // 参数的replace 功能
-                        if (vv.k == 'replace') {
-                          $.each(vv.v, function(vvVk, vvVv) {
-                            if (s == vvVk) {
-                              s = vvVv
-                            }
-                          })
-                        }
+                                 // 模板  索引 替换值
+            let oneRow =  self.rowTransfer(o[v],a1i, a1v,a1.length)
 
-                        if (vv.k == 'copy') {
-                          $.each(vv.v, function(vvVk, vvVv) {
-                            //---
-
-                            if (vvVk && a1v[vvVk] != undefined) {
-                              debugger
-                              s = a1v[vvVk]
-                            }
-                          })
-                        }
-
-                        if (vv.k == 'transfer') {
-                          $.each(vv.v, function(vvVk, vvVv) {
-                            if (vvVk == 'capitalize' && vvVv) {
-                              s = self.capitalize(s)
-                            }
-                          })
-                        }
-                        if (vv.k == 'append') {
-                          $.each(vv.v, function(vvVk, vvVv) {
-                            if (s == vvVk) {
-                              s += vvVv
-                            }
-                          })
-                        }
-                      })
-                    }
-                  })
-                }
-                return s
-              } else {
-                return ''
-              }
-            })
-            if (o[v].fix) {
-              $.each(o[v].fix.roles, function(oi, ov) {
-                if ((ov.k == 'single' || ov.k == 'both') && a1i % 2 == 1) {
-                  // 单双行处理
-                  $.each(ov.v, function(ovi, ovv) {
-                    if (ovv.k == 'replace') {
-                      $.each(ovv.v, function(ovvVk, ovvVv) {
-                        $.each(ovvVv, function(k2, v2) {
-                          oneRow = oneRow.replace(eval(k2), v2)
-                        })
-                      })
-                    }
-                  })
-                }
-                if ((ov.k == 'double' || ov.k == 'both') && a1i % 2 == 0) {
-                  // 单双行处理
-                  $.each(ov.v, function(ovi, ovv) {
-                    if (ovv.k == 'replace') {
-                      $.each(ovv.v, function(ovvVk, ovvVv) {
-                        $.each(ovvVv, function(k2, v2) {
-                          oneRow = oneRow.replace(eval(k2), v2)
-                        })
-                      })
-                    }
-                  })
-                }
-                if (ov.k == 'end' && a1i == a1.length - 1) {
-                  // 单双行处理
-                  $.each(ov.v, function(ovi, ovv) {
-                    if (ovv.k == 'replace') {
-                      $.each(ovv.v, function(ovvVk, ovvVv) {
-                        $.each(ovvVv, function(k2, v2) {
-                          oneRow = oneRow.replace(eval(k2), v2)
-                        })
-                      })
-                    }
-                  })
-                }
-                if (ov.k == 'first' && a1i == 0) {
-                  // 单双行处理
-                  $.each(ov.v, function(ovi, ovv) {
-                    if (ovv.k == 'replace') {
-                      $.each(ovv.v, function(ovvVk, ovvVv) {
-                        $.each(ovvVv, function(k2, v2) {
-                          oneRow = oneRow.replace(eval(k2), v2)
-                        })
-                      })
-                    }
-                  })
-                }
-              })
-            }
             o[v]['tempV'].push(oneRow)
-          })
+          } )
         }
-
+ 
         o[v]['tempV'] = o[v]['tempV'].join('\n')
+        
+        if (o[v].fix &&o[v].fix.param){
+            let oAfter={"template":o[v]['tempV'],"param":o[v].fix.param}
+            // 整个模板当一行处理
+            //
+            let a1v=self.fixparam.split(/[\n ]/).filter(function(x) {
+                if (x) return true
+              })
+            o[v]['tempV']=self.rowTransfer(oAfter,0, a1v,1)
+        }
+       
 
         a.push(o[v])
       })
