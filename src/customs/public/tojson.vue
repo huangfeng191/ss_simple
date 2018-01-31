@@ -58,7 +58,7 @@
 export default {
   data() {
     return {//
-      selectd: ['VUECRUDCOL', 'VUECRUDInputTwo','goModel','goStruct'],
+      selectd: ['VUECRUDCOL', 'VUECRUDInputTwo','goModelAll','goStruct'],
       types: [
         {
           value: 'VUECRUDCOL',
@@ -217,12 +217,79 @@ export default {
                 {
                   //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
                   k: 'replace',
-                  v: { int: 'INT(11)', int64: 'BIGINT(20)', float64: 'DOUBLE' }
+                  v: { int: 'INT(11)', int64: 'BIGINT(20)', float64: 'DOUBLE', string: 'VARCHAR(256)' }
                 }
               ]
             }
-          ]
-        },{// 暂未生效
+          ],
+
+        },
+        {// 暂未生效
+          value: 'goModelAll',
+          label: 'goModelAll',
+          template: '${0} *${1} `json:"${10}" xorm:"${11}"` //${2}',
+          param: [
+            {
+              k: '0',
+              v: [
+                {
+                  //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
+                  k: 'transfer',
+                  v: { capitalize: true }
+                }
+              ]
+            },
+            {
+              k: '1',
+              v: [
+                {
+                  //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
+                  k: 'replace',
+                  v: { float64: 'float64' }
+                }
+              ]
+            },
+             {
+              k: '10',
+              v: [
+                {
+                  //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
+                  k: 'copy',
+                  v: { '0': true }
+                }
+              ]
+            },
+            {
+              k: '11',
+              v: [
+                {
+                  //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
+                  k: 'copy',
+                  v: { '1': true }
+                },
+                {
+                  //*int INT(11) *int64  BIGINT(20)  *float64 DOUBLE
+                  k: 'replace',
+                  v: { int: 'INT(11)', int64: 'BIGINT(20)', float64: 'DOUBLE', string: 'VARCHAR(256)' }
+                }
+              ]
+            }
+          ],
+          fix: [
+            // single double both ,end 修理行数据 在行的位置添加
+           
+            {
+              k: 'first',
+              v: [{ k: 'replace', v: [{ '/^/': `type XXX struct {\nBean       \`xorm:"extends"\`\n`
+               }] }]
+            },
+            {
+              k: 'end',
+              v: [{ k: 'replace', v: [{ '/$/': '\n}' }] }]
+            }
+          ],
+        },
+        {// 
           value: 'goStruct',
           label: 'goStruct',
           template: '${0} *${1} `json:"${10}"`',
@@ -261,7 +328,28 @@ export default {
        
           ]
         },
+        {
+          value: 'rowToArray',
+          label: 'rowToArray',
+          template:
+            '"${0}",',
+          param: {
 
+          },
+          fix: [
+            // fix ，param  可以考虑引入参数
+            // single double both ,end 修理行数据 在行的位置添加
+           
+            {
+              k: 'first',
+              v: [{ k: 'replace', v: [{ '/^/': '[' }] }]
+            },
+            {
+              k: 'end',
+              v: [{ k: 'replace', v: [{ '/,$/': ']' }] }]
+            }
+          ],
+        },
         {
           value: 'crudcol',
           label: 'crudcol',
@@ -489,6 +577,18 @@ debugger
                   })
                 }
                 if (ov.k == 'end' && a1i == a1.length - 1) {
+                  // 单双行处理
+                  $.each(ov.v, function(ovi, ovv) {
+                    if (ovv.k == 'replace') {
+                      $.each(ovv.v, function(ovvVk, ovvVv) {
+                        $.each(ovvVv, function(k2, v2) {
+                          oneRow = oneRow.replace(eval(k2), v2)
+                        })
+                      })
+                    }
+                  })
+                }
+                if (ov.k == 'first' && a1i == 0) {
                   // 单双行处理
                   $.each(ov.v, function(ovi, ovv) {
                     if (ovv.k == 'replace') {
