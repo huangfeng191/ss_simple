@@ -412,6 +412,80 @@ export default {
             },
             ]
           }
+        },{
+          
+          //
+          value: 'goStructValue',
+          label: 'goStructValue',
+          template: '${0} ${1} `json:"${10}"`',
+          param: [
+            // 对 模板 进行正则处理 ，匹配的项可
+            //     'transfer',  ( capitalize 首字母大写 ，snake 驼峰)
+            //   'replace'  根据输入文本替换成其他文本
+            //  'copy' 从其他输入复制
+            {
+              k: '0',
+              v: [
+                {
+                  k: 'transfer',
+                  v: { capitalize: true }
+                }
+              ]
+            },
+            {
+              k: '1',
+              v: [
+                {
+                  k: 'replace',
+                  v: { float64: 'float64','array[string]':'[]string' }
+                }
+              ]
+            },
+            {
+              k: '10',
+              v: [
+                {
+                  k: 'copy',
+                  v: { '0': true }
+                }
+              ]
+            }
+          ],
+          fix: {
+            roles: [
+              // single double both ,end 修理行数据 在行的位置添加
+
+              {
+                k: 'first',
+                v: [
+                  {
+                    k: 'replace',
+                    v: [
+                      {
+                        '/^/': 'type ${0:struct_name} struct {\n'
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                k: 'end',
+                v: [{ k: 'replace', v: [{ '/$/': '\n}' }] }]
+              }
+            ],
+               param:[
+            {
+              k: '0',
+              v: [
+                {
+                  k: 'transfer',
+                  v: { snake: true }
+                }
+              ]
+            },
+            ]
+          }
+        
         },
         {
           value: 'rowToArray',
