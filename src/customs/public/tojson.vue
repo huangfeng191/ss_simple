@@ -84,7 +84,7 @@ export default {
       // 在读取的时候 处理 param
       // 'VUECRUDCOL', 'VUECRUDInputTwo', 'goModelAll', 'goStruct'
       selectd: ["VUECRUDCOL", "VUECRUDInputTwo", "goModelAll", "goStruct"],
-      selectd: ["toRow", "toRowSingle"],
+      // selectd: ["toRow", "toRowSingle"],
       types: [
         {
           value: "VUECRUDCOL",
@@ -431,25 +431,25 @@ export default {
           label: "json",
           template: '{"${0}":"${1}"},'
         },
-        // scada 6
+        // scada6
         {
-          value: "crudcol",
-          label: "crudcol",
+          value: "scada6crudcol",
+          label: "scada6crudcol",
           template:
             '{ "field": "${0:nm}"    ,  "title": "${1:nm}", "align": "center", "halign": "center", "colspan": 1, "hidden": false, "rowspan": 1, "width": 100 },',
           param: {}
         },
 
         {
-          value: "crudinputOne",
-          label: "crudinputOne",
+          value: "scada6crudinputOne",
+          label: "scada6crudinputOne",
           template:
             '  [{ "Field": "${0:nm}", "Name": "${1:nm}",ShowType: "${2:text}",  DataType: "${3:String}", Ext: "${4}", "Required": true, RowSpan: 1, ColSpan: 1 },],',
           param: {}
         },
         {
-          value: "crudinputTw0",
-          label: "crudinputTw0",
+          value: "scada6crudinputTw0",
+          label: "scada6crudinputTw0",
           template:
             '[  { "Field": "${0}", "Name": "${1}", ShowType: "text",  DataType: "${2:String}",Ext: "", "Required": true, RowSpan: 1, ColSpan: 1 ,Unit:""},\n' +
             '   { "Field": "${3}", "Name": "${4}", ShowType: "text",Ext: "", DataType: "${5:String}",   "Required": true, RowSpan: 1, ColSpan: 1 ,Unit:""},],'
