@@ -84,7 +84,7 @@ export default {
       // 在读取的时候 处理 param
       // 'VUECRUDCOL', 'VUECRUDInputTwo', 'goModelAll', 'goStruct'
       selectd: ["VUECRUDCOL", "VUECRUDInputTwo", "goModelAll", "goStruct"],
-      // selectd: ["toRow", "toRowSingle"],
+      selectd: ["goModelAll"],
       types: [
         {
           value: "VUECRUDCOL",
@@ -564,6 +564,7 @@ export default {
           // }
           // 每一项返回值进行二次处理
           if (temp.param) {
+            
             $.each(temp.param, function(ip, vp) {
               // 同一序号处理完成后再处理其他序号
               if (str.match(re)[1] == vp.k) {
@@ -668,7 +669,7 @@ export default {
             });
           }
           if (ov.k == "fun") {
-            debugger;
+            ;
             oneRow = ov.v(oneRow);
           }
         });
@@ -734,14 +735,14 @@ export default {
         }
 
         o[v]["tempV"] = o[v]["tempV"].join("\n");
-
+        
         if (o[v].fix && (o[v].fix.param || o[v].fix.fixRoles)) {
           let oAfter = { template: o[v]["tempV"] };
           if (o[v].fix.fixRoles) {
             oAfter.fix = { roles: o[v].fix.fixRoles };
           }
           if (o[v].fix.param) {
-            oAfter.param = { roles: o[v].fix.param };
+            oAfter.param = o[v].fix.param;
           }
           // 整个模板当一行处理
           //fixparam 界面输入的参数
