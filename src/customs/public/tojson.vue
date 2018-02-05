@@ -59,6 +59,10 @@
 export default {
   data() {
     return {
+      //undo 添加是否存在不同处理逻辑
+
+      //paramBefore 事先对输入进行处理 目前只支持 function 方式
+      //  暂时参数 replace
       //先按行进行处理 先处理 param  然后处理 fix
       // 整个模板进行处理，对象放入 fix.param  跟 fix.fixRoles,处理模式与行一样，调用相同的函数
 
@@ -190,6 +194,7 @@ export default {
           label: "goModelAll",
           template: '${0} *${1} `json:"${10}" xorm:"${3}${11}"` //${2}',
           desc: 'i: "index ", u: "unique ", p: "pk ", n: "null ", o: "not null "',
+
           param: [
             {
               k: "0",
@@ -229,7 +234,7 @@ export default {
                 v: [
                   {
                     k: "replace",
-                    v: [{ "/^/": 'type ${0:table_name} struct {\nBean       `xorm:"extends"`\n' }]
+                    v: [{ "/^/": '//${1:table_name} ${0:} \ntype ${1:table_name} struct {\nBean       `xorm:"extends"`\n' }]
                   }
                 ]
               },
@@ -240,10 +245,25 @@ export default {
             ],
             param: [
               {
-                k: "0",
+                k: "1",
                 v: [{ k: "transfer", v: { snake: true } }]
               }
-            ]
+            ],         
+             paramBefore: [
+                 {
+                k: "fun",
+                v: function(arr) {
+
+                  return arr.filter(function(v, i, self) {
+                    
+                    if(v=="–"){
+                      return false;
+                    }
+                      return self.indexOf(v) === i;
+                    })
+                }
+              }
+          ],
           }
         },
         {
@@ -380,11 +400,11 @@ export default {
             ]
           }
         },
-             {
+        {
           // 取第一个值 组成数组格式
           value: "toRowNumber",
           label: "toRowNumber",
-          template: '${0:nm} ',
+          template: "${0:nm} ",
           param: {},
           fix: {
             roles: [
@@ -537,7 +557,18 @@ export default {
     //row 需要转换的数据 ， i 第几行（重写需要） o 其他对象
     rowTransfer: function(temp, irow, row, len, o) {
       let self = this;
-
+      if (temp.paramBefore) {
+        
+        // 处理分两类: 参数处理，模板处理，此部分是在 转换前
+        $.each(temp.paramBefore, function(vi, vv) {
+          if (vv.k == "fun") {
+            
+            if(row){
+                row = vv.v(row);
+              }
+            }
+        });
+      }
       // 找出可替换变量
       var reg = /\$\{{1}[0-9a-zA-Z\_\/:]+\}{1}/g;
       // 对每个变量进行处理
@@ -564,12 +595,11 @@ export default {
           // }
           // 每一项返回值进行二次处理
           if (temp.param) {
-            
             $.each(temp.param, function(ip, vp) {
               // 同一序号处理完成后再处理其他序号
               if (str.match(re)[1] == vp.k) {
                 $.each(vp.v, function(vi, vv) {
-                  // 参数的replace 功能
+                  // 参数的replace 功能 // 参数时是原样替换
                   if (vv.k == "replace") {
                     $.each(vv.v, function(vvVk, vvVv) {
                       if (s == vvVk) {
@@ -669,7 +699,6 @@ export default {
             });
           }
           if (ov.k == "fun") {
-            ;
             oneRow = ov.v(oneRow);
           }
         });
@@ -735,7 +764,7 @@ export default {
         }
 
         o[v]["tempV"] = o[v]["tempV"].join("\n");
-        
+
         if (o[v].fix && (o[v].fix.param || o[v].fix.fixRoles)) {
           let oAfter = { template: o[v]["tempV"] };
           if (o[v].fix.fixRoles) {
@@ -743,6 +772,9 @@ export default {
           }
           if (o[v].fix.param) {
             oAfter.param = o[v].fix.param;
+          }
+          if (o[v].fix.paramBefore) {
+            oAfter.paramBefore = o[v].fix.paramBefore;
           }
           // 整个模板当一行处理
           //fixparam 界面输入的参数
