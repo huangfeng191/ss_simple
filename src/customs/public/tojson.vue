@@ -88,7 +88,7 @@ export default {
       // 在读取的时候 处理 param
       // 'VUECRUDCOL', 'VUECRUDInputTwo', 'goModelAll', 'goStruct'
       selectd: ["VUECRUDCOL", "VUECRUDInputTwo", "goModelAll", "goStruct"],
-      // selectd: ["goModelAll"],
+      selectd: ["postmanRequest"],
       types: [
         {
           value: "VUECRUDCOL",
@@ -98,7 +98,13 @@ export default {
           param: [
             {
               k: "3",
-              v: [{ k: "containsReplace",same:false, v: { d: 'type:"date", format:"yyyy-MM-dd"', c: 'format:"XXX"', s: 'format:"H0002"' } }]
+              v: [
+                {
+                  k: "containsReplace",
+                  same: false,
+                  v: { d: 'type:"date", format:"yyyy-MM-dd"', c: 'format:"XXX"', s: 'format:"H0002"' }
+                }
+              ]
             }
           ]
         },
@@ -128,7 +134,7 @@ export default {
             {
               k: "3",
               v: [
-                { k: "containsReplace",same:false, v: { d: "datetime", c: "combo", t: "text", s: "switch" } },
+                { k: "containsReplace", same: false, v: { d: "datetime", c: "combo", t: "text", s: "switch" } },
                 { k: "append", v: { datetime: '",format:"yyyy-MM-dd', combo: '",format:"XXX' } }
               ]
             }
@@ -155,7 +161,7 @@ export default {
             {
               k: "3",
               v: [
-                { k: "containsReplace",same:false, v: { d: "datetime", c: "combo", t: "text", s: "switch" } },
+                { k: "containsReplace", same: false, v: { d: "datetime", c: "combo", t: "text", s: "switch" } },
                 { k: "append", v: { datetime: '",format:"yyyy-MM-dd', combo: '",format:"XXX' } }
               ]
             }
@@ -248,22 +254,36 @@ export default {
                 k: "1",
                 v: [{ k: "transfer", v: { snake: true } }]
               }
-            ],         
-             paramBefore: [
-                 {
+            ],
+            paramBefore: [
+              {
                 k: "fun",
                 v: function(arr) {
-
                   return arr.filter(function(v, i, self) {
-                    
-                    if(v=="–"){
+                    if (v == "–") {
                       return false;
                     }
-                      return self.indexOf(v) === i;
-                    })
+                    return self.indexOf(v) === i;
+                  });
                 }
               }
-          ],
+            ]
+          }
+        },
+        {// 还未生效，问题在与  parambefore 是用在 param 的无法用在param 里面， 其实是可以使用的，
+        // 可以考虑模板里面加个参数parambefore,  那样fix 就是参数的意思了
+          value: "postmanRequest",
+          label: "postmanRequest",
+          template: 'output',
+          desc: " ",
+          param: [],
+          fix: {
+            paramBefore: [
+              {
+                k: "reg",
+                v: { role: "match", reg: "--data-binary(\\w+)--compressed", idx: 1}
+              }
+            ]
           }
         },
         {
@@ -553,20 +573,45 @@ export default {
       });
       return s.join("");
     },
+    toFilter: function(str, regO) {
+      // regO  /g /i    role:  replace  match
+      // idx:    -- 暂时是数字类型
+      debugger
+      let matched = [];
+      if (regO.role == "match") {
+        if(regO.g ){
+          matched = str.match(new RegExp(regO.reg,"g"));
+        }else{
+           matched = str.match(new RegExp(regO.reg));
+        }
+      
+        if (idx != undefined) {
+          return matched[idx];
+        } else {
+          return "未定";
+        }
+      }
+
+      return str;
+    },
     // temp 选中的单个模板
     //row 需要转换的数据 ， i 第几行（重写需要） o 其他对象
     rowTransfer: function(temp, irow, row, len, o) {
       let self = this;
       if (temp.paramBefore) {
-        
         // 处理分两类: 参数处理，模板处理，此部分是在 转换前
         $.each(temp.paramBefore, function(vi, vv) {
           if (vv.k == "fun") {
-            
-            if(row){
-                row = vv.v(row);
-              }
+            if (row) {
+              row = vv.v(row);
             }
+          }
+          if (vv.k == "reg") {
+            // v 截取规则
+            if (row) {
+              row = self.toFilter(row, vv.v);
+            }
+          }
         });
       }
       // 找出可替换变量
