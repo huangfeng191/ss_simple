@@ -6,6 +6,7 @@ import Mycolor from '../customs/mystock/getcolor.vue'
 import Test from '../soon/test.vue'
 // 测试 nouse
 import Cs from '../nouse/cs.vue'
+import CsJs from '../nouse/cs_js.vue'
 import Position from '../rest/css/position.vue'
 import Css from '../rest/css/css.vue'
 
@@ -15,6 +16,7 @@ import ToJson from '../customs/public/tojson.vue'
 export default{
 	routes:[
 		{path:'/cs', component:Cs},
+		{path:'/cs_js', component:CsJs},
 		{path:'/tojson', component:ToJson},
         {path:'/position', component:Position},
         {path:'/css', component:Css},

@@ -5,6 +5,7 @@
             <router-link to="/position">position</router-link>
             <router-link to="/css">css</router-link>
             <router-link to="/cs">cs</router-link>
+            <router-link to="/cs_js">cs_js</router-link>
             <router-link to="/test">test</router-link>
             <router-link to="/mycolor">获取颜色</router-link>
             <router-link to="/mystock">维护页面</router-link>
