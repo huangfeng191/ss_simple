@@ -39,7 +39,7 @@
             ` log.push("p -value-");
          ` +
             self.forInput +
-          `  log.push("end;")}
+          `  ;log.push("end;")}
          `;
           debugger;
           //  var ss = bb;
