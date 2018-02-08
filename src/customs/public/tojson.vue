@@ -88,7 +88,7 @@ export default {
       // 在读取的时候 处理 param
       // 'VUECRUDCOL', 'VUECRUDInputTwo', 'goModelAll', 'goStruct'
       selectd: ["VUECRUDCOL", "VUECRUDInputTwo", "goModelAll", "goStruct"],
-      selectd: ["goModelAll"],
+      // selectd: ["goModelAll"],
       types: [
         {
           value: "VUECRUDCOL",
@@ -98,7 +98,7 @@ export default {
           param: [
             {
               k: "3",
-              v: [{ k: "containsReplace", v: { d: 'type="date", format:"yyyy-MM-dd"', c: 'format:"XXX"', s: 'format:"H0002"' } }]
+              v: [{ k: "containsReplace",same:false, v: { d: 'type:"date", format:"yyyy-MM-dd"', c: 'format:"XXX"', s: 'format:"H0002"' } }]
             }
           ]
         },
@@ -128,7 +128,7 @@ export default {
             {
               k: "3",
               v: [
-                { k: "containsReplace", v: { d: "datetime", c: "combo", t: "text", s: "switch" } },
+                { k: "containsReplace",same:false, v: { d: "datetime", c: "combo", t: "text", s: "switch" } },
                 { k: "append", v: { datetime: '",format:"yyyy-MM-dd', combo: '",format:"XXX' } }
               ]
             }
@@ -155,7 +155,7 @@ export default {
             {
               k: "3",
               v: [
-                { k: "containsReplace", v: { d: "datetime", c: "combo", t: "text", s: "switch" } },
+                { k: "containsReplace",same:false, v: { d: "datetime", c: "combo", t: "text", s: "switch" } },
                 { k: "append", v: { datetime: '",format:"yyyy-MM-dd', combo: '",format:"XXX' } }
               ]
             }
