@@ -12,19 +12,10 @@
 <body>
 
   <script>
-    function showDetail(a) {
-      $.each(a, function(ai, av) {
-
-        return
-      })
-      a.push(2);
-      return
-    }
-    $(function() {
-      let a = [1]
-      showDetail(a)
-      console.log(a)
-    })
+   var bb = 'function play(a){alert(a+"getplay");}';
+  //  var ss = bb;
+   var ex = {getplay:eval("("+bb+")")};
+   ex.getplay(11);
   </script>
 
 </body>
