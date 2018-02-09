@@ -60,6 +60,7 @@ export default {
   data() {
     return {
       //undo 添加是否存在不同处理逻辑
+      //可以考虑添加截取功能
 
       //paramBefore 事先对输入进行处理 目前只支持 function 方式
       //  暂时参数 replace
@@ -87,6 +88,8 @@ export default {
       //  param 逻辑跟行处理的逻辑一致
       // 在读取的时候 处理 param
       // 'VUECRUDCOL', 'VUECRUDInputTwo', 'goModelAll', 'goStruct'
+
+      //  single:true, 是指没有模板时，输入 不用分 ，不用转换，当做1行处理的情况
       selectd: ["VUECRUDCOL", "VUECRUDInputTwo", "goModelAll", "goStruct"],
       selectd: ["postmanRequest"],
       types: [
@@ -274,17 +277,17 @@ export default {
         // 可以考虑模板里面加个参数parambefore,  那样fix 就是参数的意思了
           value: "postmanRequest",
           label: "postmanRequest",
-          template: 'output',
+          template: '',
+          single:true,
           desc: " ",
           param: [],
-          paramBefore: [
-              {
-                k: "reg",
-                v: { role: "match", reg: "--data-binary(\\w+)--compressed", idx: 1}
-              }
-            ],
           fix: {
-
+            paramBefore: [
+                    {
+                      k: "reg",// 匹配任意字符 \s \S
+                      v: { role: "match", reg: "--data-binary '([\\s\\S]*)' --compresse", idx: 1}
+                    }
+             ]
           }
         },
         {
@@ -574,33 +577,41 @@ export default {
       });
       return s.join("");
     },
-    toFilter: function(str, regO) {
+    // 一个规则
+    toFilter: function(arr, regO) {
       // regO  /g /i    role:  replace  match
       // idx:    -- 暂时是数字类型
-      debugger
-      let matched = [];
-      if (regO.role == "match") {
-        if(regO.g ){
-          matched = str.match(new RegExp(regO.reg,"g"));
-        }else{
-           matched = str.match(new RegExp(regO.reg));
-        }
       
-        if (idx != undefined) {
-          return matched[idx];
-        } else {
-          return "未定";
-        }
-      }
-
-      return str;
+      let rArr=[]
+      $.each(arr,function(arri,arrv){
+             let matched = [];
+              if (regO.role == "match") {
+                if(regO.g ){
+                  matched = arrv.match(new RegExp(regO.reg,"g"));
+                }else{
+                  matched = arrv.match(new RegExp(regO.reg));
+                }
+              
+                if(!matched){
+                  rArr.push("") ;
+                }else if (regO.idx != undefined) {
+                  rArr.push(matched[regO.idx]|| "") ;
+                } else {
+                  rArr.push("未定") ;
+                 
+                }
+              }
+      })
+      return rArr;
     },
     // temp 选中的单个模板
-    //row 需要转换的数据 ， i 第几行（重写需要） o 其他对象   
+    //row [] 需要转换的数据 ， irow 第几行（对行添加前缀后缀时需要） o 其他对象   
     // row 是一个一维数组，是用分隔符分割后的数据 ？
+
     rowTransfer: function(temp, irow, row, len, o) {
-      debugger
+      
       let self = this;
+      // 是对输入的字段按分隔符进行处理
       if (temp.paramBefore) {
         // 处理分两类: 参数处理，模板处理，此部分是在 转换前
         $.each(temp.paramBefore, function(vi, vv) {
@@ -625,7 +636,12 @@ export default {
       // "${1:nm/String/g}" 第一部分0 匹配值，第二部分1 key ,第三部分2  默认值,  第四部分3正则 , 第五部分4输入字符串
       // ["${1:nm/String/g}", "1", "nm", "/String/g", index: 0, input: "${1:nm/String/g}"]
 
-      let oneRow = temp.template.replace(reg, function(str) {
+// template 是 二维数组， 
+// 将行数据 ，与模板结合生成真正的行数据
+     let oneRow="";
+      // 没有模板的时候，直接返回数据
+     if(temp.template){
+      oneRow = temp.template.replace(reg, function(str) {
         // 对每个匹配项 进行 处理(没一项的返回值)
         let s = "";
 
@@ -696,6 +712,11 @@ export default {
         }
       });
 
+     }else{
+        // 没有模板的时候，直接返回数据
+        oneRow=row.join("\n")
+      }
+// 对格式化后的行数据进行二次格式化
       if (temp.fix) {
         $.each(temp.fix.roles, function(oi, ov) {
           if ((ov.k == "single" || ov.k == "both") && irow % 2 == 1) {
@@ -770,6 +791,7 @@ export default {
 
       return a.join("\n");
     },
+    // 转换的入口函数
     selectDetail: function() {
       var self = this;
 
@@ -800,7 +822,7 @@ export default {
         // 循环选中模板
 
         var temp = [];
-        o[v]["tempV"] = []; // 更改值,既每个模板的返回值
+        o[v]["tempV"] = ""; // 更改值,既每个模板的返回值
         if (o[v].template) {
           // 循环生成记录
           $.each(a1, function(a1i, a1v) {
@@ -809,11 +831,21 @@ export default {
 
             o[v]["tempV"].push(oneRow);
           });
-        }
+        // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑     每行处理完的结果
+        // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 行join :(\n) 行替换完后处理
+
 
         o[v]["tempV"] = o[v]["tempV"].join("\n");
 
-        if (o[v].fix && (o[v].fix.param || o[v].fix.fixRoles)) {
+        }else{
+          
+          // 没有模板的话说明 参数就是输出， 只是做必要转换，那时候就得配置fix  了 （对每行进行处理）
+          // 处理逻辑跟 fixparam 一致，只不过挪用param 的位置
+        }
+
+        
+
+        if (o[v].fix && (o[v].fix.param || o[v].fix.fixRoles|| o[v].fix.paramBefore)) {
           let oAfter = { template: o[v]["tempV"] };
           if (o[v].fix.fixRoles) {
             oAfter.fix = { roles: o[v].fix.fixRoles };
@@ -826,9 +858,20 @@ export default {
           }
           // 整个模板当一行处理
           //fixparam 界面输入的参数
-          let a1v = self.fixparam.split(/[\n ]/).filter(function(x) {
-            if (x) return true;
-          });
+         
+         let a1v=[];
+         //single 参数目前只用于一行（template） is null 情况
+          if(o[v].single){
+              a1v=[self.proto];
+         }else if(!o[v].template){
+              a1v= self.proto.split(/[\n ]/).filter(function(x) {
+                        if (x) return true;
+              });
+          }else{
+              a1v = self.fixparam.split(/[\n ]/).filter(function(x) {
+                        if (x) return true;
+              });
+          }
           o[v]["tempV"] = self.rowTransfer(oAfter, 0, a1v, 1);
         }
 
