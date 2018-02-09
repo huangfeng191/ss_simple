@@ -277,13 +277,14 @@ export default {
           template: 'output',
           desc: " ",
           param: [],
-          fix: {
-            paramBefore: [
+          paramBefore: [
               {
                 k: "reg",
                 v: { role: "match", reg: "--data-binary(\\w+)--compressed", idx: 1}
               }
-            ]
+            ],
+          fix: {
+
           }
         },
         {
@@ -595,8 +596,10 @@ export default {
       return str;
     },
     // temp 选中的单个模板
-    //row 需要转换的数据 ， i 第几行（重写需要） o 其他对象
+    //row 需要转换的数据 ， i 第几行（重写需要） o 其他对象   
+    // row 是一个一维数组，是用分隔符分割后的数据 ？
     rowTransfer: function(temp, irow, row, len, o) {
+      debugger
       let self = this;
       if (temp.paramBefore) {
         // 处理分两类: 参数处理，模板处理，此部分是在 转换前
