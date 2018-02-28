@@ -341,6 +341,55 @@ export default {
         },
         {
           //
+          value: "goStructV",
+          label: "goStructV",
+          template: '${0} ${1} `json:"${10}"`',
+          param: [
+            // 对 模板 进行正则处理 ，匹配的项可
+            //     'transfer',  ( capitalize 首字母大写 ，snake 驼峰)
+            //   'replace'  根据输入文本替换成其他文本
+            //  'copy' 从其他输入复制
+            {
+              k: "0",
+              v: [{ k: "transfer", v: { capitalize: true } }]
+            },
+            {
+              k: "1",
+              v: [{ k: "replace", v: { float64: "float64" } }]
+            },
+            {
+              k: "10",
+              v: [{ k: "copy", v: { "0": true } }]
+            }
+          ],
+          fix: {
+            roles: [
+              // single double both ,end 修理行数据 在行的位置添加
+
+              {
+                k: "first",
+                v: [
+                  {
+                    k: "replace",
+                    v: [{ "/^/": "type ${0:struct_name} struct {\n" }]
+                  }
+                ]
+              },
+              {
+                k: "end",
+                v: [{ k: "replace", v: [{ "/$/": "\n}" }] }]
+              }
+            ],
+            param: [
+              {
+                k: "0",
+                v: [{ k: "transfer", v: { snake: true } }]
+              }
+            ]
+          }
+        },
+        {
+          //
           value: "goStructValue",
           label: "goStructValue",
           template: '${0} ${1} `json:"${10}"`',
@@ -824,17 +873,18 @@ export default {
         var temp = [];
         o[v]["tempV"] = ""; // 更改值,既每个模板的返回值
         if (o[v].template) {
+          o[v]["tempV"]=[]
           // 循环生成记录
           $.each(a1, function(a1i, a1v) {
             // 模板  索引 替换值
             let oneRow = self.rowTransfer(o[v], a1i, a1v, a1.length);
-
+debugger
             o[v]["tempV"].push(oneRow);
           });
         // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑     每行处理完的结果
         // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 行join :(\n) 行替换完后处理
 
-
+debugger
         o[v]["tempV"] = o[v]["tempV"].join("\n");
 
         }else{
