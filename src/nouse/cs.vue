@@ -1,13 +1,30 @@
 <template>
-	<div id="cs2">
-	
-        <child :level="lvl" @to-parent="fromChild">
+<el-row class="tac">
 
-            <div slot="header">header2</div>
-         
-            <div>body2</div>
-            <div>body3</div>
-            <div slot="footer">footer</div></child>
+  <el-col :span="12">
+    <h5>自定义颜色</h5>
+    <el-button type="text" @click="cgMenu(0)">测试0</el-button>
+    <el-button type="text" @click="cgMenu(1)">测试1</el-button>
+    <el-menu
+      default-active="2"
+      class="el-menu-vertical-demo"
+      @open="handleOpen"
+      @close="handleClose"
+      background-color="#545c64"
+      text-color="#fff"
+      active-text-color="#ffd04b">
+
+      <template v-for="r in cmenu"> 
+          <el-menu-item :index="r.Id">
+            <i class="el-icon-menu"></i>
+            <span slot="title">{{r.name}}</span>
+          </el-menu-item>
+
+      </template>
+      
+    </el-menu>
+  </el-col>
+</el-row>
 	</div>
 
 </template>
@@ -15,69 +32,45 @@
 export default {
   data() {
     return {
+     m:[{ menus:[
+        {"Id":1,"name":"1"},
+        {"Id":2,"name":"2"},
+        {"Id":3,"name":"3"},
+        {"Id":4,"name":"4"},
+      ]},
+      { menus:[
+        {"Id":11,"name":"11"},
+        {"Id":21,"name":"21"},
+        {"Id":31,"name":"31"},
+        {"Id":41,"name":"41"},
+      ]}
+      ],
       message: "Hello 11Vue!",
-      lvl: 1
+      lvl: 1,
+      idx:0
     };
   },
-//   子主键传递到父主键用 emit
-// 在父主键中属性的key 都是从子主键中过来的
+
   methods: {
-      fromChild:function(param){
-          alert(param);
-          alert("正确接收")
-      }
+    cgMenu:function(i){
+      this.idx=i;
+    },
+    handleOpen(key, keyPath) {
+      console.log(key, keyPath);
+    },
+    handleClose(key, keyPath) {
+      console.log(key, keyPath);
+    }
+  },
+  computed:{
+    cmenu:function(){
+
+      return this.m[this.idx].menus
+    }
   },
   watch: {},
   mounted() {},
-  components: {
-    child: {
-      data() {
-        return {
-          a: 2
-        };
-      },
-      props: ["level"],
-      render: function(createElement) {
-          
-          var self = this;
-        return createElement(
-          "h" + this.level, // tag name 标签名称
-          {
-          on:{
-              click:function(event){
-                  debugger
-                  self.showSlot();
-                  self.$emit('to-parent',1212);
-                  //可调用组件对象的方法
-              }
-          }
-        },
-          this.$slots.default // 子组件中的阵列
-        );
-      },
-      methods:{
-          showSlot:function(){
-              alert("1212");
-          }
-      },
-
-      template: `
-           <blog-post>
-            <h1 slot="header">
-                About Me 
-            </h1>
-
-            <p>Here's some page content, which will be included in vm.$slots.default, because it's not inside a named slot.</p>
-
-            <p slot="footer">
-                Copyright 2016 Evan You
-            </p>
-
-            <p>If I have some content down here, it will also be included in vm.$slots.default.</p>.
-            </blog-post>
-        `
-    }
-  }
+  components: {}
 };
 </script>
 <style lang="less">
