@@ -2,7 +2,7 @@
   <div id="tojson">
     <el-row>
       <el-col :span="7">
-        <el-select @change="selectTp" class="selfw" v-model="selectd" multiple filterable allow-create placeholder="请选择文章标签">
+        <el-select @change="selectTp" class="selfw" v-model="selected" multiple filterable allow-create placeholder="请选择文章标签">
           <el-option v-for="item in types" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
         </el-select>
@@ -22,7 +22,7 @@
         <el-input class="selfw" type="textarea" :autosize="{ minRows: 10}" placeholder="原始" v-model="proto">
         </el-input>
       </el-col>
-      <el-col :span="10" v-for="r in selectDetail" :key="r.value">
+      <el-col :span="10" v-for="r in selectedetail" :key="r.value">
         <el-input class="selfw" type="textarea" :autosize="{ minRows: 10}" :placeholder="r.label" v-model="r.tempV">
         </el-input>
       </el-col>
@@ -57,6 +57,7 @@
 </style>
 <script>
 export default {
+  props: ["types","selected"],
   data() {
     return {
       //undo 添加是否存在不同处理逻辑
@@ -78,7 +79,7 @@ export default {
 
       //  'append'     v: { datetime: '",format:"yyyy-MM-dd', combo: '",format:"XXX' }
 
-      //   'copy' 从其他输入复制
+      //   'copy' 从其他输入复制 (不为空的时候才复制,目前复制的是输入，而不是转换后的值 , scope 是在范围内的才复制)
 
       // fix 对行进行操作， 在 param 对行进行处理的时候，在行头，行尾替换、转换处理
       // fix :{ roles:[规则] ,params:{ 参数 }}
@@ -90,469 +91,14 @@ export default {
       // 'VUECRUDCOL', 'VUECRUDInputTwo', 'goModelAll', 'goStruct'
 
       //  single:true, 是指没有模板时，输入 不用分 ，不用转换，当做1行处理的情况
-      selectd: ["VUECRUDCOL", "VUECRUDInputTwo", "goModelAll", "goStruct"],
-      selectd: ["postmanRequest"],
-      types: [
-        {
-          value: "VUECRUDCOL",
-          label: "VUECRUDCOL",
-          template: '{ title: "${2:nm}", data: "${0:code}", width: 130,${3} },',
-          desc: "第四个参数：d:时间格式,c:词典,s:词典",
-          param: [
-            {
-              k: "3",
-              v: [
-                {
-                  k: "containsReplace",
-                  same: false,
-                  v: { d: 'type:"date", format:"yyyy-MM-dd"', c: 'format:"XXX"', s: 'format:"H0002"' }
-                }
-              ]
-            }
-          ]
-        },
-        {
-          value: "VUECRUDInputOne",
-          label: "VUECRUDInputOne",
-          template: '{title: "${2:nm}",data: "${0:code}",required: true,dataType: "${1}",showType: "${3:text}"},',
-          desc: "",
-          fix: {
-            roles: [
-              {
-                k: "both",
-                v: [{ k: "replace", v: [{ "/^{/": "[{", "/},$/": "}]," }] }]
-              }
-            ],
-            param: []
-          },
-          // 参数为1维数组的原因是 我希望顺序执行规则 ,采用 k v 对象方式是为了以后扩展方便
-          param: [
-            {
-              k: "1",
-              v: [
-                // 元素值， 变化后值
-                { k: "replace", v: { string: "String", int: "Number", int64: "Number" } }
-              ]
-            },
-            {
-              k: "3",
-              v: [
-                { k: "containsReplace", same: false, v: { d: "datetime", c: "combo", t: "text", s: "switch" } },
-                { k: "append", v: { datetime: '",format:"yyyy-MM-dd', combo: '",format:"XXX' } }
-              ]
-            }
-          ]
-        },
-        {
-          value: "VUECRUDInputTwo",
-          label: "VUECRUDInputTwo",
-          template: '{title: "${2:nm}",data: "${0:code}",required: true,dataType: "${1}",showType: "${3:text}"},',
-          fix: {
-            roles: [
-              // single double both ,end 修理行数据 在行的位置添加
-              { k: "double", v: [{ k: "replace", v: [{ "/^{/": "[{" }] }] },
-              { k: "single", v: [{ k: "replace", v: [{ "/},$/": "}]," }] }] },
-              { k: "end", v: [{ k: "replace", v: [{ "/},$/": "}]," }] }] }
-            ]
-          },
-          // 参数为1维数组的原因是 我希望顺序执行规则 ,采用 k v 对象方式是为了以后扩展方便
-          param: [
-            {
-              k: "1",
-              v: [{ k: "replace", v: { string: "String", int: "Number", int64: "Number" } }]
-            },
-            {
-              k: "3",
-              v: [
-                { k: "containsReplace", same: false, v: { d: "datetime", c: "combo", t: "text", s: "switch" } },
-                { k: "append", v: { datetime: '",format:"yyyy-MM-dd', combo: '",format:"XXX' } }
-              ]
-            }
-          ]
-        },
-        {
-          value: "goModel",
-          label: "goModel",
-          template: '${0} *${1} `json:"${10}" xorm:"${3}${11}"` //${2}',
-          desc: 'i: "index ", u: "unique ", p: "pk ", n: "null ", o: "not null "',
-          param: [
-            {
-              k: "0",
-              v: [{ k: "transfer", v: { capitalize: true } }]
-            },
-            { k: "1", v: [{ k: "replace", v: { float64: "float64" } }] },
-            {
-              k: "3",
-              v: [{ k: "containsReplace", v: { i: "index ", u: "unique ", p: "pk ", n: "null ", o: "not null " } }]
-            },
-            {
-              k: "10",
-              v: [{ k: "copy", v: { "0": true } }]
-            },
-            {
-              k: "11",
-              v: [
-                { k: "copy", v: { "1": true } },
-                { k: "replace", v: { int: "INT(11)", int64: "BIGINT(20)", float64: "DOUBLE", string: "VARCHAR(256)" } }
-              ]
-            }
-          ]
-        },
-        {
-          value: "goModelAll",
-          label: "goModelAll",
-          template: '${0} *${1} `json:"${10}" xorm:"${3}${11}"` //${2}',
-          desc: 'i: "index ", u: "unique ", p: "pk ", n: "null ", o: "not null "',
+     
+     
 
-          param: [
-            {
-              k: "0",
-              v: [{ k: "transfer", v: { capitalize: true } }]
-            },
-            {
-              k: "1",
-              v: [{ k: "replace", v: { float64: "float64" } }]
-            },
-            {
-              k: "3",
-
-              v: [
-                {
-                  k: "containsReplace",
-                  v: { i: "index ", u: "unique ", p: "pk ", n: "null ", o: "not null " }
-                }
-              ]
-            },
-            {
-              k: "10",
-              v: [{ k: "copy", v: { "0": true } }]
-            },
-            {
-              k: "11",
-              v: [
-                { k: "copy", v: { "1": true } },
-                { k: "replace", v: { int: "INT(11)", int64: "BIGINT(20)", float64: "DOUBLE", string: "VARCHAR(256)" } }
-              ]
-            }
-          ],
-          fix: {
-            roles: [
-              // single double both ,end 修理行数据 在行的位置添加
-              {
-                k: "first",
-                v: [
-                  {
-                    k: "replace",
-                    v: [{ "/^/": '//${1:table_name} ${0:} \ntype ${1:table_name} struct {\nBean       `xorm:"extends"`\n' }]
-                  }
-                ]
-              },
-              {
-                k: "end",
-                v: [{ k: "replace", v: [{ "/$/": "\n}" }] }]
-              }
-            ],
-            param: [
-              {
-                k: "1",
-                v: [{ k: "transfer", v: { snake: true } }]
-              }
-            ],
-            paramBefore: [
-              {
-                k: "fun",
-                v: function(arr) {
-                  return arr.filter(function(v, i, self) {
-                    if (v == "–") {
-                      return false;
-                    }
-                    return self.indexOf(v) === i;
-                  });
-                }
-              }
-            ]
-          }
-        },
-        {// 还未生效，问题在与  parambefore 是用在 param 的无法用在param 里面， 其实是可以使用的，
-        // 可以考虑模板里面加个参数parambefore,  那样fix 就是参数的意思了
-          value: "postmanRequest",
-          label: "postmanRequest",
-          template: '',
-          single:true,
-          desc: " ",
-          param: [],
-          fix: {
-            paramBefore: [
-                    {
-                      k: "reg",// 匹配任意字符 \s \S
-                      v: { role: "match", reg: "--data-binary '([\\s\\S]*)' --compresse", idx: 1}
-                    }
-             ]
-          }
-        },
-        {
-          //
-          value: "goStruct",
-          label: "goStruct",
-          template: '${0} *${1} `json:"${10}"`',
-          param: [
-            // 对 模板 进行正则处理 ，匹配的项可
-            //     'transfer',  ( capitalize 首字母大写 ，snake 驼峰)
-            //   'replace'  根据输入文本替换成其他文本
-            //  'copy' 从其他输入复制
-            {
-              k: "0",
-              v: [{ k: "transfer", v: { capitalize: true } }]
-            },
-            {
-              k: "1",
-              v: [{ k: "replace", v: { float64: "float64" } }]
-            },
-            {
-              k: "10",
-              v: [{ k: "copy", v: { "0": true } }]
-            }
-          ],
-          fix: {
-            roles: [
-              // single double both ,end 修理行数据 在行的位置添加
-
-              {
-                k: "first",
-                v: [
-                  {
-                    k: "replace",
-                    v: [{ "/^/": "type ${0:struct_name} struct {\n" }]
-                  }
-                ]
-              },
-              {
-                k: "end",
-                v: [{ k: "replace", v: [{ "/$/": "\n}" }] }]
-              }
-            ],
-            param: [
-              {
-                k: "0",
-                v: [{ k: "transfer", v: { snake: true } }]
-              }
-            ]
-          }
-        },
-        {
-          //
-          value: "goStructV",
-          label: "goStructV",
-          template: '${0} ${1} `json:"${10}"`',
-          param: [
-            // 对 模板 进行正则处理 ，匹配的项可
-            //     'transfer',  ( capitalize 首字母大写 ，snake 驼峰)
-            //   'replace'  根据输入文本替换成其他文本
-            //  'copy' 从其他输入复制
-            {
-              k: "0",
-              v: [{ k: "transfer", v: { capitalize: true } }]
-            },
-            {
-              k: "1",
-              v: [{ k: "replace", v: { float64: "float64" } }]
-            },
-            {
-              k: "10",
-              v: [{ k: "copy", v: { "0": true } }]
-            }
-          ],
-          fix: {
-            roles: [
-              // single double both ,end 修理行数据 在行的位置添加
-
-              {
-                k: "first",
-                v: [
-                  {
-                    k: "replace",
-                    v: [{ "/^/": "type ${0:struct_name} struct {\n" }]
-                  }
-                ]
-              },
-              {
-                k: "end",
-                v: [{ k: "replace", v: [{ "/$/": "\n}" }] }]
-              }
-            ],
-            param: [
-              {
-                k: "0",
-                v: [{ k: "transfer", v: { snake: true } }]
-              }
-            ]
-          }
-        },
-        {
-          //
-          value: "goStructValue",
-          label: "goStructValue",
-          template: '${0} ${1} `json:"${10}"`',
-          param: [
-            // 对 模板 进行正则处理 ，匹配的项可
-            //     'transfer',  ( capitalize 首字母大写 ，snake 驼峰)
-            //   'replace'  根据输入文本替换成其他文本
-            //  'copy' 从其他输入复制
-            {
-              k: "0",
-              v: [{ k: "transfer", v: { capitalize: true } }]
-            },
-            {
-              k: "1",
-              v: [{ k: "replace", v: { float64: "float64", "array[string]": "[]string" } }]
-            },
-            {
-              k: "10",
-              v: [{ k: "copy", v: { "0": true } }]
-            }
-          ],
-          fix: {
-            roles: [
-              // single double both ,end 修理行数据 在行的位置添加
-
-              {
-                k: "first",
-                v: [
-                  {
-                    k: "replace",
-                    v: [{ "/^/": "type ${0:struct_name} struct {\n" }]
-                  }
-                ]
-              },
-              {
-                k: "end",
-                v: [{ k: "replace", v: [{ "/$/": "\n}" }] }]
-              }
-            ],
-            param: [
-              {
-                k: "0",
-                v: [{ k: "transfer", v: { snake: true } }]
-              }
-            ]
-          }
-        },
-        {
-          value: "rowToArray",
-          label: "rowToArray",
-          template: '"${0}",',
-          param: {},
-          fix: {
-            roles: [
-              { k: "first", v: [{ k: "replace", v: [{ "/^/": "[" }] }] },
-              { k: "end", v: [{ k: "replace", v: [{ "/,$/": "]" }] }] }
-            ]
-          }
-        },
-        // 未解决
-        // 可以考虑生成sql语句
-        // 指定数据格式， 可使用参数（与fix 参数可混用，毕竟同时用参数的情况不多）
-        {
-          // 取第一个值 组成数组格式
-          value: "toRow",
-          label: "toRow",
-          template: '"${0:nm}" ',
-          param: {},
-          fix: {
-            roles: [
-              { k: "first", v: [{ k: "replace", v: [{ "/^/": "[" }] }] },
-              { k: "end", v: [{ k: "replace", v: [{ "/$/": "]" }] }] }
-            ],
-            fixRoles: [
-              {
-                k: "fun",
-                v: function(str) {
-                  return str.split("\n").join(",");
-                }
-              }
-            ]
-          }
-        },
-        {
-          // 取第一个值 组成数组格式
-          value: "toRowNumber",
-          label: "toRowNumber",
-          template: "${0:nm} ",
-          param: {},
-          fix: {
-            roles: [
-              { k: "first", v: [{ k: "replace", v: [{ "/^/": "[" }] }] },
-              { k: "end", v: [{ k: "replace", v: [{ "/$/": "]" }] }] }
-            ],
-            fixRoles: [
-              {
-                k: "fun",
-                v: function(str) {
-                  return str.split("\n").join(",");
-                }
-              }
-            ]
-          }
-        },
-        {
-          // 取第一个值 组成数组格式
-          value: "toRowSingle",
-          label: "toRowSingle",
-          template: '"${0:nm}" ',
-          param: {},
-          fix: {
-            roles: [],
-            fixRoles: [
-              {
-                k: "fun",
-                v: function(str) {
-                  return str
-                    .split("\n")
-                    .filter(function(v, i, self) {
-                      return self.indexOf(v) === i;
-                    })
-                    .join(",");
-                }
-              },
-              { k: "first", v: [{ k: "replace", v: [{ "/^/": "[" }] }] },
-              { k: "end", v: [{ k: "replace", v: [{ "/$/": "]" }] }] }
-            ]
-          }
-        },
-        {
-          value: "json",
-          label: "json",
-          template: '{"${0}":"${1}"},'
-        },
-        // scada6
-        {
-          value: "scada6crudcol",
-          label: "scada6crudcol",
-          template:
-            '{ "field": "${0:nm}"    ,  "title": "${1:nm}", "align": "center", "halign": "center", "colspan": 1, "hidden": false, "rowspan": 1, "width": 100 },',
-          param: {}
-        },
-
-        {
-          value: "scada6crudinputOne",
-          label: "scada6crudinputOne",
-          template:
-            '  [{ "Field": "${0:nm}", "Name": "${1:nm}",ShowType: "${2:text}",  DataType: "${3:String}", Ext: "${4}", "Required": true, RowSpan: 1, ColSpan: 1 },],',
-          param: {}
-        },
-        {
-          value: "scada6crudinputTw0",
-          label: "scada6crudinputTw0",
-          template:
-            '[  { "Field": "${0}", "Name": "${1}", ShowType: "text",  DataType: "${2:String}",Ext: "", "Required": true, RowSpan: 1, ColSpan: 1 ,Unit:""},\n' +
-            '   { "Field": "${3}", "Name": "${4}", ShowType: "text",Ext: "", DataType: "${5:String}",   "Required": true, RowSpan: 1, ColSpan: 1 ,Unit:""},],'
-        }
-      ],
       template: "",
       param: "",
       fixparam: "",
       aparts: " ,	",
-      proto: "",
+      proto: "", // 输入的原始数据
       lastSelect: ""
       //up data
       //dowm for show
@@ -562,9 +108,9 @@ export default {
     getTemp() {},
     changeTemplate() {
       var self = this;
-      if (self.selectd.length > 0) {
+      if (self.selected.length > 0) {
         $.each(self.types, function(i, v) {
-          if (v.value == self.selectd[0]) {
+          if (v.value == self.selected[0]) {
             v["template"] = self.template;
           }
         });
@@ -630,35 +176,33 @@ export default {
     toFilter: function(arr, regO) {
       // regO  /g /i    role:  replace  match
       // idx:    -- 暂时是数字类型
-      
-      let rArr=[]
-      $.each(arr,function(arri,arrv){
-             let matched = [];
-              if (regO.role == "match") {
-                if(regO.g ){
-                  matched = arrv.match(new RegExp(regO.reg,"g"));
-                }else{
-                  matched = arrv.match(new RegExp(regO.reg));
-                }
-              
-                if(!matched){
-                  rArr.push("") ;
-                }else if (regO.idx != undefined) {
-                  rArr.push(matched[regO.idx]|| "") ;
-                } else {
-                  rArr.push("未定") ;
-                 
-                }
-              }
-      })
+
+      let rArr = [];
+      $.each(arr, function(arri, arrv) {
+        let matched = [];
+        if (regO.role == "match") {
+          if (regO.g) {
+            matched = arrv.match(new RegExp(regO.reg, "g"));
+          } else {
+            matched = arrv.match(new RegExp(regO.reg));
+          }
+
+          if (!matched) {
+            rArr.push("");
+          } else if (regO.idx != undefined) {
+            rArr.push(matched[regO.idx] || "");
+          } else {
+            rArr.push("未定");
+          }
+        }
+      });
       return rArr;
     },
     // temp 选中的单个模板
-    //row [] 需要转换的数据 ， irow 第几行（对行添加前缀后缀时需要） o 其他对象   
+    //row [] 需要转换的数据 ， irow 第几行（对行添加前缀后缀时需要） o 其他对象
     // row 是一个一维数组，是用分隔符分割后的数据 ？
 
     rowTransfer: function(temp, irow, row, len, o) {
-      
       let self = this;
       // 是对输入的字段按分隔符进行处理
       if (temp.paramBefore) {
@@ -685,87 +229,90 @@ export default {
       // "${1:nm/String/g}" 第一部分0 匹配值，第二部分1 key ,第三部分2  默认值,  第四部分3正则 , 第五部分4输入字符串
       // ["${1:nm/String/g}", "1", "nm", "/String/g", index: 0, input: "${1:nm/String/g}"]
 
-// template 是 二维数组， 
-// 将行数据 ，与模板结合生成真正的行数据
-     let oneRow="";
+      // template 是 二维数组，
+      // 将行数据 ，与模板结合生成真正的行数据
+      let oneRow = "";
       // 没有模板的时候，直接返回数据
-     if(temp.template){
-      oneRow = temp.template.replace(reg, function(str) {
-        // 对每个匹配项 进行 处理(没一项的返回值)
-        let s = "";
+      if (temp.template) {
+        oneRow = temp.template.replace(reg, function(str) {
+          // 对每个匹配项 进行 处理(没一项的返回值)
+          let s = "";
 
-        if (str.match(re)) {
-          // "${1:nm/String/g}" 第一部分0 匹配值，第二部分1 key ,第三部分2  默认值,  第四部分3正则 , 第五部分4输入字符串
-          if (row[str.match(re)[1]] != undefined && row[str.match(re)[1]] != "") {
-            s = row[str.match(re)[1]];
+          if (str.match(re)) {
+            // "${1:nm/String/g}" 第一部分0 匹配值，第二部分1 key ,第三部分2  默认值,  第四部分3正则 , 第五部分4输入字符串
+            if (row[str.match(re)[1]] != undefined && row[str.match(re)[1]] != "") {
+              s = row[str.match(re)[1]];
+            } else {
+              s = str.match(re)[2];
+            }
+            //  正则暂时不启用
+            // if(str.match(re)[3]){
+            //
+            //     s.match(str.match(re)[3])
+            // }
+            // 每一项返回值进行二次处理
+            if (temp.param) {
+              $.each(temp.param, function(ip, vp) {
+                // 同一序号处理完成后再处理其他序号
+                if (str.match(re)[1] == vp.k) {
+                  $.each(vp.v, function(vi, vv) {
+                    // 参数的replace 功能 // 参数时是原样替换
+                    if (vv.k == "replace") {
+                      $.each(vv.v, function(vvVk, vvVv) {
+                        if (s == vvVk) {
+                          s = vvVv;
+                        }
+                      });
+                    }
+
+                    if (vv.k == "copy") {
+                      // (不为空的时候才复制,目前复制的是输入，而不是转换后的值 , scope 是在范围内的才复制 )
+                      $.each(vv.v, function(vvVk, vvVv) {
+                        //---
+
+                        if (vvVk && row[vvVk] != undefined) {
+                          if (vv.scope && $.inArray(row[vvVk], vv.scope) < 0) {
+                          } else {
+                            s = row[vvVk];
+                          }
+                        }
+                      });
+                    }
+                    if (vv.k == "containsReplace" && vv.v) {
+                      s = self.containsReplace(s, vv.v, vv.time, vv.same);
+                    }
+                    if (vv.k == "transfer") {
+                      $.each(vv.v, function(vvVk, vvVv) {
+                        if (vvVk == "capitalize" && vvVv) {
+                          s = self.capitalize(s);
+                        }
+                        if (vvVk == "snake" && vvVv) {
+                          s = self.snake(s);
+                        }
+                      });
+                    }
+
+                    if (vv.k == "append") {
+                      $.each(vv.v, function(vvVk, vvVv) {
+                        if (s == vvVk) {
+                          s += vvVv;
+                        }
+                      });
+                    }
+                  });
+                }
+              });
+            }
+            return s;
           } else {
-            s = str.match(re)[2];
+            return "";
           }
-          //  正则暂时不启用
-          // if(str.match(re)[3]){
-          //
-          //     s.match(str.match(re)[3])
-          // }
-          // 每一项返回值进行二次处理
-          if (temp.param) {
-            $.each(temp.param, function(ip, vp) {
-              // 同一序号处理完成后再处理其他序号
-              if (str.match(re)[1] == vp.k) {
-                $.each(vp.v, function(vi, vv) {
-                  // 参数的replace 功能 // 参数时是原样替换
-                  if (vv.k == "replace") {
-                    $.each(vv.v, function(vvVk, vvVv) {
-                      if (s == vvVk) {
-                        s = vvVv;
-                      }
-                    });
-                  }
-
-                  if (vv.k == "copy") {
-                    $.each(vv.v, function(vvVk, vvVv) {
-                      //---
-
-                      if (vvVk && row[vvVk] != undefined) {
-                        s = row[vvVk];
-                      }
-                    });
-                  }
-                  if (vv.k == "containsReplace" && vv.v) {
-                    s = self.containsReplace(s, vv.v, vv.time, vv.same);
-                  }
-                  if (vv.k == "transfer") {
-                    $.each(vv.v, function(vvVk, vvVv) {
-                      if (vvVk == "capitalize" && vvVv) {
-                        s = self.capitalize(s);
-                      }
-                      if (vvVk == "snake" && vvVv) {
-                        s = self.snake(s);
-                      }
-                    });
-                  }
-
-                  if (vv.k == "append") {
-                    $.each(vv.v, function(vvVk, vvVv) {
-                      if (s == vvVk) {
-                        s += vvVv;
-                      }
-                    });
-                  }
-                });
-              }
-            });
-          }
-          return s;
-        } else {
-          return "";
-        }
-      });
-
-     }else{
+        });
+      } else {
         // 没有模板的时候，直接返回数据
-        oneRow=row.join("\n")
+        oneRow = row.join("\n");
       }
-// 对格式化后的行数据进行二次格式化
+      // 对格式化后的行数据进行二次格式化
       if (temp.fix) {
         $.each(temp.fix.roles, function(oi, ov) {
           if ((ov.k == "single" || ov.k == "both") && irow % 2 == 1) {
@@ -833,7 +380,7 @@ export default {
         o[v.value] = v;
       });
       var a = [];
-      $.each(self.selectd, function(i, v) {
+      $.each(self.selected, function(i, v) {
         // 循环选中模板
         a.push(o[v].template + (o[v].desc ? "------//" + o[v].desc : ""));
       });
@@ -841,7 +388,7 @@ export default {
       return a.join("\n");
     },
     // 转换的入口函数
-    selectDetail: function() {
+    selectedetail: function() {
       var self = this;
 
       var o = {};
@@ -867,35 +414,30 @@ export default {
         });
       }
 
-      $.each(self.selectd, function(i, v) {
+      $.each(self.selected, function(i, v) {
         // 循环选中模板
 
         var temp = [];
         o[v]["tempV"] = ""; // 更改值,既每个模板的返回值
         if (o[v].template) {
-          o[v]["tempV"]=[]
+          o[v]["tempV"] = [];
           // 循环生成记录
           $.each(a1, function(a1i, a1v) {
             // 模板  索引 替换值
             let oneRow = self.rowTransfer(o[v], a1i, a1v, a1.length);
-debugger
+
             o[v]["tempV"].push(oneRow);
           });
-        // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑     每行处理完的结果
-        // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 行join :(\n) 行替换完后处理
+          // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑     每行处理完的结果
+          // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 行join :(\n) 行替换完后处理
 
-debugger
-        o[v]["tempV"] = o[v]["tempV"].join("\n");
-
-        }else{
-          
+          o[v]["tempV"] = o[v]["tempV"].join("\n");
+        } else {
           // 没有模板的话说明 参数就是输出， 只是做必要转换，那时候就得配置fix  了 （对每行进行处理）
           // 处理逻辑跟 fixparam 一致，只不过挪用param 的位置
         }
 
-        
-
-        if (o[v].fix && (o[v].fix.param || o[v].fix.fixRoles|| o[v].fix.paramBefore)) {
+        if (o[v].fix && (o[v].fix.param || o[v].fix.fixRoles || o[v].fix.paramBefore)) {
           let oAfter = { template: o[v]["tempV"] };
           if (o[v].fix.fixRoles) {
             oAfter.fix = { roles: o[v].fix.fixRoles };
@@ -908,19 +450,19 @@ debugger
           }
           // 整个模板当一行处理
           //fixparam 界面输入的参数
-         
-         let a1v=[];
-         //single 参数目前只用于一行（template） is null 情况
-          if(o[v].single){
-              a1v=[self.proto];
-         }else if(!o[v].template){
-              a1v= self.proto.split(/[\n ]/).filter(function(x) {
-                        if (x) return true;
-              });
-          }else{
-              a1v = self.fixparam.split(/[\n ]/).filter(function(x) {
-                        if (x) return true;
-              });
+
+          let a1v = [];
+          //single 参数目前只用于一行（template） is null 情况
+          if (o[v].single) {
+            a1v = [self.proto];
+          } else if (!o[v].template) {
+            a1v = self.proto.split(/[\n ]/).filter(function(x) {
+              if (x) return true;
+            });
+          } else {
+            a1v = self.fixparam.split(/[\n ]/).filter(function(x) {
+              if (x) return true;
+            });
           }
           o[v]["tempV"] = self.rowTransfer(oAfter, 0, a1v, 1);
         }

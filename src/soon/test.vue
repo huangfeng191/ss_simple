@@ -1,65 +1,76 @@
-<template>
-	<div id="test">
-		<h3>html测试</h3>
-		<el-button type="primary" @click="st1">按钮</el-button>
+<template  >
 
-		<input type="button" value="按钮" id="cs"/>
-		<input type="text" value="按钮" id="cs1"/>
-
-	</div>
+  <div>
+      <el-form :model="dynamicValidateForm" ref="dynamicValidateForm" label-width="100px" class="demo-dynamic">
+  <el-form-item
+    prop="email"
+    label="邮箱"
+    :rules="[
+      { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+      { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur,change' }
+    ]"
+  >
+    <el-input v-model="dynamicValidateForm.email"></el-input>
+  </el-form-item>
+  <el-form-item
+    v-for="(domain, index) in dynamicValidateForm.domains"
+    :label="'域名' + index"
+    :key="domain.key"
+    :prop="'domains.' + index + '.value'"
+    :rules="{
+      required: true, message: '域名不能为空', trigger: 'blur'
+    }"
+  >
+    <el-input v-model="domain.value"></el-input><el-button @click.prevent="removeDomain(domain)">删除</el-button>
+  </el-form-item>
+  <el-form-item>
+    <el-button type="primary" @click="submitForm('dynamicValidateForm')">提交</el-button>
+    <el-button @click="addDomain">新增域名</el-button>
+    <el-button @click="resetForm('dynamicValidateForm')">重置</el-button>
+  </el-form-item>
+</el-form>
+  </div>
 </template>
 
 <script>
-
-    export default{
-
-        data(){
-            return {
-                cs: "1"
-            }
-        },
-        methods: {
-            st(){// test 闭包
-                function cs(arg) {
-                    var c = arg;
-                    return function (p) {
-                        console.log((c++) + p)
-                    }
-                }
-
-                var fn = cs(1);
-            },
-            st1(){
-
-                $.each([1, 2, 3], function (i, v) {
-
-
-                    console.log(v)
-                })
-                var all = {};
-
-                function cs(arg) {
-                    var c = arg;
-                    return function (p) {
-                        alert((c++) + p);
-                    }
-                }
-
-
-
-            }
-
-        },
-        mounted(){
-//            this.st();
-
-            this.st1();
+//  测试 element 表单 验证
+  export default {
+    data() {
+      return {
+        dynamicValidateForm: {
+          domains: [{
+            value: ''
+          }],
+          email: ''
         }
-
+      };
+    },
+    methods: {
+      submitForm(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            alert('submit!');
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
+      resetForm(formName) {
+        this.$refs[formName].resetFields();
+      },
+      removeDomain(item) {
+        var index = this.dynamicValidateForm.domains.indexOf(item)
+        if (index !== -1) {
+          this.dynamicValidateForm.domains.splice(index, 1)
+        }
+      },
+      addDomain() {
+        this.dynamicValidateForm.domains.push({
+          value: '',
+          key: Date.now()
+        });
+      }
     }
+  }
 </script>
-<style lang="less">
-	#test {
-
-	}
-</style>
