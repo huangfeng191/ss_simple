@@ -1,10 +1,15 @@
 var path = require('path')
 var webpack = require('webpack')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 //path:编译路径地址， 原来 ./dist
 module.exports = {
     entry: './src/main.js',
     output: {
+        // 打包后文件存放的地方
         path: path.resolve(__dirname, './service/public/dist'),
+        // publicPath 并不会对生成文件的路径造成影响，
+        // 主要是对你的页面里面引入的资源的路径做对应的补全，常见的就是css文件里面引入的图片
+        // 换句话说就是引入路径*************
         publicPath: '/dist/',
         filename: 'build.js'
     },
@@ -106,7 +111,16 @@ if (process.env.NODE_ENV === 'production') {
         }),
         new webpack.LoaderOptionsPlugin({
             minimize: true
-        })
+        }),
+        // The plugin will generate an HTML5 file for you that includes 
+        // all your webpack bundles in the body using script tags.
+        //  Just add the plugin to your webpack config as follows:
+/*         new HtmlWebpackPlugin({
+            filename:'../index.html',
+            // 已某个文件作为模板,在把生成的添加进去
+            template:'./indexpro.html'
+        }) */
+        //  暂时还不会如何打包
     ])
 }
 
