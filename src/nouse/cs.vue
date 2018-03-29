@@ -1,7 +1,6 @@
 <template>
 <div id="cs2">
   <el-button type="text" @click="dialogVisible = true">点击打开 Dialog</el-button>
-
   <el-dialog
     title="提示"
     :visible.sync="dialogVisible"
@@ -16,10 +15,12 @@
   </el-dialog>
 </div>
 
+
 </template>
 <script>
 export default {
   data() {
+
       return {
         dialogVisible: false
       };
@@ -34,8 +35,10 @@ export default {
       }
     }
   };
+
 </script>
 <style lang="less">
 #cs2 {
+  height: 100%;
 }
 </style>
