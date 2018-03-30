@@ -26,6 +26,7 @@ export default {
                   v: {
                     c: 'binding: "USER"',
                     d: "formatter: DateFormatter",
+                    u:'unit:"XXX",',
                     f: "formatter: function (v, r, i) {\n if (v){return v; \n}else {\n return v; \n}   }"
                   }
                 }
