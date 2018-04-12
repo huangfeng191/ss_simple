@@ -66,7 +66,7 @@ export default {
       //paramBefore 事先对输入进行处理 目前只支持 function 方式
       //  暂时参数 replace
       //先按行进行处理 先处理 param  然后处理 fix
-      // 整个模板进行处理，对象放入 fix.param  跟 fix.fixRoles,处理模式与行一样，调用相同的函数
+      // 整个模板进行处理，对象放入 (fix.param (主要是替换参数用) 跟 fix.fixRoles（对模板进行处理）),处理模式与行一样，调用相同的函数
 
       // param 对 template 进行处理，绑定proto(用户输入)
       //param  是对${...}单个模板 输入项进行操作， 支持操作  [{k:"1",v: [ 规则]}]
@@ -94,12 +94,12 @@ export default {
      
      
 
-      template: "",
-      param: "",
+      template: "", //*** 行模板
+      param: "",    //*** 行模板 
+      aparts: " ,	",//*** 对行处理的分割符， 也就是说 获取 ${?}信息
       fixparam: "",
-      aparts: " ,	",
-      proto: "", // 输入的原始数据
-      lastSelect: ""
+      proto: "", //*** 输入的所有原始数据
+      lastSelect: "" //*** 暂时没用，记录最后一次选择的情况，可以考虑使用 lastSelect
       //up data
       //dowm for show
     };
@@ -116,6 +116,7 @@ export default {
         });
       }
     },
+    // 选择模板时触发
     selectTp(values) {
       if (!values[0]) {
         return;
@@ -129,6 +130,7 @@ export default {
       self.template = o[values[0]].template;
       self.param = JSON.stringify(o[values[0]].param);
     },
+    /* ↓↓↓↓↓↓↓↓↓↓↓↓以下为转换的规则 */
     // 只有包含的字符才替换 ，按顺序单个替换
     containsReplace: function(str, config, time = 1, same = true) {
       let s = "";
@@ -172,6 +174,7 @@ export default {
       });
       return s.join("");
     },
+     /* ↑↑↑↑↑↑↑↑↑↑↑↑以上为转换的规则 */
     // 一个规则
     toFilter: function(arr, regO) {
       // regO  /g /i    role:  replace  match
@@ -201,6 +204,59 @@ export default {
     // temp 选中的单个模板
     //row [] 需要转换的数据 ， irow 第几行（对行添加前缀后缀时需要） o 其他对象
     // row 是一个一维数组，是用分隔符分割后的数据 ？
+
+//  作为逻辑来讲，，1 模板，+proto 生成目标数据，对目标数据进行处理（fix）
+/* 对行数据处理的核心方法
+处理逻辑：
+    找出模板中需要替换的字段，用用户输入的信息进行替换，
+    目前调用分两种情况，
+      1 对行数据进行处理，此时的规则配置为：param:[
+        {  替换字段按顺序执行
+              k: "2",
+              v: [   k规则名， 对每项的规则按顺序执行
+                   { k: "replace",  
+                    v: { c: "combo", d: "datetime", a: "textarea", u: "upload", f: "text" }}] 
+                    
+        },
+      ] 
+      2 对行数据处理完合并的数据，再次应用规则，此时的规则配置为：fix{
+          roles: [ 对数据进行处理
+              {
+                k: "both",
+                v: [{ k: "replace", v: [{ "/^{/": "[{", "/},$/": "}]," }] }]
+              }
+            ],
+
+           //  paramBefore: [  事先对输入进行处理 目前只支持 function 方式 (次方法应该也可在 方式1中使用)
+              { 
+                k: "fun",
+                v: function(arr) {
+                  return arr.filter(function(v, i, self) {
+                    if (v == "–") {
+                      return false;
+                    }
+                    return self.indexOf(v) === i;
+                  });
+                }
+              }
+            ],  
+
+            param: [] // 类似调用方式1 中的，param
+
+            fixRoles: [ // 就是方式1中的 fix.roles   roles:  single double both , first end 修理行数据 在行的位置添加
+              {
+                k: "fun",
+                v: function(str) {
+                  return str.split("\n").join(",");
+                }
+              }
+            ]
+
+
+
+      }
+    
+    */
 
     rowTransfer: function(temp, irow, row, len, o) {
       let self = this;
@@ -314,6 +370,7 @@ export default {
       }
       // 对格式化后的行数据进行二次格式化
       if (temp.fix) {
+        debugger
         $.each(temp.fix.roles, function(oi, ov) {
           if ((ov.k == "single" || ov.k == "both") && irow % 2 == 1) {
             // 单双行处理
@@ -387,6 +444,7 @@ export default {
 
       return a.join("\n");
     },
+    // ******** 转换的入口
     // 转换的入口函数
     selectedetail: function() {
       var self = this;
@@ -398,7 +456,7 @@ export default {
       $.each(self.types, function(index, v) {
         o[v.value] = v;
       });
-
+//↓↓↓↓↓↓↓↓↓↓↓ 从输入的原始数据（proto） 中依据分割符号，提取成二维数组的数据
       var a1 = [];
       // 二维数组    [  行[需要替换对象]] a1
       // 需要转换的数据
@@ -413,12 +471,16 @@ export default {
           }
         });
       }
+//↑↑↑↑↑↑↑*************** 从输入的原始数据（proto） 中依据分割符号，提取成二维数组的数据
 
       $.each(self.selected, function(i, v) {
         // 循环选中模板
 
         var temp = [];
         o[v]["tempV"] = ""; // 更改值,既每个模板的返回值
+
+        //↓↓↓↓↓↓↓*************** 行数据需要转换的模板开始处理
+
         if (o[v].template) {
           o[v]["tempV"] = [];
           // 循环生成记录
@@ -436,6 +498,8 @@ export default {
           // 没有模板的话说明 参数就是输出， 只是做必要转换，那时候就得配置fix  了 （对每行进行处理）
           // 处理逻辑跟 fixparam 一致，只不过挪用param 的位置
         }
+
+        //↑↑↑↑↑↑↑*************** 行数据需要转换的模板处理完成
 
         if (o[v].fix && (o[v].fix.param || o[v].fix.fixRoles || o[v].fix.paramBefore)) {
           let oAfter = { template: o[v]["tempV"] };

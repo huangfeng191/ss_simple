@@ -11,8 +11,41 @@ export default {
   props: {},
   data() {
     return {
-       selected: ["postmanRequest","json","selectFirsttoRow"],
+       selected: ["postmanRequest","json","selectFirsttoRow","singleConnect"],
       types: [
+
+        {
+          value: "singleConnect",
+          label: "singleConnect",
+          template: '${0:nm} ',
+          single: true,
+          desc: " ",
+          param: [],
+          fix: {
+            roles: [
+              
+            ],
+            fixRoles: [
+              {
+                k: "fun",
+                v: function(str) {
+                  let singleConnect=""
+                  $.each(str.split("\n"),function(i,v){
+                    if(i!=0&&i%2==0){
+                     singleConnect=singleConnect+"\n"+v;
+                    }else{
+                      singleConnect=singleConnect+v;
+                    
+                    }
+                  })
+                  return singleConnect;
+                }
+              }
+            ]
+          }
+        },
+
+
         // 模板
         {
           value: "VUECRUDCOL",
