@@ -6,13 +6,32 @@
 </template>
 
 <script>
+/* 
+  copy scope 里面对为空不替换需要支持。
+  考虑设置一个优化版本
+*/
 import ToJson from "./tojson.vue";
 export default {
   props: {},
   data() {
       return {
-      selected: ["test"],
+      selected: ["test","model"],
       types: [{
+          value: "test",
+          label: "test",
+          template: '${0:nm} ',
+          single: true,
+          desc: " ",
+          param: [],
+          fix: {
+            roles: [
+              
+            ],
+            fixRoles: [
+
+            ]
+          }
+        },{
           value: "test",
           label: "test",
           template: '${0:nm} ',

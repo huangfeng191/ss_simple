@@ -11,12 +11,40 @@ export default {
   props: {},
   data() {
     return {
-      selected: ["scada6crudcol","scada6crudinputOne"],
-      types: [{
+      selected: ["scada6crudcol", "scada6crudinputOne"],
+      // selected: ["scada6Quick"],
+      types: [
+        {
+          value: "scada6Quick",
+          label: "scada6Quick",
+          template:
+            '{"Name" : "${0}","Field": "${1}",  "ShowType": "${2:text}", "DataType": "${21:String}", "Unique": 0, "FilterEnabled": false, "Frozen": false, "Hidden": false, "OrderEnabled": false, "Ext": "${22}", },  ',
+          single: true,
+          desc: " ",
+          param: [
+            {
+              k: "2",
+              v: [{ k: "replace", v: { c: "combo", d: "datetime" } }]
+            },
+            {
+              k: "21",
+              v: [
+                { k: "copy", v: { "2": true }, scope: ["d"] }
+              
+              ]
+            }
+            
+          ],
+          fix: {
+            roles: [],
+            fixRoles: []
+          }
+        },
+        {
           value: "scada6crudcol",
           label: "scada6crudcol",
           template:
-            '{ "field": "${0:nm}","title": "${1:nm}", "align": "center", "halign":"center","colspan": 1,"hidden": false, "rowspan": 1,"width": 100,${2} },',
+            '{ "field": "${1:nm}","title": "${0:nm}", "align": "center", "halign":"center","colspan": 1,"hidden": false, "rowspan": 1,"width": 100,${2} },',
           param: [
             {
               k: "2",
@@ -24,10 +52,19 @@ export default {
                 {
                   k: "containsReplace",
                   v: {
-                    c: 'binding: "USER"',
-                    d: "formatter: DateFormatter",
-                    u:'unit:"XXX",',
-                    f: "formatter: function (v, r, i) {\n if (v){return v; \n}else {\n return v; \n}   }"
+                    c: {
+                      k: "fun",
+                      v: function(row, tempConfigO) {
+                        if (row[tempConfigO.key]) {
+                          return  'binding:"'+row[tempConfigO.key]+'"'  ;
+                        } else {
+                          return 'binding:"USER"';
+                        }
+                      }
+                    },
+                    d: "formatter: DateFormatter,",
+                    u: 'unit:"XXX",',
+                    f: "formatter: function (v, r, i) {\n if (v){return v; \n}else {\n return v; \n}   },"
                   }
                 }
               ]
@@ -39,15 +76,33 @@ export default {
           value: "scada6crudinputOne",
           label: "scada6crudinputOne",
           template:
-            '{ "Field": "${0}", "Name": "${1}", ShowType: "${2:text}", Ext: "${3}",DataType: "${4:String}", "Required": true, RowSpan: 1, ColSpan: 1 },',
+            '{ "Field": "${1}", "Name": "${0}", ShowType: "${2:text}", Ext: "${3}",DataType: "${4:String}", "Required": true, RowSpan: 1, ColSpan: 1 },',
           param: [
             {
               k: "2",
-              v: [{ k: "replace", v: { c: "combo", d: "datetime", a: "textarea", u: "upload", f: "text" } }]
+              v: [{ k: "replace", v: { c: "combo", d: "datetime", a: "textarea", u: "upload", t: "text" } }]
             },
             {
               k: "3",
-              v: [{ k: "copy", v: { "2": true }, scope: ["d", "c"] }, { k: "replace", v: { d: "yyyy-MM-dd", c: "USER" } }]
+              v: [
+                { k: "copy", v: { "2": true }, scope: ["d", "c"] },
+                {
+                  k: "replace",
+                  v: {
+                    d: "yyyy-MM-dd",
+                    c: {
+                      k: "fun",
+                      v: function(row, tempConfigO) {
+                        if (row[tempConfigO.key]) {
+                          return row[tempConfigO.key];
+                        } else {
+                          return "USER";
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
             },
             {
               k: "4",
@@ -58,7 +113,7 @@ export default {
             roles: [
               {
                 k: "both",
-                v: [{ k: "replace", v: [{ "/^{/": "[{", "/},$/": "}]," }] }]
+                v: [{ k: "replace", v: [{ "/^{/": "[{", "/},$/": "},]," }] }]
               }
             ],
             param: []
@@ -68,15 +123,33 @@ export default {
           value: "scada6crudinputTwo",
           label: "scada6crudinputTwo",
           template:
-            '{ "Field": "${0}", "Name": "${1}", ShowType: "${2:text}", Ext: "${3}",DataType: "${4:String}", "Required": true, RowSpan: 1, ColSpan: 1 },',
+            '{ "Field": "${1}", "Name": "${0}", ShowType: "${2:text}", Ext: "${3}",DataType: "${4:String}", "Required": true, RowSpan: 1, ColSpan: 1 },',
           param: [
             {
               k: "2",
-              v: [{ k: "replace", v: { c: "combo", d: "datetime", a: "textarea", u: "upload", f: "text" } }]
+              v: [{ k: "replace", v: { c: "combo", d: "datetime", a: "textarea", u: "upload", t: "text" } }]
             },
             {
               k: "3",
-              v: [{ k: "copy", v: { "2": true }, scope: ["d", "c"] }, { k: "replace", v: { d: "yyyy-MM-dd", c: "USER" } }]
+              v: [
+                { k: "copy", v: { "2": true }, scope: ["d", "c"] },
+                {
+                  k: "replace",
+                  v: {
+                    d: "yyyy-MM-dd",
+                    c: {
+                      k: "fun",
+                      v: function(row, tempConfigO) {
+                        if (row[tempConfigO.key]) {
+                          return row[tempConfigO.key];
+                        } else {
+                          return "USER";
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
             },
             {
               k: "4",
@@ -87,12 +160,13 @@ export default {
             roles: [
               // single double both ,end 修理行数据 在行的位置添加
               { k: "double", v: [{ k: "replace", v: [{ "/^{/": "[{" }] }] },
-              { k: "single", v: [{ k: "replace", v: [{ "/},$/": "}]," }] }] },
-              { k: "end", v: [{ k: "replace", v: [{ "/},$/": "}]," }] }] }
+              { k: "single", v: [{ k: "replace", v: [{ "/},$/": "},]," }] }] },
+              { k: "end", v: [{ k: "replace", v: [{ "/},$/": "},]," }] }] }
             ],
             param: []
           }
-        }]
+        }
+      ]
     };
   },
   created() {},

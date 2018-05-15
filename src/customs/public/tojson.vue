@@ -132,7 +132,10 @@ export default {
     },
     /* ↓↓↓↓↓↓↓↓↓↓↓↓以下为转换的规则 */
     // 只有包含的字符才替换 ，按顺序单个替换
+    // str 输入的值，  config 配置的规则 ，time 匹配几次, same 是否完全匹配
     containsReplace: function(str, config, time = 1, same = true) {
+      debugger
+      // s 是最后的返回值
       let s = "";
       let configO = {};
       $.each(config, function(configk, configv) {
@@ -140,6 +143,7 @@ export default {
       });
 
       $.each(str.split(""), function(stri, strv) {
+        // 如果不在替换范围内则不需要替换 ，或者转换次数大于
         if (same && (configO[strv] == undefined || (configO[strv] > time && time != 0))) {
           s = "";
           return false;
@@ -257,7 +261,13 @@ export default {
       }
     
     */
-
+   /* 
+   temp: 模板：
+   irow: proto  的第几行
+   row:proto 根据分割符分割后的数组[1,2,3,4]
+   len:proto 的总行数
+   o:可能暂时没有用到
+   */
     rowTransfer: function(temp, irow, row, len, o) {
       let self = this;
       // 是对输入的字段按分隔符进行处理
@@ -291,11 +301,20 @@ export default {
       // 没有模板的时候，直接返回数据
       if (temp.template) {
         oneRow = temp.template.replace(reg, function(str) {
-          // 对每个匹配项 进行 处理(没一项的返回值)
+          // 对每个匹配项 进行 处理(每一项的返回值)
+          // 用户输入的row 数组里面，根据 key:数组下标，找到值
           let s = "";
+          /*str ： ${0:1} 类似次结构
+           是 应用正则后 返回复核要求的每一项
+           str.match(re)： 得到需要替换的属性，考虑把这个对象存成一个对象(tempConfigO)，后续可使用 
+           */
+          let tempConfigO={}
 
           if (str.match(re)) {
-            // "${1:nm/String/g}" 第一部分0 匹配值，第二部分1 key ,第三部分2  默认值,  第四部分3正则 , 第五部分4输入字符串
+            tempConfigO["str"]=str.match(re)[0]
+            tempConfigO["key"]=str.match(re)[1]
+            tempConfigO["default"]=str.match(re)[2]
+            // "${1:nm/String/g}" 第一部分0 匹配值，第二部分1 key ,第三部分2  默认值,  第四部分3 正则 , 第五部分4输入字符串
             if (row[str.match(re)[1]] != undefined && row[str.match(re)[1]] != "") {
               s = row[str.match(re)[1]];
             } else {
@@ -315,8 +334,19 @@ export default {
                     // 参数的replace 功能 // 参数时是原样替换
                     if (vv.k == "replace") {
                       $.each(vv.v, function(vvVk, vvVv) {
+                        // 输入的值 是需要替换的，那么替换成配置的值
                         if (s == vvVk) {
-                          s = vvVv;
+                          // 如果需要替换的值时一个对象，那么按对象类型（目前只有一个fun）进行控制
+                          if(vvVv.k){
+                            if(vvVv.k=="fun"){
+                              // row 行数组, 需要处理的模板
+                              s = vvVv.v(row,tempConfigO);
+                            }
+
+                          }else{
+                            s = vvVv;
+                          }
+                         
                         }
                       });
                     }
@@ -325,7 +355,7 @@ export default {
                       // (不为空的时候才复制,目前复制的是输入，而不是转换后的值 , scope 是在范围内的才复制 )
                       $.each(vv.v, function(vvVk, vvVv) {
                         //---
-
+                        debugger
                         if (vvVk && row[vvVk] != undefined) {
                           if (vv.scope && $.inArray(row[vvVk], vv.scope) < 0) {
                           } else {
@@ -335,6 +365,7 @@ export default {
                       });
                     }
                     if (vv.k == "containsReplace" && vv.v) {
+                      // s 输入的值，  vv.v 配置的规则 ，vv.time 匹配几次, vv.same 是否完全匹配
                       s = self.containsReplace(s, vv.v, vv.time, vv.same);
                     }
                     if (vv.k == "transfer") {
@@ -485,7 +516,7 @@ export default {
           o[v]["tempV"] = [];
           // 循环生成记录
           $.each(a1, function(a1i, a1v) {
-            // 模板  索引 替换值
+            // 模板  索引 替换值 将输入行（proto）通过分割符分割成数组 [1,2,3,4]
             let oneRow = self.rowTransfer(o[v], a1i, a1v, a1.length);
 
             o[v]["tempV"].push(oneRow);
