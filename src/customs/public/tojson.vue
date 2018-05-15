@@ -133,7 +133,8 @@ export default {
     /* ↓↓↓↓↓↓↓↓↓↓↓↓以下为转换的规则 */
     // 只有包含的字符才替换 ，按顺序单个替换
     // str 输入的值，  config 配置的规则 ，time 匹配几次, same 是否完全匹配
-    containsReplace: function(str, config, time = 1, same = true) {
+    // 
+    containsReplace: function({str,config,time=0,same=true,row,tempConfigO}) {
       debugger
       // s 是最后的返回值
       let s = "";
@@ -151,7 +152,17 @@ export default {
 
         if (config[strv] != undefined) {
           if (time == 0 || time >= configO[strv]) {
-            s += config[strv];
+
+            if(config[strv].k){
+                if(config[strv].k=="fun"){
+                      // row 行数组, 需要处理的模板
+                      s = config[strv].v(row,tempConfigO);
+                    }
+            }else{
+               s += config[strv];
+
+            }
+
             configO[strv] += 1;
           }
         }
@@ -309,7 +320,9 @@ export default {
            str.match(re)： 得到需要替换的属性，考虑把这个对象存成一个对象(tempConfigO)，后续可使用 
            */
           let tempConfigO={}
-
+          let methodParam={}// 为了解构新加 ,函数调用function
+              methodParam["tempConfigO"]=tempConfigO
+              methodParam["row"]=row
           if (str.match(re)) {
             tempConfigO["str"]=str.match(re)[0]
             tempConfigO["key"]=str.match(re)[1]
@@ -366,7 +379,16 @@ export default {
                     }
                     if (vv.k == "containsReplace" && vv.v) {
                       // s 输入的值，  vv.v 配置的规则 ，vv.time 匹配几次, vv.same 是否完全匹配
-                      s = self.containsReplace(s, vv.v, vv.time, vv.same);
+                      // str,config,time,same=true
+                      let containsRQuery={}
+                      containsRQuery["str"]=s
+                      containsRQuery["config"]=vv.v
+                      containsRQuery["time"]=vv.time
+                      containsRQuery["same"]=vv.same
+                      containsRQuery["row"]=methodParam.row
+                      containsRQuery["tempConfigO"]=methodParam.tempConfigO
+                      s = self.containsReplace(containsRQuery);
+                      // s = self.containsReplace(s, vv.v, vv.time, vv.same);
                     }
                     if (vv.k == "transfer") {
                       $.each(vv.v, function(vvVk, vvVv) {

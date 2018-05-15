@@ -55,8 +55,8 @@ export default {
                     c: {
                       k: "fun",
                       v: function(row, tempConfigO) {
-                        if (row[tempConfigO.key]) {
-                          return  'binding:"'+row[tempConfigO.key]+'"'  ;
+                        if (row[3]) {
+                          return  'binding:"'+row[3]+'"'  ;
                         } else {
                           return 'binding:"USER"';
                         }
