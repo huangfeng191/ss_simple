@@ -273,7 +273,7 @@ export default {
     
     */
    /* 
-   temp: 模板：
+   temp: 模板：就是配置详细
    irow: proto  的第几行
    row:proto 根据分割符分割后的数组[1,2,3,4]
    len:proto 的总行数

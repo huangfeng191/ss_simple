@@ -76,14 +76,14 @@ export default {
           value: "scada6crudinputOne",
           label: "scada6crudinputOne",
           template:
-            '{ "Field": "${1}", "Name": "${0}", ShowType: "${2:text}", Ext: "${3}",DataType: "${4:String}", "Required": true, RowSpan: 1, ColSpan: 1 },',
+            '{ "Field": "${1}", "Name": "${0}", ShowType: "${2:text}", Ext: "${21}",DataType: "${22:String}", "Required": false, RowSpan: 1, ColSpan: 1 },',
           param: [
             {
               k: "2",
               v: [{ k: "replace", v: { c: "combo", d: "datetime", a: "textarea", u: "upload", t: "text" } }]
             },
             {
-              k: "3",
+              k: "21",
               v: [
                 { k: "copy", v: { "2": true }, scope: ["d", "c"] },
                 {
@@ -105,7 +105,7 @@ export default {
               ]
             },
             {
-              k: "4",
+              k: "22",
               v: [{ k: "copy", v: { "2": true }, scope: ["d"] }, { k: "replace", v: { d: "Number" } }]
             }
           ],
@@ -123,14 +123,14 @@ export default {
           value: "scada6crudinputTwo",
           label: "scada6crudinputTwo",
           template:
-            '{ "Field": "${1}", "Name": "${0}", ShowType: "${2:text}", Ext: "${3}",DataType: "${4:String}", "Required": true, RowSpan: 1, ColSpan: 1 },',
+            '{ "Field": "${1}", "Name": "${0}", ShowType: "${2:text}", Ext: "${21}",DataType: "${22:String}", "Required": false, RowSpan: 1, ColSpan: 1 },',
           param: [
             {
               k: "2",
               v: [{ k: "replace", v: { c: "combo", d: "datetime", a: "textarea", u: "upload", t: "text" } }]
             },
             {
-              k: "3",
+              k: "21",
               v: [
                 { k: "copy", v: { "2": true }, scope: ["d", "c"] },
                 {
@@ -152,7 +152,7 @@ export default {
               ]
             },
             {
-              k: "4",
+              k: "22",
               v: [{ k: "copy", v: { "2": true }, scope: ["d"] }, { k: "replace", v: { d: "Number" } }]
             }
           ],
