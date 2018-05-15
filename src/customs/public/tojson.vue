@@ -172,7 +172,7 @@ export default {
       return s;
     },
     // 首字母大写
-    capitalize(str) {
+    capitalize({str}) {
       // 正则法
       str = str.toLowerCase();
       var reg = /\b(\w)|\s(\w)/g; //  \b判断边界\s判断空格
@@ -181,11 +181,11 @@ export default {
       });
     },
     // 含_-驼峰命名法
-    snake: function(str) {
+    snake: function({str}) {
       let self = this;
       let s = [];
       $.each(str.split(/[\_-]/), function(k, v) {
-        s.push(self.capitalize(v));
+        s.push(self.capitalize({"str":v}));
       });
       return s.join("");
     },
@@ -324,14 +324,15 @@ export default {
               methodParam["tempConfigO"]=tempConfigO
               methodParam["row"]=row
           if (str.match(re)) {
+             // "${1:nm/String/g}" 第一部分0 匹配值，第二部分1 key ,第三部分2  默认值,  第四部分3 正则 , 第五部分4输入字符串
             tempConfigO["str"]=str.match(re)[0]
             tempConfigO["key"]=str.match(re)[1]
             tempConfigO["default"]=str.match(re)[2]
-            // "${1:nm/String/g}" 第一部分0 匹配值，第二部分1 key ,第三部分2  默认值,  第四部分3 正则 , 第五部分4输入字符串
-            if (row[str.match(re)[1]] != undefined && row[str.match(re)[1]] != "") {
-              s = row[str.match(re)[1]];
+           
+            if (row[tempConfigO["key"]] != undefined && row[tempConfigO["key"]] != "") {
+              s = row[tempConfigO["key"]];
             } else {
-              s = str.match(re)[2];
+              s = tempConfigO["default"];
             }
             //  正则暂时不启用
             // if(str.match(re)[3]){
@@ -342,7 +343,7 @@ export default {
             if (temp.param) {
               $.each(temp.param, function(ip, vp) {
                 // 同一序号处理完成后再处理其他序号
-                if (str.match(re)[1] == vp.k) {
+                if (tempConfigO["key"] == vp.k) {
                   $.each(vp.v, function(vi, vv) {
                     // 参数的replace 功能 // 参数时是原样替换
                     if (vv.k == "replace") {
@@ -393,10 +394,10 @@ export default {
                     if (vv.k == "transfer") {
                       $.each(vv.v, function(vvVk, vvVv) {
                         if (vvVk == "capitalize" && vvVv) {
-                          s = self.capitalize(s);
+                          s = self.capitalize({"str":s});
                         }
                         if (vvVk == "snake" && vvVv) {
-                          s = self.snake(s);
+                          s = self.snake({"str":s});
                         }
                       });
                     }
