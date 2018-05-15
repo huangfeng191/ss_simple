@@ -279,7 +279,7 @@ export default {
    len:proto 的总行数
    o:可能暂时没有用到
    */
-    rowTransfer: function(temp, irow, row, len, o) {
+    rowTransfer: function({temp, irow, row, len, o}) {
       let self = this;
       // 是对输入的字段按分隔符进行处理
       if (temp.paramBefore) {
@@ -540,7 +540,7 @@ export default {
           // 循环生成记录
           $.each(a1, function(a1i, a1v) {
             // 模板  索引 替换值 将输入行（proto）通过分割符分割成数组 [1,2,3,4]
-            let oneRow = self.rowTransfer(o[v], a1i, a1v, a1.length);
+            let oneRow = self.rowTransfer({"temp":o[v],"irow": a1i, "row":a1v, "len":a1.length});
 
             o[v]["tempV"].push(oneRow);
           });
@@ -582,7 +582,8 @@ export default {
               if (x) return true;
             });
           }
-          o[v]["tempV"] = self.rowTransfer(oAfter, 0, a1v, 1);
+
+          o[v]["tempV"] = self.rowTransfer({"temp":oAfter, "irow":0, "row":a1v, "len":1});
         }
 
         a.push(o[v]);
