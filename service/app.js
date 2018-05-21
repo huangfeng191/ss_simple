@@ -19,6 +19,7 @@ app.use(bodyparser({
 app.use(json())
 app.use(logger())
 // 静态资源 vue 代码
+// 读取静态资源 ，默认是 读取 index.html
 app.use(require('koa-static')(__dirname + '/public'))
 
 

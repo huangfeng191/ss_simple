@@ -1,7 +1,10 @@
 <template>
     <div id="app">
         <div style="height:25px;">
-            <router-link to="/tojson">tojson</router-link>
+            <router-link to="/usejson6">usejson6</router-link>
+            <router-link to="/usejson7">usejson7</router-link>
+            <router-link to="/usejsona">usejsonall</router-link>
+            <router-link to="/jsontest">jsontest</router-link>
             <router-link to="/position">position</router-link>
             <router-link to="/css">css</router-link>
             <router-link to="/cs">cs</router-link>
