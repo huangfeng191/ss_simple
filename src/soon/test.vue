@@ -1,65 +1,59 @@
 <template>
-	<div id="test">
-		<h3>html测试</h3>
-		<el-button type="primary" @click="st1">按钮</el-button>
+      <div class="test">
 
-		<input type="button" value="按钮" id="cs"/>
-		<input type="text" value="按钮" id="cs1"/>
-
-	</div>
+          <div class="align_bottom">
+                <icon name="shijian1" class="margin_right_90" >
+                    <div style="top: -180px; position: absolute;left: -16px;">
+                        <subject w="542px" h="166px"></subject>
+                    </div>
+                </icon>
+                <icon name="sousuo"  class="margin_right_90">
+                     <div style="top: -180px; position: absolute;left: -16px;">
+                        <subject w="542px" h="166px"></subject>
+                    </div>
+                </icon>
+                <icon name="tuceng"  class="margin_right_90"></icon>
+                <icon name="shijian1"  class="margin_right_90"></icon>
+          </div>
+      </div>
+       
 </template>
 
 <script>
-
-    export default{
-
-        data(){
-            return {
-                cs: "1"
-            }
-        },
-        methods: {
-            st(){// test 闭包
-                function cs(arg) {
-                    var c = arg;
-                    return function (p) {
-                        console.log((c++) + p)
-                    }
-                }
-
-                var fn = cs(1);
-            },
-            st1(){
-
-                $.each([1, 2, 3], function (i, v) {
-
-
-                    console.log(v)
-                })
-                var all = {};
-
-                function cs(arg) {
-                    var c = arg;
-                    return function (p) {
-                        alert((c++) + p);
-                    }
-                }
-
-
-
-            }
-
-        },
-        mounted(){
-//            this.st();
-
-            this.st1();
-        }
-
-    }
+import icon from "./part/icon.vue";
+import subject from "./part/subject.vue";
+export default {
+  props: {},
+  data() {
+    return {
+        show1:true,
+    };
+  },
+  created() {},
+  mounted() {},
+  methods: {
+      showShijian1:function(){
+          debugger
+          this.show1=!this.show1
+      }
+  },
+  watch: {},
+  components: {
+    icon,
+    subject
+  }
+};
 </script>
-<style lang="less">
-	#test {
-
-	}
+<style lang="less" >
+.test {
+  .align_bottom {
+    position: absolute;
+    bottom: 50px;
+    left: 500px;
+  }
+  .margin_right_90 {
+    position: relative;
+    margin-right: 90px;
+  }
+}
 </style>
