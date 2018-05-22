@@ -71,7 +71,44 @@ export default {
             }
           ]
         },
-
+ {
+          value: "scada6crudprop",
+          label: "scada6crudprop",
+          template:
+            '{ "Name": "${0}", "Field": "${1}",  "ShowType": "${2:text}", "Ext": "${21}","DataType": "${22:String}", "FilterEnabled": true, "OrderEnabled": true, "Unique": 0 },',
+          param: [
+            {
+              k: "2",
+              v: [{ k: "replace", v: { c: "combo", d: "datetime" } }]
+            },
+            {
+              k: "21",
+              v: [
+                { k: "copy", v: { "2": true }, scope: ["d", "c"] },
+                {
+                  k: "replace",
+                  v: {
+                    d: "yyyy-MM-dd",
+                    c: {
+                      k: "fun",
+                      v: function(row, tempConfigO) {
+                        if (row[3]) {
+                          return row[3];
+                        } else {
+                          return "USER";
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              k: "22",
+              v: [{ k: "copy", v: { "2": true }, scope: ["d"] }, { k: "replace", v: { d: "Number" } }]
+            }
+          ]
+        },
         {
           value: "scada6crudinputOne",
           label: "scada6crudinputOne",
@@ -93,8 +130,8 @@ export default {
                     c: {
                       k: "fun",
                       v: function(row, tempConfigO) {
-                        if (row[tempConfigO.key]) {
-                          return row[tempConfigO.key];
+                       if (row[3]) {
+                          return row[3];
                         } else {
                           return "USER";
                         }
@@ -140,8 +177,8 @@ export default {
                     c: {
                       k: "fun",
                       v: function(row, tempConfigO) {
-                        if (row[tempConfigO.key]) {
-                          return row[tempConfigO.key];
+                      if (row[3]) {
+                          return row[3];
                         } else {
                           return "USER";
                         }
