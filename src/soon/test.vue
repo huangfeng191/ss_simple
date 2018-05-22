@@ -1,76 +1,59 @@
-<template  >
+<template>
+      <div class="test">
 
-  <div>
-      <el-form :model="dynamicValidateForm" ref="dynamicValidateForm" label-width="100px" class="demo-dynamic">
-  <el-form-item
-    prop="email"
-    label="邮箱"
-    :rules="[
-      { required: true, message: '请输入邮箱地址', trigger: 'blur' },
-      { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur,change' }
-    ]"
-  >
-    <el-input v-model="dynamicValidateForm.email"></el-input>
-  </el-form-item>
-  <el-form-item
-    v-for="(domain, index) in dynamicValidateForm.domains"
-    :label="'域名' + index"
-    :key="domain.key"
-    :prop="'domains.' + index + '.value'"
-    :rules="{
-      required: true, message: '域名不能为空', trigger: 'blur'
-    }"
-  >
-    <el-input v-model="domain.value"></el-input><el-button @click.prevent="removeDomain(domain)">删除</el-button>
-  </el-form-item>
-  <el-form-item>
-    <el-button type="primary" @click="submitForm('dynamicValidateForm')">提交</el-button>
-    <el-button @click="addDomain">新增域名</el-button>
-    <el-button @click="resetForm('dynamicValidateForm')">重置</el-button>
-  </el-form-item>
-</el-form>
-  </div>
+          <div class="align_bottom">
+                <icon name="shijian1" class="margin_right_90" >
+                    <div style="top: -180px; position: absolute;left: -16px;">
+                        <subject w="542px" h="166px"></subject>
+                    </div>
+                </icon>
+                <icon name="sousuo"  class="margin_right_90">
+                     <div style="top: -180px; position: absolute;left: -16px;">
+                        <subject w="542px" h="166px"></subject>
+                    </div>
+                </icon>
+                <icon name="tuceng"  class="margin_right_90"></icon>
+                <icon name="shijian1"  class="margin_right_90"></icon>
+          </div>
+      </div>
+       
 </template>
 
 <script>
-//  测试 element 表单 验证
-  export default {
-    data() {
-      return {
-        dynamicValidateForm: {
-          domains: [{
-            value: ''
-          }],
-          email: ''
-        }
-      };
-    },
-    methods: {
-      submitForm(formName) {
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            alert('submit!');
-          } else {
-            console.log('error submit!!');
-            return false;
-          }
-        });
-      },
-      resetForm(formName) {
-        this.$refs[formName].resetFields();
-      },
-      removeDomain(item) {
-        var index = this.dynamicValidateForm.domains.indexOf(item)
-        if (index !== -1) {
-          this.dynamicValidateForm.domains.splice(index, 1)
-        }
-      },
-      addDomain() {
-        this.dynamicValidateForm.domains.push({
-          value: '',
-          key: Date.now()
-        });
+import icon from "./part/icon.vue";
+import subject from "./part/subject.vue";
+export default {
+  props: {},
+  data() {
+    return {
+        show1:true,
+    };
+  },
+  created() {},
+  mounted() {},
+  methods: {
+      showShijian1:function(){
+          debugger
+          this.show1=!this.show1
       }
-    }
+  },
+  watch: {},
+  components: {
+    icon,
+    subject
   }
+};
 </script>
+<style lang="less" >
+.test {
+  .align_bottom {
+    position: absolute;
+    bottom: 50px;
+    left: 500px;
+  }
+  .margin_right_90 {
+    position: relative;
+    margin-right: 90px;
+  }
+}
+</style>

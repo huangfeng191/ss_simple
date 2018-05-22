@@ -5,7 +5,7 @@ import App from './App.vue'
 import router from './router'
 
 
-
+require("./static/font/iconfont.css")
 
 
 Vue.use(ElementUI)
