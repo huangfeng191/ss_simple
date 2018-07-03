@@ -312,7 +312,8 @@ export default {
           // replace 根据正则进行替换，需替换的值时正则匹配结果 就是  str : ${0:1} 类似次结构
           // 对每个匹配项 进行 处理(每一项的返回值)
           // 用户输入的aRow 数组里面，根据 key:数组下标，找到值
-          let s = "";
+          // 每一项替换后的返回值
+          let retS = "";
           /*str ： ${0:1} 类似次结构
            是 应用正则后 返回复核要求的每一项
            str.match(re)： 得到需要替换的属性，考虑把这个对象存成一个对象(tempConfigO)，后续可使用 
@@ -327,16 +328,27 @@ export default {
             tempConfigO["key"] = str.match(re)[1];
             tempConfigO["default"] = str.match(re)[2];
             if (tempConfigO.key==99){
-              debugger
               if(aRow.length>0){
-                s=aRow[aRow.length-1]
+                retS =aRow[aRow.length-1]
               }else{
-                s = tempConfigO["default"];
+                retS = tempConfigO["default"];
+              }
+            }else if (tempConfigO.key==98){
+              if(aRow.length>1){
+                retS =aRow[aRow.length-2]
+              }else{
+                retS = tempConfigO["default"];
+              }
+            }else if (tempConfigO.key==97){
+              if(aRow.length>2){
+                retS =aRow[aRow.length-3]
+              }else{
+                retS = tempConfigO["default"];
               }
             }else if (aRow[tempConfigO["key"]] != undefined && aRow[tempConfigO["key"]] != "") {
-              s = aRow[tempConfigO["key"]];
+              retS = aRow[tempConfigO["key"]];
             } else {
-              s = tempConfigO["default"];
+              retS = tempConfigO["default"];
             }
             //  正则暂时不启用
             // if(str.match(re)[3]){
@@ -353,15 +365,14 @@ export default {
                     if (vv.k == "replace") {
                       $.each(vv.v, function(vvVk, vvVv) {
                         // 输入的值 是需要替换的，那么替换成配置的值
-                        if (s == vvVk) {
+                        if (retS == vvVk) {
                           // 如果需要替换的值时一个对象，那么按对象类型（目前只有一个fun）进行控制
                           if (vvVv.k) {
                             if (vvVv.k == "fun") {
-                              // aRow 行数组, 需要处理的模板
-                              s = vvVv.v(aRow, tempConfigO);
+                              retS = vvVv.v(aRow, tempConfigO);
                             }
                           } else {
-                            s = vvVv;
+                            retS = vvVv;
                           }
                         }
                       });
@@ -375,7 +386,7 @@ export default {
                         if (vvVk && aRow[vvVk] != undefined) {
                           if (vv.scope && $.inArray(aRow[vvVk], vv.scope) < 0) {
                           } else {
-                            s = aRow[vvVk];
+                            retS = aRow[vvVk];
                           }
                         }
                       });
@@ -390,23 +401,23 @@ export default {
                       containsRQuery["same"] = vv.same;
                       containsRQuery["aRow"] = methodParam.aRow;
                       containsRQuery["tempConfigO"] = methodParam.tempConfigO;
-                      s = self.containsReplace(containsRQuery);
-                      // s = self.containsReplace(s, vv.v, vv.time, vv.same);
+                      retS = self.containsReplace(containsRQuery);
+                      // retS = self.containsReplace(s, vv.v, vv.time, vv.same);
                     }
                     if (vv.k == "transfer") {
                       $.each(vv.v, function(vvVk, vvVv) {
                         if (vvVk == "capitalize" && vvVv) {
-                          s = self.capitalize({ str: s });
+                          retS = self.capitalize({ str: s });
                         }
                         if (vvVk == "snake" && vvVv) {
-                          s = self.snake({ str: s });
+                          retS = self.snake({ str: s });
                         }
                       });
                     }
 
                     if (vv.k == "append") {
                       $.each(vv.v, function(vvVk, vvVv) {
-                        if (s == vvVk) {
+                        if (retS == vvVk) {
                           s += vvVv;
                         }
                       });
@@ -415,10 +426,9 @@ export default {
                 }
               });
             }
-            return s;
-          } else {
-            return "";
+           
           }
+          return retS 
         });
       } else {
         // 没有模板的时候，直接返回数据

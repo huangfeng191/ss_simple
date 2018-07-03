@@ -34,7 +34,7 @@ export default {
         },{
           value: "testlast",
           label: "testlast",
-          template: '${0:nm} ${99} ',
+          template: '${0:nm} ${99} ${98} ${97} ',
           single: true,
           desc: " ",
           param: [],
