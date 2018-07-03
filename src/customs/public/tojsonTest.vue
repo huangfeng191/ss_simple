@@ -1,8 +1,8 @@
 <template>
-      <div class="tojsonTest">
-        <to-json :types="types" :selected="selected"></to-json>
-      </div>
-       
+  <div class="tojsonTest">
+    <to-json :types="types" :selected="selected"></to-json>
+  </div>
+
 </template>
 
 <script>
@@ -14,64 +14,67 @@ import ToJson from "./tojson.vue";
 export default {
   props: {},
   data() {
-      return {
+    return {
       selected: ["testlast"],
-      types: [{
+      types: [
+        {
           value: "test",
           label: "test",
-          template: '${0:nm} ',
+          template: "${0:nm} ",
           single: true,
           desc: " ",
           param: [],
           fix: {
-            roles: [
-              
-            ],
-            fixRoles: [
-
-            ]
+            roles: [],
+            fixRoles: []
           }
-        },{
+        },
+        {
           value: "testlast",
           label: "testlast",
-          template: '${0:nm} ${99} ${98} ${97} ',
+          template: "${0:nm} ${99} ${98} ${97} ",
           single: true,
           desc: " ",
-          param: [],
-          fix: {
-          
-          }
-        },{
+          param: [
+            {
+              k: "98",
+              v: [{ k: "existsReplace", v: { int: "int",Int: "int", string: "string" } }]
+            },
+            {
+              k: "97",
+              v: [{ k: "existsReplace", v: { int: "int",Int: "int", string: "string" } }]
+            }
+          ],
+          fix: {}
+        },
+        {
           value: "test",
           label: "test",
-          template: '${0:nm} ',
+          template: "${0:nm} ",
           single: true,
           desc: " ",
           param: [],
           fix: {
-            roles: [
-              
-            ],
+            roles: [],
             fixRoles: [
               {
                 k: "fun",
                 v: function(str) {
-                  let singleConnect="";
-                  $.each(str.split("\n"),function(i,v){
-                   if(i!=0&&i%2==0){
-                     singleConnect=singleConnect+"\n"+v;
-                   }else{
-                      singleConnect=singleConnect+v;
-                    
-                   }
-                  })
+                  let singleConnect = "";
+                  $.each(str.split("\n"), function(i, v) {
+                    if (i != 0 && i % 2 == 0) {
+                      singleConnect = singleConnect + "\n" + v;
+                    } else {
+                      singleConnect = singleConnect + v;
+                    }
+                  });
                   return singleConnect;
                 }
               }
             ]
           }
         }
-        ]
+      ]
     };
   },
   created() {},
@@ -82,9 +85,8 @@ export default {
     ToJson
   }
 };
-
 </script>
 <style lang="less" >
-.tojsonTest{
+.tojsonTest {
 }
 </style>

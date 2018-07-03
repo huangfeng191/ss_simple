@@ -128,11 +128,23 @@ export default {
       self.template = o[values[0]].template;
       self.param = JSON.stringify(o[values[0]].param);
     },
+    existsReplace:function({str,config,}){
+      let retS="";
+      // 将数组配置成 对象
+      let configO = {};
+      $.each(config, function(configk, configv) {
+        configO[configk] = configv;
+      });
+      if(str in configO){
+        retS=configO[str]
+      }
+      return retS;
+    },
     /* ↓↓↓↓↓↓↓↓↓↓↓↓以下为转换的规则 */
     // 只有包含的字符才替换 ，按顺序单个替换
     // str 输入的值，  config 配置的规则 ，time 匹配几次, same 是否完全匹配
     //
-    containsReplace: function({ str, config, time = 0, same = true, row, tempConfigO }) {
+    containsReplace: function({ str, config, time = 0, same = true, aRow, tempConfigO }) {
       debugger;
       // s 是最后的返回值
       let s = "";
@@ -152,8 +164,7 @@ export default {
           if (time == 0 || time >= configO[strv]) {
             if (config[strv].k) {
               if (config[strv].k == "fun") {
-                // row 行数组, 需要处理的模板
-                s = config[strv].v(row, tempConfigO);
+                s = config[strv].v(aRow, tempConfigO);
               }
             } else {
               s += config[strv];
@@ -395,7 +406,7 @@ export default {
                       // s 输入的值，  vv.v 配置的规则 ，vv.time 匹配几次, vv.same 是否完全匹配
                       // str,config,time,same=true
                       let containsRQuery = {};
-                      containsRQuery["str"] = s;
+                      containsRQuery["str"] = retS;
                       containsRQuery["config"] = vv.v;
                       containsRQuery["time"] = vv.time;
                       containsRQuery["same"] = vv.same;
@@ -404,13 +415,20 @@ export default {
                       retS = self.containsReplace(containsRQuery);
                       // retS = self.containsReplace(s, vv.v, vv.time, vv.same);
                     }
+                    if (vv.k == "existsReplace" && vv.v) {
+                      let containsRQuery = {};
+                      containsRQuery["str"] = retS;
+                      containsRQuery["config"] = vv.v;
+                      retS = self.existsReplace(containsRQuery);
+                    }
+
                     if (vv.k == "transfer") {
                       $.each(vv.v, function(vvVk, vvVv) {
                         if (vvVk == "capitalize" && vvVv) {
-                          retS = self.capitalize({ str: s });
+                          retS = self.capitalize({ str: retS });
                         }
                         if (vvVk == "snake" && vvVv) {
-                          retS = self.snake({ str: s });
+                          retS = self.snake({ str: retS });
                         }
                       });
                     }
@@ -418,7 +436,7 @@ export default {
                     if (vv.k == "append") {
                       $.each(vv.v, function(vvVk, vvVv) {
                         if (retS == vvVk) {
-                          s += vvVv;
+                          retS += vvVv;
                         }
                       });
                     }
