@@ -7,7 +7,7 @@
           </el-option>
         </el-select>
       </el-col>
-       <el-col :span="8">
+      <el-col :span="8">
         <el-input class="selfw" type="textarea" :autosize="{ minRows: 2}" placeholder="fixparam" v-model="fixparam">
         </el-input>
       </el-col>
@@ -15,7 +15,7 @@
         <el-input class="selfw" @change="changeTemplate" type="textarea" :autosize="{ minRows: 2}" placeholder="template" v-model="template">
         </el-input>
       </el-col>
-     
+
     </el-row>
     <el-row class="content">
       <el-col :span="4">
@@ -57,7 +57,7 @@
 </style>
 <script>
 export default {
-  props: ["types","selected"],
+  props: ["types", "selected"],
   data() {
     return {
       //undo 添加是否存在不同处理逻辑
@@ -91,12 +91,10 @@ export default {
       // 'VUECRUDCOL', 'VUECRUDInputTwo', 'goModelAll', 'goStruct'
 
       //  single:true, 是指没有模板时，输入 不用分 ，不用转换，当做1行处理的情况
-     
-     
 
       template: "", //*** 行模板
-      param: "",    //*** 行模板 
-      aparts: " ,	",//*** 对行处理的分割符， 也就是说 获取 ${?}信息
+      param: "", //*** 行模板
+      aparts: " ,	", //*** 对行处理的分割符， 也就是说 获取 ${?}信息
       fixparam: "",
       proto: "", //*** 输入的所有原始数据
       lastSelect: "" //*** 暂时没用，记录最后一次选择的情况，可以考虑使用 lastSelect
@@ -133,9 +131,9 @@ export default {
     /* ↓↓↓↓↓↓↓↓↓↓↓↓以下为转换的规则 */
     // 只有包含的字符才替换 ，按顺序单个替换
     // str 输入的值，  config 配置的规则 ，time 匹配几次, same 是否完全匹配
-    // 
-    containsReplace: function({str,config,time=0,same=true,row,tempConfigO}) {
-      debugger
+    //
+    containsReplace: function({ str, config, time = 0, same = true, row, tempConfigO }) {
+      debugger;
       // s 是最后的返回值
       let s = "";
       let configO = {};
@@ -152,15 +150,13 @@ export default {
 
         if (config[strv] != undefined) {
           if (time == 0 || time >= configO[strv]) {
-
-            if(config[strv].k){
-                if(config[strv].k=="fun"){
-                      // row 行数组, 需要处理的模板
-                      s = config[strv].v(row,tempConfigO);
-                    }
-            }else{
-               s += config[strv];
-
+            if (config[strv].k) {
+              if (config[strv].k == "fun") {
+                // row 行数组, 需要处理的模板
+                s = config[strv].v(row, tempConfigO);
+              }
+            } else {
+              s += config[strv];
             }
 
             configO[strv] += 1;
@@ -172,7 +168,7 @@ export default {
       return s;
     },
     // 首字母大写
-    capitalize({str}) {
+    capitalize({ str }) {
       // 正则法
       str = str.toLowerCase();
       var reg = /\b(\w)|\s(\w)/g; //  \b判断边界\s判断空格
@@ -181,15 +177,15 @@ export default {
       });
     },
     // 含_-驼峰命名法
-    snake: function({str}) {
+    snake: function({ str }) {
       let self = this;
       let s = [];
       $.each(str.split(/[\_-]/), function(k, v) {
-        s.push(self.capitalize({"str":v}));
+        s.push(self.capitalize({ str: v }));
       });
       return s.join("");
     },
-     /* ↑↑↑↑↑↑↑↑↑↑↑↑以上为转换的规则 */
+    /* ↑↑↑↑↑↑↑↑↑↑↑↑以上为转换的规则 */
     // 一个规则
     toFilter: function(arr, regO) {
       // regO  /g /i    role:  replace  match
@@ -220,8 +216,8 @@ export default {
     //row [] 需要转换的数据 ， irow 第几行（对行添加前缀后缀时需要） o 其他对象
     // row 是一个一维数组，是用分隔符分割后的数据 ？
 
-//  作为逻辑来讲，，1 模板，+proto 生成目标数据，对目标数据进行处理（fix）
-/* 对行数据处理的核心方法
+    //  作为逻辑来讲，，1 模板，+proto 生成目标数据，对目标数据进行处理（fix）
+    /* 对行数据处理的核心方法
 处理逻辑：
     找出模板中需要替换的字段，用用户输入的信息进行替换，
     目前调用分两种情况，
@@ -272,14 +268,14 @@ export default {
       }
     
     */
-   /* 
+    /* 
    temp: 模板：就是配置详细
    irow: proto  的第几行
    row:proto 根据分割符分割后的数组[1,2,3,4]
    len:proto 的总行数
    o:可能暂时没有用到
    */
-    rowTransfer: function({temp, irow, row, len, o}) {
+    rowTransfer: function({ temp, irow, row, len, o }) {
       let self = this;
       // 是对输入的字段按分隔符进行处理
       if (temp.paramBefore) {
@@ -319,16 +315,16 @@ export default {
            是 应用正则后 返回复核要求的每一项
            str.match(re)： 得到需要替换的属性，考虑把这个对象存成一个对象(tempConfigO)，后续可使用 
            */
-          let tempConfigO={}
-          let methodParam={}// 为了解构新加 ,函数调用function
-              methodParam["tempConfigO"]=tempConfigO
-              methodParam["row"]=row
+          let tempConfigO = {};
+          let methodParam = {}; // 为了解构新加 ,函数调用function
+          methodParam["tempConfigO"] = tempConfigO;
+          methodParam["row"] = row;
           if (str.match(re)) {
-             // "${1:nm/String/g}" 第一部分0 匹配值，第二部分1 key ,第三部分2  默认值,  第四部分3 正则 , 第五部分4输入字符串
-            tempConfigO["str"]=str.match(re)[0]
-            tempConfigO["key"]=str.match(re)[1]
-            tempConfigO["default"]=str.match(re)[2]
-           
+            // "${1:nm/String/g}" 第一部分0 匹配值，第二部分1 key ,第三部分2  默认值,  第四部分3 正则 , 第五部分4输入字符串
+            tempConfigO["str"] = str.match(re)[0];
+            tempConfigO["key"] = str.match(re)[1];
+            tempConfigO["default"] = str.match(re)[2];
+
             if (row[tempConfigO["key"]] != undefined && row[tempConfigO["key"]] != "") {
               s = row[tempConfigO["key"]];
             } else {
@@ -351,16 +347,14 @@ export default {
                         // 输入的值 是需要替换的，那么替换成配置的值
                         if (s == vvVk) {
                           // 如果需要替换的值时一个对象，那么按对象类型（目前只有一个fun）进行控制
-                          if(vvVv.k){
-                            if(vvVv.k=="fun"){
+                          if (vvVv.k) {
+                            if (vvVv.k == "fun") {
                               // row 行数组, 需要处理的模板
-                              s = vvVv.v(row,tempConfigO);
+                              s = vvVv.v(row, tempConfigO);
                             }
-
-                          }else{
+                          } else {
                             s = vvVv;
                           }
-                         
                         }
                       });
                     }
@@ -369,7 +363,7 @@ export default {
                       // (不为空的时候才复制,目前复制的是输入，而不是转换后的值 , scope 是在范围内的才复制 )
                       $.each(vv.v, function(vvVk, vvVv) {
                         //---
-                        debugger
+                        debugger;
                         if (vvVk && row[vvVk] != undefined) {
                           if (vv.scope && $.inArray(row[vvVk], vv.scope) < 0) {
                           } else {
@@ -381,23 +375,23 @@ export default {
                     if (vv.k == "containsReplace" && vv.v) {
                       // s 输入的值，  vv.v 配置的规则 ，vv.time 匹配几次, vv.same 是否完全匹配
                       // str,config,time,same=true
-                      let containsRQuery={}
-                      containsRQuery["str"]=s
-                      containsRQuery["config"]=vv.v
-                      containsRQuery["time"]=vv.time
-                      containsRQuery["same"]=vv.same
-                      containsRQuery["row"]=methodParam.row
-                      containsRQuery["tempConfigO"]=methodParam.tempConfigO
+                      let containsRQuery = {};
+                      containsRQuery["str"] = s;
+                      containsRQuery["config"] = vv.v;
+                      containsRQuery["time"] = vv.time;
+                      containsRQuery["same"] = vv.same;
+                      containsRQuery["row"] = methodParam.row;
+                      containsRQuery["tempConfigO"] = methodParam.tempConfigO;
                       s = self.containsReplace(containsRQuery);
                       // s = self.containsReplace(s, vv.v, vv.time, vv.same);
                     }
                     if (vv.k == "transfer") {
                       $.each(vv.v, function(vvVk, vvVv) {
                         if (vvVk == "capitalize" && vvVv) {
-                          s = self.capitalize({"str":s});
+                          s = self.capitalize({ str: s });
                         }
                         if (vvVk == "snake" && vvVv) {
-                          s = self.snake({"str":s});
+                          s = self.snake({ str: s });
                         }
                       });
                     }
@@ -424,7 +418,7 @@ export default {
       }
       // 对格式化后的行数据进行二次格式化
       if (temp.fix) {
-        debugger
+        debugger;
         $.each(temp.fix.roles, function(oi, ov) {
           if ((ov.k == "single" || ov.k == "both") && irow % 2 == 1) {
             // 单双行处理
@@ -506,18 +500,23 @@ export default {
       var o = {};
       var a = [];
 
-      // 获取模板对象
+      //↓↓↓↓↓↓↓↓↓↓↓ 因为 types 是数组 将 数组转成对象 方便获取 模板信息，
+
       $.each(self.types, function(index, v) {
         o[v.value] = v;
       });
-//↓↓↓↓↓↓↓↓↓↓↓ 从输入的原始数据（proto） 中依据分割符号，提取成二维数组的数据
-      var a1 = [];
-      // 二维数组    [  行[需要替换对象]] a1
+      
+      //↑↑↑↑↑↑↑***************  处理完成
+
+
+      //↓↓↓↓↓↓↓↓↓↓↓ 从输入的原始数据（proto） 中依据分割符号，提取成二维数组的数据
+      // 二维数组    [  行[需要替换对象]]
+      var protoLikeObj = [];
       // 需要转换的数据
       if (self.proto) {
         $.each(self.proto.split("\n"), function(i, v) {
           if (v) {
-            a1.push(
+            protoLikeObj.push(
               v.split(eval("/[" + self.aparts + "]/ ")).filter(function(x) {
                 if (x) return true;
               })
@@ -525,7 +524,7 @@ export default {
           }
         });
       }
-//↑↑↑↑↑↑↑*************** 从输入的原始数据（proto） 中依据分割符号，提取成二维数组的数据
+      //↑↑↑↑↑↑↑*************** 从输入的原始数据（proto） 中依据分割符号，提取成二维数组的数据
 
       $.each(self.selected, function(i, v) {
         // 循环选中模板
@@ -538,9 +537,9 @@ export default {
         if (o[v].template) {
           o[v]["tempV"] = [];
           // 循环生成记录
-          $.each(a1, function(a1i, a1v) {
+          $.each(protoLikeObj, function(protoLikeObji, protoLikeObjv) {
             // 模板  索引 替换值 将输入行（proto）通过分割符分割成数组 [1,2,3,4]
-            let oneRow = self.rowTransfer({"temp":o[v],"irow": a1i, "row":a1v, "len":a1.length});
+            let oneRow = self.rowTransfer({ temp: o[v], irow: protoLikeObji, row: protoLikeObjv, len: protoLikeObj.length });
 
             o[v]["tempV"].push(oneRow);
           });
@@ -569,21 +568,21 @@ export default {
           // 整个模板当一行处理
           //fixparam 界面输入的参数
 
-          let a1v = [];
+          let protoLikeObjv = [];
           //single 参数目前只用于一行（template） is null 情况
           if (o[v].single) {
-            a1v = [self.proto];
+            protoLikeObjv = [self.proto];
           } else if (!o[v].template) {
-            a1v = self.proto.split(/[\n ]/).filter(function(x) {
+            protoLikeObjv = self.proto.split(/[\n ]/).filter(function(x) {
               if (x) return true;
             });
           } else {
-            a1v = self.fixparam.split(/[\n ]/).filter(function(x) {
+            protoLikeObjv = self.fixparam.split(/[\n ]/).filter(function(x) {
               if (x) return true;
             });
           }
 
-          o[v]["tempV"] = self.rowTransfer({"temp":oAfter, "irow":0, "row":a1v, "len":1});
+          o[v]["tempV"] = self.rowTransfer({ temp: oAfter, irow: 0, row: protoLikeObjv, len: 1 });
         }
 
         a.push(o[v]);
