@@ -495,23 +495,23 @@ export default {
     // ******** 转换的入口
     // 转换的入口函数
     selectedetail: function() {
+      //  计算属性 ，返回的是转换后的数组对象 :aRet
+      //  显示的是 aRet.tempV;
       var self = this;
 
       var typesObj = {};
-      var a = [];
+      var protoLikeObj = []; // 二维数组    [  行[需要替换对象]] 从输入的原始数据（proto） 中依据分割符号，提取成二维数组的数据
+      var aRet = [];
 
       //↓↓↓↓↓↓↓↓↓↓↓ 因为 types 是数组 将 数组转成对象 (typesObj)方便获取 模板信息，
 
       $.each(self.types, function(index, v) {
         typesObj[v.value] = v;
       });
-      
+
       //↑↑↑↑↑↑↑***************  处理完成
 
-
-      //↓↓↓↓↓↓↓↓↓↓↓ 从输入的原始数据（proto） 中依据分割符号，提取成二维数组的数据
-      // 二维数组    [  行[需要替换对象]]
-      var protoLikeObj = [];
+      //↓↓↓↓↓↓↓↓↓↓↓
       // 需要转换的数据
       if (self.proto) {
         $.each(self.proto.split("\n"), function(i, v) {
@@ -528,11 +528,9 @@ export default {
 
       $.each(self.selected, function(i, v) {
         // 循环选中模板
-
-        var temp = [];
         typesObj[v]["tempV"] = ""; // 更改值,既每个模板的返回值
 
-        //↓↓↓↓↓↓↓*************** 行数据需要转换的模板开始处理
+        //↓↓↓↓↓↓↓*************** 行数据需要转换的模板开始处理———————————————————1———————
 
         if (typesObj[v].template) {
           typesObj[v]["tempV"] = [];
@@ -545,15 +543,15 @@ export default {
           });
           // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑     每行处理完的结果
           // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 行join :(\n) 行替换完后处理
-
           typesObj[v]["tempV"] = typesObj[v]["tempV"].join("\n");
         } else {
           // 没有模板的话说明 参数就是输出， 只是做必要转换，那时候就得配置fix  了 （对每行进行处理）
           // 处理逻辑跟 fixparam 一致，只不过挪用param 的位置
         }
 
-        //↑↑↑↑↑↑↑*************** 行数据需要转换的模板处理完成
+        //↑↑↑↑↑↑↑*************** 行数据需要转换的模板处理完成————————————————————1——————
 
+        //↓↓↓↓↓↓↓*************** 对处理完的数据再次处理，那时候应用的是 fix 对象————————————————————2——————
         if (typesObj[v].fix && (typesObj[v].fix.param || typesObj[v].fix.fixRoles || typesObj[v].fix.paramBefore)) {
           let oAfter = { template: typesObj[v]["tempV"] };
           if (typesObj[v].fix.fixRoles) {
@@ -584,12 +582,13 @@ export default {
 
           typesObj[v]["tempV"] = self.rowTransfer({ temp: oAfter, irow: 0, row: protoLikeObjv, len: 1 });
         }
+        //↑↑↑↑↑↑↑*************** 对处理完的数据再次处理，那时候应用的是 fix 对象————————————————————2——————
 
-        a.push(typesObj[v]);
+        aRet.push(typesObj[v]);
       });
-      // a 默认模板规则
+      // aRet 默认模板规则
 
-      return a;
+      return aRet;
     }
   },
   watch: {},
