@@ -73,10 +73,11 @@ p(d.join("\\n"))
       var strFunciton =
         `
             function play(log){` +
-        ` log.push("p -value-");
-         ` +
+        // ` log.push("p -value-");
+        //  ` +
         self.forInput +
-        `  ;log.push("end;")}
+        // `  ;log.push("end;")}
+        `  ;}
          `;
 
       if (self.forParam && strFunciton.includes("param1")) {
