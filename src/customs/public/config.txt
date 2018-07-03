@@ -1,0 +1,18 @@
+ types: [{
+          value: "test",
+          label: "test",
+          template: '${99:nm} ',
+          single: true,
+          desc: " ",
+          param: [],
+          fix: {
+            roles: [
+              
+            ],
+            fixRoles: [
+
+            ]
+          }
+        }
+
+${99} 表示取数组的最后一个元素        

@@ -15,7 +15,7 @@ export default {
   props: {},
   data() {
       return {
-      selected: ["test","model"],
+      selected: ["testlast"],
       types: [{
           value: "test",
           label: "test",
@@ -30,6 +30,16 @@ export default {
             fixRoles: [
 
             ]
+          }
+        },{
+          value: "testlast",
+          label: "testlast",
+          template: '${0:nm} ${99} ',
+          single: true,
+          desc: " ",
+          param: [],
+          fix: {
+          
           }
         },{
           value: "test",

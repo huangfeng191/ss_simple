@@ -273,23 +273,24 @@ export default {
    irow: proto  的第几行
    row:proto 根据分割符分割后的数组[1,2,3,4]
    len:proto 的总行数
-   o:可能暂时没有用到
+   o:暂时没有用到
    */
-    rowTransfer: function({ temp, irow, row, len, o }) {
+    rowTransfer: function({ temp, iaRow, aRow, len, o }) {
+      
       let self = this;
       // 是对输入的字段按分隔符进行处理
       if (temp.paramBefore) {
         // 处理分两类: 参数处理，模板处理，此部分是在 转换前
         $.each(temp.paramBefore, function(vi, vv) {
           if (vv.k == "fun") {
-            if (row) {
-              row = vv.v(row);
+            if (aRow) {
+              aRow = vv.v(aRow);
             }
           }
           if (vv.k == "reg") {
             // v 截取规则
-            if (row) {
-              row = self.toFilter(row, vv.v);
+            if (aRow) {
+              aRow = self.toFilter(aRow, vv.v);
             }
           }
         });
@@ -299,7 +300,7 @@ export default {
       // 对每个变量进行处理
       var re = /\$\{{1}([0-9]+):?([0-9a-zA-Z\_]*)(\/{1}[0-9a-zA-Z\_\/]*||'')\}{1}/;
       // 单个参数处理正则
-      // "${1:nm/String/g}" 第一部分0 匹配值，第二部分1 key ,第三部分2  默认值,  第四部分3正则 , 第五部分4输入字符串
+      // "${1:nm/String/g}" 第一部分0 匹配值，第二部分1 key ,第三部分2  默认值,  第四部分3正则 , 第五部分是输入字符串
       // ["${1:nm/String/g}", "1", "nm", "/String/g", index: 0, input: "${1:nm/String/g}"]
 
       // template 是 二维数组，
@@ -308,8 +309,9 @@ export default {
       // 没有模板的时候，直接返回数据
       if (temp.template) {
         oneRow = temp.template.replace(reg, function(str) {
+          // replace 根据正则进行替换，需替换的值时正则匹配结果 就是  str : ${0:1} 类似次结构
           // 对每个匹配项 进行 处理(每一项的返回值)
-          // 用户输入的row 数组里面，根据 key:数组下标，找到值
+          // 用户输入的aRow 数组里面，根据 key:数组下标，找到值
           let s = "";
           /*str ： ${0:1} 类似次结构
            是 应用正则后 返回复核要求的每一项
@@ -318,15 +320,21 @@ export default {
           let tempConfigO = {};
           let methodParam = {}; // 为了解构新加 ,函数调用function
           methodParam["tempConfigO"] = tempConfigO;
-          methodParam["row"] = row;
+          methodParam["aRow"] = aRow;
           if (str.match(re)) {
             // "${1:nm/String/g}" 第一部分0 匹配值，第二部分1 key ,第三部分2  默认值,  第四部分3 正则 , 第五部分4输入字符串
             tempConfigO["str"] = str.match(re)[0];
             tempConfigO["key"] = str.match(re)[1];
             tempConfigO["default"] = str.match(re)[2];
-
-            if (row[tempConfigO["key"]] != undefined && row[tempConfigO["key"]] != "") {
-              s = row[tempConfigO["key"]];
+            if (tempConfigO.key==99){
+              debugger
+              if(aRow.length>0){
+                s=aRow[aRow.length-1]
+              }else{
+                s = tempConfigO["default"];
+              }
+            }else if (aRow[tempConfigO["key"]] != undefined && aRow[tempConfigO["key"]] != "") {
+              s = aRow[tempConfigO["key"]];
             } else {
               s = tempConfigO["default"];
             }
@@ -349,8 +357,8 @@ export default {
                           // 如果需要替换的值时一个对象，那么按对象类型（目前只有一个fun）进行控制
                           if (vvVv.k) {
                             if (vvVv.k == "fun") {
-                              // row 行数组, 需要处理的模板
-                              s = vvVv.v(row, tempConfigO);
+                              // aRow 行数组, 需要处理的模板
+                              s = vvVv.v(aRow, tempConfigO);
                             }
                           } else {
                             s = vvVv;
@@ -364,10 +372,10 @@ export default {
                       $.each(vv.v, function(vvVk, vvVv) {
                         //---
                         debugger;
-                        if (vvVk && row[vvVk] != undefined) {
-                          if (vv.scope && $.inArray(row[vvVk], vv.scope) < 0) {
+                        if (vvVk && aRow[vvVk] != undefined) {
+                          if (vv.scope && $.inArray(aRow[vvVk], vv.scope) < 0) {
                           } else {
-                            s = row[vvVk];
+                            s = aRow[vvVk];
                           }
                         }
                       });
@@ -380,7 +388,7 @@ export default {
                       containsRQuery["config"] = vv.v;
                       containsRQuery["time"] = vv.time;
                       containsRQuery["same"] = vv.same;
-                      containsRQuery["row"] = methodParam.row;
+                      containsRQuery["aRow"] = methodParam.aRow;
                       containsRQuery["tempConfigO"] = methodParam.tempConfigO;
                       s = self.containsReplace(containsRQuery);
                       // s = self.containsReplace(s, vv.v, vv.time, vv.same);
@@ -414,13 +422,13 @@ export default {
         });
       } else {
         // 没有模板的时候，直接返回数据
-        oneRow = row.join("\n");
+        oneRow = aRow.join("\n");
       }
       // 对格式化后的行数据进行二次格式化
       if (temp.fix) {
         debugger;
         $.each(temp.fix.roles, function(oi, ov) {
-          if ((ov.k == "single" || ov.k == "both") && irow % 2 == 1) {
+          if ((ov.k == "single" || ov.k == "both") && iaRow % 2 == 1) {
             // 单双行处理
             $.each(ov.v, function(ovi, ovv) {
               if (ovv.k == "replace") {
@@ -432,7 +440,7 @@ export default {
               }
             });
           }
-          if ((ov.k == "double" || ov.k == "both") && irow % 2 == 0) {
+          if ((ov.k == "double" || ov.k == "both") && iaRow % 2 == 0) {
             // 单双行处理
             $.each(ov.v, function(ovi, ovv) {
               if (ovv.k == "replace") {
@@ -444,7 +452,7 @@ export default {
               }
             });
           }
-          if (ov.k == "end" && irow == len - 1) {
+          if (ov.k == "end" && iaRow == len - 1) {
             // 单双行处理
             $.each(ov.v, function(ovi, ovv) {
               if (ovv.k == "replace") {
@@ -456,7 +464,7 @@ export default {
               }
             });
           }
-          if (ov.k == "first" && irow == 0) {
+          if (ov.k == "first" && iaRow == 0) {
             // 单双行处理
             $.each(ov.v, function(ovi, ovv) {
               if (ovv.k == "replace") {
@@ -475,6 +483,7 @@ export default {
       }
 
       return oneRow;
+    
     }
   },
   computed: {
@@ -537,7 +546,7 @@ export default {
           // 循环生成记录
           $.each(protoLikeObj, function(protoLikeObji, protoLikeObjv) {
             // 模板  索引 替换值 将输入行（proto）通过分割符分割成数组 [1,2,3,4]
-            let oneRow = self.rowTransfer({ temp: typesObj[v], irow: protoLikeObji, row: protoLikeObjv, len: protoLikeObj.length });
+            let oneRow = self.rowTransfer({ temp: typesObj[v], iaRow: protoLikeObji, aRow: protoLikeObjv, len: protoLikeObj.length });
 
             typesObj[v]["tempV"].push(oneRow);
           });
@@ -580,7 +589,7 @@ export default {
             });
           }
 
-          typesObj[v]["tempV"] = self.rowTransfer({ temp: oAfter, irow: 0, row: protoLikeObjv, len: 1 });
+          typesObj[v]["tempV"] = self.rowTransfer({ temp: oAfter, iaRow: 0, aRow: protoLikeObjv, len: 1 });
         }
         //↑↑↑↑↑↑↑*************** 对处理完的数据再次处理，那时候应用的是 fix 对象————————————————————2——————
 
