@@ -497,13 +497,13 @@ export default {
     selectedetail: function() {
       var self = this;
 
-      var o = {};
+      var typesObj = {};
       var a = [];
 
-      //↓↓↓↓↓↓↓↓↓↓↓ 因为 types 是数组 将 数组转成对象 方便获取 模板信息，
+      //↓↓↓↓↓↓↓↓↓↓↓ 因为 types 是数组 将 数组转成对象 (typesObj)方便获取 模板信息，
 
       $.each(self.types, function(index, v) {
-        o[v.value] = v;
+        typesObj[v.value] = v;
       });
       
       //↑↑↑↑↑↑↑***************  处理完成
@@ -530,23 +530,23 @@ export default {
         // 循环选中模板
 
         var temp = [];
-        o[v]["tempV"] = ""; // 更改值,既每个模板的返回值
+        typesObj[v]["tempV"] = ""; // 更改值,既每个模板的返回值
 
         //↓↓↓↓↓↓↓*************** 行数据需要转换的模板开始处理
 
-        if (o[v].template) {
-          o[v]["tempV"] = [];
+        if (typesObj[v].template) {
+          typesObj[v]["tempV"] = [];
           // 循环生成记录
           $.each(protoLikeObj, function(protoLikeObji, protoLikeObjv) {
             // 模板  索引 替换值 将输入行（proto）通过分割符分割成数组 [1,2,3,4]
-            let oneRow = self.rowTransfer({ temp: o[v], irow: protoLikeObji, row: protoLikeObjv, len: protoLikeObj.length });
+            let oneRow = self.rowTransfer({ temp: typesObj[v], irow: protoLikeObji, row: protoLikeObjv, len: protoLikeObj.length });
 
-            o[v]["tempV"].push(oneRow);
+            typesObj[v]["tempV"].push(oneRow);
           });
           // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑     每行处理完的结果
           // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 行join :(\n) 行替换完后处理
 
-          o[v]["tempV"] = o[v]["tempV"].join("\n");
+          typesObj[v]["tempV"] = typesObj[v]["tempV"].join("\n");
         } else {
           // 没有模板的话说明 参数就是输出， 只是做必要转换，那时候就得配置fix  了 （对每行进行处理）
           // 处理逻辑跟 fixparam 一致，只不过挪用param 的位置
@@ -554,25 +554,25 @@ export default {
 
         //↑↑↑↑↑↑↑*************** 行数据需要转换的模板处理完成
 
-        if (o[v].fix && (o[v].fix.param || o[v].fix.fixRoles || o[v].fix.paramBefore)) {
-          let oAfter = { template: o[v]["tempV"] };
-          if (o[v].fix.fixRoles) {
-            oAfter.fix = { roles: o[v].fix.fixRoles };
+        if (typesObj[v].fix && (typesObj[v].fix.param || typesObj[v].fix.fixRoles || typesObj[v].fix.paramBefore)) {
+          let oAfter = { template: typesObj[v]["tempV"] };
+          if (typesObj[v].fix.fixRoles) {
+            oAfter.fix = { roles: typesObj[v].fix.fixRoles };
           }
-          if (o[v].fix.param) {
-            oAfter.param = o[v].fix.param;
+          if (typesObj[v].fix.param) {
+            oAfter.param = typesObj[v].fix.param;
           }
-          if (o[v].fix.paramBefore) {
-            oAfter.paramBefore = o[v].fix.paramBefore;
+          if (typesObj[v].fix.paramBefore) {
+            oAfter.paramBefore = typesObj[v].fix.paramBefore;
           }
           // 整个模板当一行处理
           //fixparam 界面输入的参数
 
           let protoLikeObjv = [];
           //single 参数目前只用于一行（template） is null 情况
-          if (o[v].single) {
+          if (typesObj[v].single) {
             protoLikeObjv = [self.proto];
-          } else if (!o[v].template) {
+          } else if (!typesObj[v].template) {
             protoLikeObjv = self.proto.split(/[\n ]/).filter(function(x) {
               if (x) return true;
             });
@@ -582,10 +582,10 @@ export default {
             });
           }
 
-          o[v]["tempV"] = self.rowTransfer({ temp: oAfter, irow: 0, row: protoLikeObjv, len: 1 });
+          typesObj[v]["tempV"] = self.rowTransfer({ temp: oAfter, irow: 0, row: protoLikeObjv, len: 1 });
         }
 
-        a.push(o[v]);
+        a.push(typesObj[v]);
       });
       // a 默认模板规则
 
