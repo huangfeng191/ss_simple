@@ -4,9 +4,11 @@ import Mystock from '../customs/mystock/index.vue'
 import Mycolor from '../customs/mystock/getcolor.vue'
 // 测试 js
 import Test from '../soon/test.vue'
+import SoonCsJs from '../soon/cs_js.vue'
+
 // 测试 nouse
 import Cs from '../nouse/cs.vue'
-import CsJs from '../nouse/cs_js.vue'
+// import CsJs from '../nouse/cs_js.vue'
 import Position from '../rest/css/position.vue'
 import Css from '../rest/css/css.vue'
 
@@ -19,7 +21,7 @@ import ToJsonTest from '../customs/public/tojsontest.vue'
 export default{
 	routes:[
 		{path:'/cs', component:Cs},
-		{path:'/cs_js', component:CsJs},
+		{path:'/cs_js', component:SoonCsJs},
 		{path:'/usejson6', component:UseJson6},
 		{path:'/jsontest', component:ToJsonTest},
 		{path:'/usejson7', component:UseJson7},
