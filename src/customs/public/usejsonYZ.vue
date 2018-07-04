@@ -12,7 +12,7 @@ export default {
   data() {
     return {
       // selected: ["scada6crudcol", "scada6crudinputOne"],
-      selected: ["scada6crudinputThree","toRowSingle","scada6crudcol"],
+      selected: ["scada6crudinputThree","toRowSingle","scada6crudcol","scada6Input"],
       // selected: ["scada6Quick"],
       types: [
         {
