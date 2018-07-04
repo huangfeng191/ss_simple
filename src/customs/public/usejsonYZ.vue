@@ -11,7 +11,8 @@ export default {
   props: {},
   data() {
     return {
-      selected: ["scada6crudcol", "scada6crudinputOne"],
+      // selected: ["scada6crudcol", "scada6crudinputOne"],
+      selected: [ "scada6crudinputThree"],
       // selected: ["scada6Quick"],
       types: [
         {
@@ -240,7 +241,7 @@ export default {
             roles: [
               // single double both ,end 修理行数据 在行的位置添加
               { k: "mod", config:{"k":3,"value":0}, v: [{ k: "replace", v: [{ "/^{/": "[{" }] }] },
-              { k: "mod", config:{"k":3,"value":1}, v: [{ k: "replace", v: [{ "/},$/": "},]," }] }] },
+              { k: "mod", config:{"k":3,"value":2}, v: [{ k: "replace", v: [{ "/},$/": "},]," }] }] },
               { k: "end", v: [{ k: "replace", v: [{ "/},$/": "},]," }] }] }
             ],
             param: []

@@ -157,7 +157,6 @@ export default {
     // str 输入的值，  config 配置的规则 ，time 匹配几次, same 是否完全匹配
     //
     containsReplace: function({ str, config, time = 0, same = true, aRow, tempConfigO }) {
-      debugger;
       // s 是最后的返回值
       let s = "";
       let configO = {};
@@ -405,7 +404,7 @@ export default {
                       // (不为空的时候才复制,目前复制的是输入，而不是转换后的值 , scope 是在范围内的才复制 )
                       $.each(vv.v, function(vvVk, vvVv) {
                         //---
-                        debugger;
+                     
                         if (vvVk && aRow[vvVk] != undefined) {
                           if (vv.scope && $.inArray(aRow[vvVk], vv.scope) < 0) {
                           } else {
@@ -467,7 +466,6 @@ export default {
       }
       // 对格式化后的行数据进行二次格式化
       if (temp.fix) {
-        debugger;
         $.each(temp.fix.roles, function(oi, ov) {
           if ((ov.k == "single" || ov.k == "both") && iaRow % 2 == 1) {
             // 单双行处理
@@ -481,6 +479,23 @@ export default {
               }
             });
           }
+//  此处 考虑 利用 mod 提炼函数，将其他配置转换成此处配置 *************
+
+          if (ov.k == "mod"&&ov.config  && iaRow % ov.config.k == ov.config.value) {
+           debugger
+           // 单双行处理
+            $.each(ov.v, function(ovi, ovv) {
+              if (ovv.k == "replace") {
+                $.each(ovv.v, function(ovvVk, ovvVv) {
+                  $.each(ovvVv, function(k2, v2) {
+                    oneRow = oneRow.replace(eval(k2), v2);
+                  });
+                });
+              }
+            });
+          }
+
+
           if ((ov.k == "double" || ov.k == "both") && iaRow % 2 == 0) {
             // 单双行处理
             $.each(ov.v, function(ovi, ovv) {
