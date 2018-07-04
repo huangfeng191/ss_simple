@@ -128,15 +128,27 @@ export default {
       self.template = o[values[0]].template;
       self.param = JSON.stringify(o[values[0]].param);
     },
+    // str 就是 调用前的输出
+    //  该对象配置项config  就是 配置的 param 里面的 [{key, v:[ {配置项}]}]
     existsReplace:function({str,config,}){
       let retS="";
       // 将数组配置成 对象
       let configO = {};
-      $.each(config, function(configk, configv) {
+      $.each(config.v, function(configk, configv) {
         configO[configk] = configv;
       });
       if(str in configO){
         retS=configO[str]
+      }
+      if(config.or && config.or.length>0){
+         config.or.forEach(function(v,i){
+           if (v=="number"){
+             var regIsNumber=/^[0-9]+$/g;
+             if((regIsNumber.exec(str)!=null )){
+                retS=str;
+             }
+           }
+         })
       }
       return retS;
     },
@@ -418,7 +430,8 @@ export default {
                     if (vv.k == "existsReplace" && vv.v) {
                       let containsRQuery = {};
                       containsRQuery["str"] = retS;
-                      containsRQuery["config"] = vv.v;
+                      // containsRQuery["config"] = vv.v;
+                      containsRQuery["config"]=vv
                       retS = self.existsReplace(containsRQuery);
                     }
 

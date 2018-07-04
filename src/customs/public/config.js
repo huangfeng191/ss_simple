@@ -8,7 +8,7 @@ o={
     param: [
       {
         k: "98",
-        v: [{ k: "existsReplace", v: { int: "int", string: "string" } }]  // 全部存在的时候 ，才显示，
+        v: [{ k: "existsReplace", v: { int: "int", string: "string" },or:["number"] }]  // 全部存在的时候 ，才显示， 或者输入是数字
       }
     ],
     fix: {

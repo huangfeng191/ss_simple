@@ -38,11 +38,11 @@ export default {
           param: [
             {
               k: "98",
-              v: [{ k: "existsReplace", v: { int: "int",Int: "int", string: "string" } }]
+              v: [{ k: "existsReplace", v: { int: "int",Int: "int", string: "string" },or:["number"] }]
             },
             {
               k: "97",
-              v: [{ k: "existsReplace", v: { int: "int",Int: "int", string: "string" } }]
+              v: [{ k: "existsReplace", v: { int: "int",Int: "int", string: "string" },or:["number"]  }]
             }
           ],
           fix: {}
