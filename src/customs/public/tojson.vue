@@ -152,11 +152,29 @@ export default {
       }
       return retS;
     },
+     filterStr:function({str,config,oModelItem}){
+      let retS=str;
+      config.v.forEach(function(oConfigV,i){
+          if(oConfigV.k=="notNumber"){
+              var regIsNumber=/^[0-9]+$/g;
+              if((regIsNumber.exec(str)!=null )){
+                debugger
+                  if(oModelItem &&oModelItem.default){
+                      retS=oModelItem.default;
+                  }else{
+                     retS="";
+                  }
+                 
+              }
+          }
+      })
+      return retS;
+    },
     /* ↓↓↓↓↓↓↓↓↓↓↓↓以下为转换的规则 */
     // 只有包含的字符才替换 ，按顺序单个替换
     // str 输入的值，  config 配置的规则 ，time 匹配几次, same 是否完全匹配
     //
-    containsReplace: function({ str, config, time = 0, same = true, aRow, tempConfigO }) {
+    containsReplace: function({ str, config, time = 0, same = true, aRow, oModelItem }) {
       // s 是最后的返回值
       let s = "";
       let configO = {};
@@ -175,7 +193,7 @@ export default {
           if (time == 0 || time >= configO[strv]) {
             if (config[strv].k) {
               if (config[strv].k == "fun") {
-                s = config[strv].v(aRow, tempConfigO);
+                s = config[strv].v(aRow, oModelItem);
               }
             } else {
               s += config[strv];
@@ -338,39 +356,39 @@ export default {
           let retS = "";
           /*str ： ${0:1} 类似次结构
            是 应用正则后 返回复核要求的每一项
-           str.match(re)： 得到需要替换的属性，考虑把这个对象存成一个对象(tempConfigO)，后续可使用 
+           str.match(re)： 得到需要替换的属性，考虑把这个对象存成一个对象(oModelItem)，后续可使用 
            */
-          let tempConfigO = {};
+          let oModelItem = {};
           let methodParam = {}; // 为了解构新加 ,函数调用function
-          methodParam["tempConfigO"] = tempConfigO;
+          methodParam["oModelItem"] = oModelItem;
           methodParam["aRow"] = aRow;
           if (str.match(re)) {
             // "${1:nm/String/g}" 第一部分0 匹配值，第二部分1 key ,第三部分2  默认值,  第四部分3 正则 , 第五部分4输入字符串
-            tempConfigO["str"] = str.match(re)[0];
-            tempConfigO["key"] = str.match(re)[1];
-            tempConfigO["default"] = str.match(re)[2];
-            if (tempConfigO.key==99){
+            oModelItem["str"] = str.match(re)[0];
+            oModelItem["key"] = str.match(re)[1];
+            oModelItem["default"] = str.match(re)[2];
+            if (oModelItem.key==99){
               if(aRow.length>0){
                 retS =aRow[aRow.length-1]
               }else{
-                retS = tempConfigO["default"];
+                retS = oModelItem["default"];
               }
-            }else if (tempConfigO.key==98){
+            }else if (oModelItem.key==98){
               if(aRow.length>1){
                 retS =aRow[aRow.length-2]
               }else{
-                retS = tempConfigO["default"];
+                retS = oModelItem["default"];
               }
-            }else if (tempConfigO.key==97){
+            }else if (oModelItem.key==97){
               if(aRow.length>2){
                 retS =aRow[aRow.length-3]
               }else{
-                retS = tempConfigO["default"];
+                retS = oModelItem["default"];
               }
-            }else if (aRow[tempConfigO["key"]] != undefined && aRow[tempConfigO["key"]] != "") {
-              retS = aRow[tempConfigO["key"]];
+            }else if (aRow[oModelItem["key"]] != undefined && aRow[oModelItem["key"]] != "") {
+              retS = aRow[oModelItem["key"]];
             } else {
-              retS = tempConfigO["default"];
+              retS = oModelItem["default"];
             }
             //  正则暂时不启用
             // if(str.match(re)[3]){
@@ -381,7 +399,8 @@ export default {
             if (temp.param) {
               $.each(temp.param, function(ip, vp) {
                 // 同一序号处理完成后再处理其他序号
-                if (tempConfigO["key"] == vp.k) {
+                if (oModelItem["key"] == vp.k) {
+                  //  vv 就是配置项
                   $.each(vp.v, function(vi, vv) {
                     // 参数的replace 功能 // 参数时是原样替换
                     if (vv.k == "replace") {
@@ -391,7 +410,7 @@ export default {
                           // 如果需要替换的值时一个对象，那么按对象类型（目前只有一个fun）进行控制
                           if (vvVv.k) {
                             if (vvVv.k == "fun") {
-                              retS = vvVv.v(aRow, tempConfigO);
+                              retS = vvVv.v(aRow, oModelItem);
                             }
                           } else {
                             retS = vvVv;
@@ -422,7 +441,7 @@ export default {
                       containsRQuery["time"] = vv.time;
                       containsRQuery["same"] = vv.same;
                       containsRQuery["aRow"] = methodParam.aRow;
-                      containsRQuery["tempConfigO"] = methodParam.tempConfigO;
+                      containsRQuery["oModelItem"] = methodParam.oModelItem;
                       retS = self.containsReplace(containsRQuery);
                       // retS = self.containsReplace(s, vv.v, vv.time, vv.same);
                     }
@@ -433,6 +452,15 @@ export default {
                       containsRQuery["config"]=vv
                       retS = self.existsReplace(containsRQuery);
                     }
+
+                    if (vv.k == "filterStr" && vv.v) {
+                      let containsRQuery = {};
+                      containsRQuery["str"] = retS;
+                      containsRQuery["config"]=vv
+                      containsRQuery["oModelItem"] = methodParam.oModelItem;
+                      retS = self.filterStr(containsRQuery);
+                    }
+
 
                     if (vv.k == "transfer") {
                       $.each(vv.v, function(vvVk, vvVv) {
