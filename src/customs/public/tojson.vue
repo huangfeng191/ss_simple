@@ -314,255 +314,255 @@ export default {
    len:proto 的总行数
    o:暂时没有用到
    */
-    rowTransfer: function({ temp, iaRow, aRow, len, o }) {
-      let self = this;
-      // 是对输入的字段按分隔符进行处理
-      if (temp.paramBefore) {
-        // 处理分两类: 参数处理，模板处理，此部分是在 转换前
-        $.each(temp.paramBefore, function(vi, vv) {
-          if (vv.k == "fun") {
-            if (aRow) {
-              aRow = vv.v(aRow);
-            }
+   rowTransfer: function({ type, iaRow, aRow, len, o }) {
+    let self = this;
+    // 是对输入的字段按分隔符进行处理
+    if (type.paramBefore) {
+      // 处理分两类: 参数处理，模板处理，此部分是在 转换前
+      $.each(type.paramBefore, function(vi, vv) {
+        if (vv.k == "fun") {
+          if (aRow) {
+            aRow = vv.v(aRow);
           }
-          if (vv.k == "reg") {
-            // v 截取规则
-            if (aRow) {
-              aRow = self.toFilter(aRow, vv.v);
-            }
+        }
+        if (vv.k == "reg") {
+          // v 截取规则
+          if (aRow) {
+            aRow = self.toFilter(aRow, vv.v);
           }
-        });
-      }
-      // 找出可替换变量
-      var reg = /\$\{{1}[0-9a-zA-Z\_\/:]+\}{1}/g;
-      // 对每个变量进行处理
-      var re = /\$\{{1}([0-9]+):?([0-9a-zA-Z\_]*)(\/{1}[0-9a-zA-Z\_\/]*||'')\}{1}/;
-      // 单个参数处理正则
-      // "${1:nm/String/g}" 第一部分0 匹配值，第二部分1 key ,第三部分2  默认值,  第四部分3正则 , 第五部分是输入字符串
-      // ["${1:nm/String/g}", "1", "nm", "/String/g", index: 0, input: "${1:nm/String/g}"]
+        }
+      });
+    }
+    // 找出可替换变量
+    var reg = /\$\{{1}[0-9a-zA-Z\_\/:]+\}{1}/g;
+    // 对每个变量进行处理
+    var re = /\$\{{1}([0-9]+):?([0-9a-zA-Z\_]*)(\/{1}[0-9a-zA-Z\_\/]*||'')\}{1}/;
+    // 单个参数处理正则
+    // "${1:nm/String/g}" 第一部分0 匹配值，第二部分1 key ,第三部分2  默认值,  第四部分3正则 , 第五部分是输入字符串
+    // ["${1:nm/String/g}", "1", "nm", "/String/g", index: 0, input: "${1:nm/String/g}"]
 
-      // template 是 二维数组，
-      // 将行数据 ，与模板结合生成真正的行数据
-      let oneRow = "";
-      // 没有模板的时候，直接返回数据
-      if (temp.template) {
-        oneRow = temp.template.replace(reg, function(str) {
-          // replace 根据正则进行替换，需替换的值时正则匹配结果 就是  str : ${0:1} 类似次结构
-          // 对每个匹配项 进行 处理(每一项的返回值)
-          // 用户输入的aRow 数组里面，根据 key:数组下标，找到值
-          // 每一项替换后的返回值
-          let retS = "";
-          /*str ： ${0:1} 类似次结构
-           是 应用正则后 返回复核要求的每一项
-           str.match(re)： 得到需要替换的属性，考虑把这个对象存成一个对象(oModelItem)，后续可使用 
-           */
-          let oModelItem = {};
-          let methodParam = {}; // 为了解构新加 ,函数调用function
-          methodParam["oModelItem"] = oModelItem;
-          methodParam["aRow"] = aRow;
-          if (str.match(re)) {
-            // "${1:nm/String/g}" 第一部分0 匹配值，第二部分1 key ,第三部分2  默认值,  第四部分3 正则 , 第五部分4输入字符串
-            oModelItem["str"] = str.match(re)[0];
-            oModelItem["key"] = str.match(re)[1];
-            oModelItem["default"] = str.match(re)[2];
-            if (oModelItem.key == 99) {
-              if (aRow.length > 0) {
-                retS = aRow[aRow.length - 1];
-              } else {
-                retS = oModelItem["default"];
-              }
-            } else if (oModelItem.key == 98) {
-              if (aRow.length > 1) {
-                retS = aRow[aRow.length - 2];
-              } else {
-                retS = oModelItem["default"];
-              }
-            } else if (oModelItem.key == 97) {
-              if (aRow.length > 2) {
-                retS = aRow[aRow.length - 3];
-              } else {
-                retS = oModelItem["default"];
-              }
-            } else if (aRow[oModelItem["key"]] != undefined && aRow[oModelItem["key"]] != "") {
-              retS = aRow[oModelItem["key"]];
+    // template 是 二维数组，
+    // 将行数据 ，与模板结合生成真正的行数据
+    let oneRow = "";
+    // 没有模板的时候，直接返回数据
+    if (type.template) {
+      oneRow = type.template.replace(reg, function(str) {
+        // replace 根据正则进行替换，需替换的值时正则匹配结果 就是  str : ${0:1} 类似次结构
+        // 对每个匹配项 进行 处理(每一项的返回值)
+        // 用户输入的aRow 数组里面，根据 key:数组下标，找到值
+        // 每一项替换后的返回值
+        let retS = "";
+        /*str ： ${0:1} 类似次结构
+         是 应用正则后 返回复核要求的每一项
+         str.match(re)： 得到需要替换的属性，考虑把这个对象存成一个对象(oModelItem)，后续可使用 
+         */
+        let oModelItem = {};
+        let methodParam = {}; // 为了解构新加 ,函数调用function
+        methodParam["oModelItem"] = oModelItem;
+        methodParam["aRow"] = aRow;
+        if (str.match(re)) {
+          // "${1:nm/String/g}" 第一部分0 匹配值，第二部分1 key ,第三部分2  默认值,  第四部分3 正则 , 第五部分4输入字符串
+          oModelItem["str"] = str.match(re)[0];
+          oModelItem["key"] = str.match(re)[1];
+          oModelItem["default"] = str.match(re)[2];
+          if (oModelItem.key == 99) {
+            if (aRow.length > 0) {
+              retS = aRow[aRow.length - 1];
             } else {
               retS = oModelItem["default"];
             }
-            //  正则暂时不启用
-            // if(str.match(re)[3]){
-            //
-            //     s.match(str.match(re)[3])
-            // }
-            // 每一项返回值进行二次处理
-            if (temp.param) {
-              $.each(temp.param, function(ip, vp) {
-                // 同一序号处理完成后再处理其他序号
-                if (oModelItem["key"] == vp.k) {
-                  //  vv 就是配置项
-                  $.each(vp.v, function(vi, vv) {
-                    // 参数的replace 功能 // 参数时是原样替换
-                    if (vv.k == "replace") {
-                      $.each(vv.v, function(vvVk, vvVv) {
-                        // 输入的值 是需要替换的，那么替换成配置的值
-                        if (retS == vvVk) {
-                          // 如果需要替换的值时一个对象，那么按对象类型（目前只有一个fun）进行控制
-                          if (vvVv.k) {
-                            if (vvVv.k == "fun") {
-                              retS = vvVv.v(aRow, oModelItem);
-                            }
-                          } else {
-                            retS = vvVv;
+          } else if (oModelItem.key == 98) {
+            if (aRow.length > 1) {
+              retS = aRow[aRow.length - 2];
+            } else {
+              retS = oModelItem["default"];
+            }
+          } else if (oModelItem.key == 97) {
+            if (aRow.length > 2) {
+              retS = aRow[aRow.length - 3];
+            } else {
+              retS = oModelItem["default"];
+            }
+          } else if (aRow[oModelItem["key"]] != undefined && aRow[oModelItem["key"]] != "") {
+            retS = aRow[oModelItem["key"]];
+          } else {
+            retS = oModelItem["default"];
+          }
+          //  正则暂时不启用
+          // if(str.match(re)[3]){
+          //
+          //     s.match(str.match(re)[3])
+          // }
+          // 每一项返回值进行二次处理
+          if (type.param) {
+            $.each(type.param, function(ip, vp) {
+              // 同一序号处理完成后再处理其他序号
+              if (oModelItem["key"] == vp.k) {
+                //  vv 就是配置项
+                $.each(vp.v, function(vi, vv) {
+                  // 参数的replace 功能 // 参数时是原样替换
+                  if (vv.k == "replace") {
+                    $.each(vv.v, function(vvVk, vvVv) {
+                      // 输入的值 是需要替换的，那么替换成配置的值
+                      if (retS == vvVk) {
+                        // 如果需要替换的值时一个对象，那么按对象类型（目前只有一个fun）进行控制
+                        if (vvVv.k) {
+                          if (vvVv.k == "fun") {
+                            retS = vvVv.v(aRow, oModelItem);
                           }
+                        } else {
+                          retS = vvVv;
                         }
-                      });
-                    }
+                      }
+                    });
+                  }
 
-                    if (vv.k == "copy") {
-                      // (不为空的时候才复制,目前复制的是输入，而不是转换后的值 , scope 是在范围内的才复制 )
-                      $.each(vv.v, function(vvVk, vvVv) {
-                        //---
+                  if (vv.k == "copy") {
+                    // (不为空的时候才复制,目前复制的是输入，而不是转换后的值 , scope 是在范围内的才复制 )
+                    $.each(vv.v, function(vvVk, vvVv) {
+                      //---
 
-                        if (vvVk && aRow[vvVk] != undefined) {
-                          if (vv.scope && $.inArray(aRow[vvVk], vv.scope) < 0) {
-                          } else {
-                            retS = aRow[vvVk];
-                          }
+                      if (vvVk && aRow[vvVk] != undefined) {
+                        if (vv.scope && $.inArray(aRow[vvVk], vv.scope) < 0) {
+                        } else {
+                          retS = aRow[vvVk];
                         }
-                      });
-                    }
-                    if (vv.k == "containsReplace" && vv.v) {
-                      // s 输入的值，  vv.v 配置的规则 ，vv.time 匹配几次, vv.same 是否完全匹配
-                      // str,config,time,same=true
-                      let containsRQuery = {};
-                      containsRQuery["str"] = retS;
-                      containsRQuery["config"] = vv.v;
-                      containsRQuery["time"] = vv.time;
-                      containsRQuery["same"] = vv.same;
-                      containsRQuery["aRow"] = methodParam.aRow;
-                      containsRQuery["oModelItem"] = methodParam.oModelItem;
-                      retS = self.containsReplace(containsRQuery);
-                      // retS = self.containsReplace(s, vv.v, vv.time, vv.same);
-                    }
-                    if (vv.k == "existsReplace" && vv.v) {
-                      let containsRQuery = {};
-                      containsRQuery["str"] = retS;
-                      // containsRQuery["config"] = vv.v;
-                      containsRQuery["config"] = vv;
-                      retS = self.existsReplace(containsRQuery);
-                    }
+                      }
+                    });
+                  }
+                  if (vv.k == "containsReplace" && vv.v) {
+                    // s 输入的值，  vv.v 配置的规则 ，vv.time 匹配几次, vv.same 是否完全匹配
+                    // str,config,time,same=true
+                    let containsRQuery = {};
+                    containsRQuery["str"] = retS;
+                    containsRQuery["config"] = vv.v;
+                    containsRQuery["time"] = vv.time;
+                    containsRQuery["same"] = vv.same;
+                    containsRQuery["aRow"] = methodParam.aRow;
+                    containsRQuery["oModelItem"] = methodParam.oModelItem;
+                    retS = self.containsReplace(containsRQuery);
+                    // retS = self.containsReplace(s, vv.v, vv.time, vv.same);
+                  }
+                  if (vv.k == "existsReplace" && vv.v) {
+                    let containsRQuery = {};
+                    containsRQuery["str"] = retS;
+                    // containsRQuery["config"] = vv.v;
+                    containsRQuery["config"] = vv;
+                    retS = self.existsReplace(containsRQuery);
+                  }
 
-                    if (vv.k == "filterStr" && vv.v) {
-                      let containsRQuery = {};
-                      containsRQuery["str"] = retS;
-                      containsRQuery["config"] = vv;
-                      containsRQuery["oModelItem"] = methodParam.oModelItem;
-                      retS = self.filterStr(containsRQuery);
-                    }
+                  if (vv.k == "filterStr" && vv.v) {
+                    let containsRQuery = {};
+                    containsRQuery["str"] = retS;
+                    containsRQuery["config"] = vv;
+                    containsRQuery["oModelItem"] = methodParam.oModelItem;
+                    retS = self.filterStr(containsRQuery);
+                  }
 
-                    if (vv.k == "transfer") {
-                      $.each(vv.v, function(vvVk, vvVv) {
-                        if (vvVk == "capitalize" && vvVv) {
-                          retS = self.capitalize({ str: retS });
-                        }
-                        if (vvVk == "snake" && vvVv) {
-                          retS = self.snake({ str: retS });
-                        }
-                      });
-                    }
+                  if (vv.k == "transfer") {
+                    $.each(vv.v, function(vvVk, vvVv) {
+                      if (vvVk == "capitalize" && vvVv) {
+                        retS = self.capitalize({ str: retS });
+                      }
+                      if (vvVk == "snake" && vvVv) {
+                        retS = self.snake({ str: retS });
+                      }
+                    });
+                  }
 
-                    if (vv.k == "append") {
-                      $.each(vv.v, function(vvVk, vvVv) {
-                        if (retS == vvVk) {
-                          retS += vvVv;
-                        }
-                      });
-                    }
-                  });
-                }
+                  if (vv.k == "append") {
+                    $.each(vv.v, function(vvVk, vvVv) {
+                      if (retS == vvVk) {
+                        retS += vvVv;
+                      }
+                    });
+                  }
+                });
+              }
+            });
+          }
+        }
+        return retS;
+      });
+    } else {
+      // 没有模板的时候，直接返回数据
+      oneRow = aRow.join("\n");
+    }
+    // 对格式化后的行数据进行二次格式化
+    if (type.fix) {
+      $.each(type.fix.roles, function(oi, ov) {
+        if ((ov.k == "single" || ov.k == "both") && iaRow % 2 == 1) {
+          // 单双行处理
+          $.each(ov.v, function(ovi, ovv) {
+            if (ovv.k == "replace") {
+              $.each(ovv.v, function(ovvVk, ovvVv) {
+                $.each(ovvVv, function(k2, v2) {
+                  oneRow = oneRow.replace(eval(k2), v2);
+                });
               });
             }
-          }
-          return retS;
-        });
-      } else {
-        // 没有模板的时候，直接返回数据
-        oneRow = aRow.join("\n");
-      }
-      // 对格式化后的行数据进行二次格式化
-      if (temp.fix) {
-        $.each(temp.fix.roles, function(oi, ov) {
-          if ((ov.k == "single" || ov.k == "both") && iaRow % 2 == 1) {
-            // 单双行处理
-            $.each(ov.v, function(ovi, ovv) {
-              if (ovv.k == "replace") {
-                $.each(ovv.v, function(ovvVk, ovvVv) {
-                  $.each(ovvVv, function(k2, v2) {
-                    oneRow = oneRow.replace(eval(k2), v2);
-                  });
-                });
-              }
-            });
-          }
-          //  此处 考虑 利用 mod 提炼函数，将其他配置转换成此处配置 *************
+          });
+        }
+        //  此处 考虑 利用 mod 提炼函数，将其他配置转换成此处配置 *************
 
-          if (ov.k == "mod" && ov.config && iaRow % ov.config.k == ov.config.value) {
-            debugger;
-            // 单双行处理
-            $.each(ov.v, function(ovi, ovv) {
-              if (ovv.k == "replace") {
-                $.each(ovv.v, function(ovvVk, ovvVv) {
-                  $.each(ovvVv, function(k2, v2) {
-                    oneRow = oneRow.replace(eval(k2), v2);
-                  });
+        if (ov.k == "mod" && ov.config && iaRow % ov.config.k == ov.config.value) {
+          debugger;
+          // 单双行处理
+          $.each(ov.v, function(ovi, ovv) {
+            if (ovv.k == "replace") {
+              $.each(ovv.v, function(ovvVk, ovvVv) {
+                $.each(ovvVv, function(k2, v2) {
+                  oneRow = oneRow.replace(eval(k2), v2);
                 });
-              }
-            });
-          }
+              });
+            }
+          });
+        }
 
-          if ((ov.k == "double" || ov.k == "both") && iaRow % 2 == 0) {
-            // 单双行处理
-            $.each(ov.v, function(ovi, ovv) {
-              if (ovv.k == "replace") {
-                $.each(ovv.v, function(ovvVk, ovvVv) {
-                  $.each(ovvVv, function(k2, v2) {
-                    oneRow = oneRow.replace(eval(k2), v2);
-                  });
+        if ((ov.k == "double" || ov.k == "both") && iaRow % 2 == 0) {
+          // 单双行处理
+          $.each(ov.v, function(ovi, ovv) {
+            if (ovv.k == "replace") {
+              $.each(ovv.v, function(ovvVk, ovvVv) {
+                $.each(ovvVv, function(k2, v2) {
+                  oneRow = oneRow.replace(eval(k2), v2);
                 });
-              }
-            });
-          }
-          if (ov.k == "end" && iaRow == len - 1) {
-            // 单双行处理
-            $.each(ov.v, function(ovi, ovv) {
-              if (ovv.k == "replace") {
-                $.each(ovv.v, function(ovvVk, ovvVv) {
-                  $.each(ovvVv, function(k2, v2) {
-                    oneRow = oneRow.replace(eval(k2), v2);
-                  });
+              });
+            }
+          });
+        }
+        if (ov.k == "end" && iaRow == len - 1) {
+          // 单双行处理
+          $.each(ov.v, function(ovi, ovv) {
+            if (ovv.k == "replace") {
+              $.each(ovv.v, function(ovvVk, ovvVv) {
+                $.each(ovvVv, function(k2, v2) {
+                  oneRow = oneRow.replace(eval(k2), v2);
                 });
-              }
-            });
-          }
-          if (ov.k == "first" && iaRow == 0) {
-            // 单双行处理
-            $.each(ov.v, function(ovi, ovv) {
-              if (ovv.k == "replace") {
-                $.each(ovv.v, function(ovvVk, ovvVv) {
-                  $.each(ovvVv, function(k2, v2) {
-                    oneRow = oneRow.replace(eval(k2), v2);
-                  });
+              });
+            }
+          });
+        }
+        if (ov.k == "first" && iaRow == 0) {
+          // 单双行处理
+          $.each(ov.v, function(ovi, ovv) {
+            if (ovv.k == "replace") {
+              $.each(ovv.v, function(ovvVk, ovvVv) {
+                $.each(ovvVv, function(k2, v2) {
+                  oneRow = oneRow.replace(eval(k2), v2);
                 });
-              }
-            });
-          }
-          if (ov.k == "fun") {
-            oneRow = ov.v(oneRow);
-          }
-        });
-      }
+              });
+            }
+          });
+        }
+        if (ov.k == "fun") {
+          oneRow = ov.v(oneRow);
+        }
+      });
+    }
 
-      return oneRow;
-    },
+    return oneRow;
+  },
 
     ///////////  2018 -07-08 整理
     /* 
@@ -644,7 +644,7 @@ export default {
           $.each(protoLikeArray, function(protoLikeArrayi, protoLikeArrayv) {
             // 模板  索引 替换值 将输入行（proto）通过分割符分割成数组 [1,2,3,4]
             let oneRow = self.rowTransfer({
-              temp: typesObj[v],
+              type: typesObj[v],
               iaRow: protoLikeArrayi,
               aRow: protoLikeArrayv,
               len: protoLikeArray.length
@@ -691,7 +691,7 @@ export default {
             });
           }
 
-          typesObj[v]["templateOut"] = self.rowTransfer({ temp: oAfter, iaRow: 0, aRow: protoLikeArrayv, len: 1 });
+          typesObj[v]["templateOut"] = self.rowTransfer({ type: oAfter, iaRow: 0, aRow: protoLikeArrayv, len: 1 });
         }
         //↑↑↑↑↑↑↑*************** 对处理完的数据再次处理，那时候应用的是 fix 对象————————————————————2——————
 
