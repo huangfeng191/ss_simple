@@ -60,38 +60,7 @@ export default {
   props: ["types", "selected"],
   data() {
     return {
-      //undo 添加是否存在不同处理逻辑
-      //可以考虑添加截取功能
-
-      //protoRowTranslate 事先对输入进行处理 目前只支持 function 方式
-      //  暂时参数 replace
-      //先按行进行处理 先处理 param  然后处理 fix
-      // 整个模板进行处理，对象放入 (fix.param (主要是替换参数用) 跟 fix.fixRoles（对模板进行处理）),处理模式与行一样，调用相同的函数
-
-      // param 对 template 进行处理，绑定proto(用户输入)
-      //param  是对${...}单个模板 输入项进行操作， 支持操作  [{k:"1",v: [ 规则]}]
-      //  对 模板 进行正则处理 ，匹配的项可 [{}]
-      //  'transfer',  ( capitalize 首字母大写 ，snake 驼峰)  { k: 'transfer', v: { capitalize: true } }
-
-      //  'replace'  根据输入文本替换成其他文本        { k: 'replace', v: { d: 'format:"yyyy-MM-dd"', c: 'format:"XXX"', s: 'format:"H0002"' } }
-      //  'containsReplace'  根据输入逐个解析  默认全部符合时才显示， 可设置 time 符合次数   same 全部符合
-      //  { k: 'containsReplace', v: { d: 'format:"yyyy-MM-dd"', c: 'format:"XXX"', s: 'format:"H0002"' } }
-
-      //  'append'     v: { datetime: '",format:"yyyy-MM-dd', combo: '",format:"XXX' }
-
-      //   'copy' 从其他输入复制 (不为空的时候才复制,目前复制的是输入，而不是转换后的值 , scope 是在范围内的才复制)
-
-      // fix 对行进行操作， 在 param 对行进行处理的时候，在行头，行尾替换、转换处理
-      // fix :{ roles:[规则] ,params:{ 参数 }}
-      //      roles:  single double both , first end 修理行数据 在行的位置添加
-      //  { k: 'both', v: [{ k: 'replace', v: [{ '/^{/': '[{', '/},$/': '}],' }] }] }
-      //               k  规则名称， v 规则详细
-      //  param 逻辑跟行处理的逻辑一致
-      // 在读取的时候 处理 param
-      // 'VUECRUDCOL', 'VUECRUDInputTwo', 'goModelAll', 'goStruct'
-
-      //  single:true, 是指没有模板时，输入 不用分 ，不用转换，当做1行处理的情况
-
+     
       template: "", //*** 行模板
       param: "", //*** 行模板
       aparts: " ,	", //*** 对行处理的分割符， 也就是说 获取 ${?}信息
