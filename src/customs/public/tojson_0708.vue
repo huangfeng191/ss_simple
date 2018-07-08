@@ -23,7 +23,7 @@
         </el-input>
       </el-col>
       <el-col :span="10" v-for="r in selectedDetail" :key="r.value">
-        <el-input class="selfw" type="textarea" :autosize="{ minRows: 10}" :placeholder="r.label" v-model="r.templateOut">
+        <el-input class="selfw" type="textarea" :autosize="{ minRows: 10}" :placeholder="r.label" v-model="r.tempV">
         </el-input>
       </el-col>
     </el-row>
@@ -130,43 +130,44 @@ export default {
     },
     // str 就是 调用前的输出
     //  该对象配置项config  就是 配置的 param 里面的 [{key, v:[ {配置项}]}]
-    existsReplace: function({ str, config }) {
-      let retS = "";
+    existsReplace:function({str,config,}){
+      let retS="";
       // 将数组配置成 对象
       let configO = {};
       $.each(config.v, function(configk, configv) {
         configO[configk] = configv;
       });
-      if (str in configO) {
-        retS = configO[str];
+      if(str in configO){
+        retS=configO[str]
       }
-      if (config.or && config.or.length > 0) {
-        config.or.forEach(function(v, i) {
-          if (v == "number") {
-            var regIsNumber = /^[0-9]+$/g;
-            if (regIsNumber.exec(str) != null) {
-              retS = str;
-            }
-          }
-        });
+      if(config.or && config.or.length>0){
+         config.or.forEach(function(v,i){
+           if (v=="number"){
+             var regIsNumber=/^[0-9]+$/g;
+             if((regIsNumber.exec(str)!=null )){
+                retS=str;
+             }
+           }
+         })
       }
       return retS;
     },
-    filterStr: function({ str, config, oModelItem }) {
-      let retS = str;
-      config.v.forEach(function(oConfigV, i) {
-        if (oConfigV.k == "notNumber") {
-          var regIsNumber = /^[0-9]+$/g;
-          if (regIsNumber.exec(str) != null) {
-            debugger;
-            if (oModelItem && oModelItem.default) {
-              retS = oModelItem.default;
-            } else {
-              retS = "";
-            }
+     filterStr:function({str,config,oModelItem}){
+      let retS=str;
+      config.v.forEach(function(oConfigV,i){
+          if(oConfigV.k=="notNumber"){
+              var regIsNumber=/^[0-9]+$/g;
+              if((regIsNumber.exec(str)!=null )){
+                debugger
+                  if(oModelItem &&oModelItem.default){
+                      retS=oModelItem.default;
+                  }else{
+                     retS="";
+                  }
+                 
+              }
           }
-        }
-      });
+      })
       return retS;
     },
     /* ↓↓↓↓↓↓↓↓↓↓↓↓以下为转换的规则 */
@@ -315,6 +316,7 @@ export default {
    o:暂时没有用到
    */
     rowTransfer: function({ temp, iaRow, aRow, len, o }) {
+      
       let self = this;
       // 是对输入的字段按分隔符进行处理
       if (temp.paramBefore) {
@@ -365,25 +367,25 @@ export default {
             oModelItem["str"] = str.match(re)[0];
             oModelItem["key"] = str.match(re)[1];
             oModelItem["default"] = str.match(re)[2];
-            if (oModelItem.key == 99) {
-              if (aRow.length > 0) {
-                retS = aRow[aRow.length - 1];
-              } else {
+            if (oModelItem.key==99){
+              if(aRow.length>0){
+                retS =aRow[aRow.length-1]
+              }else{
                 retS = oModelItem["default"];
               }
-            } else if (oModelItem.key == 98) {
-              if (aRow.length > 1) {
-                retS = aRow[aRow.length - 2];
-              } else {
+            }else if (oModelItem.key==98){
+              if(aRow.length>1){
+                retS =aRow[aRow.length-2]
+              }else{
                 retS = oModelItem["default"];
               }
-            } else if (oModelItem.key == 97) {
-              if (aRow.length > 2) {
-                retS = aRow[aRow.length - 3];
-              } else {
+            }else if (oModelItem.key==97){
+              if(aRow.length>2){
+                retS =aRow[aRow.length-3]
+              }else{
                 retS = oModelItem["default"];
               }
-            } else if (aRow[oModelItem["key"]] != undefined && aRow[oModelItem["key"]] != "") {
+            }else if (aRow[oModelItem["key"]] != undefined && aRow[oModelItem["key"]] != "") {
               retS = aRow[oModelItem["key"]];
             } else {
               retS = oModelItem["default"];
@@ -421,7 +423,7 @@ export default {
                       // (不为空的时候才复制,目前复制的是输入，而不是转换后的值 , scope 是在范围内的才复制 )
                       $.each(vv.v, function(vvVk, vvVv) {
                         //---
-
+                     
                         if (vvVk && aRow[vvVk] != undefined) {
                           if (vv.scope && $.inArray(aRow[vvVk], vv.scope) < 0) {
                           } else {
@@ -447,17 +449,18 @@ export default {
                       let containsRQuery = {};
                       containsRQuery["str"] = retS;
                       // containsRQuery["config"] = vv.v;
-                      containsRQuery["config"] = vv;
+                      containsRQuery["config"]=vv
                       retS = self.existsReplace(containsRQuery);
                     }
 
                     if (vv.k == "filterStr" && vv.v) {
                       let containsRQuery = {};
                       containsRQuery["str"] = retS;
-                      containsRQuery["config"] = vv;
+                      containsRQuery["config"]=vv
                       containsRQuery["oModelItem"] = methodParam.oModelItem;
                       retS = self.filterStr(containsRQuery);
                     }
+
 
                     if (vv.k == "transfer") {
                       $.each(vv.v, function(vvVk, vvVv) {
@@ -481,8 +484,9 @@ export default {
                 }
               });
             }
+           
           }
-          return retS;
+          return retS 
         });
       } else {
         // 没有模板的时候，直接返回数据
@@ -503,11 +507,11 @@ export default {
               }
             });
           }
-          //  此处 考虑 利用 mod 提炼函数，将其他配置转换成此处配置 *************
+//  此处 考虑 利用 mod 提炼函数，将其他配置转换成此处配置 *************
 
-          if (ov.k == "mod" && ov.config && iaRow % ov.config.k == ov.config.value) {
-            debugger;
-            // 单双行处理
+          if (ov.k == "mod"&&ov.config  && iaRow % ov.config.k == ov.config.value) {
+           debugger
+           // 单双行处理
             $.each(ov.v, function(ovi, ovv) {
               if (ovv.k == "replace") {
                 $.each(ovv.v, function(ovvVk, ovvVv) {
@@ -518,6 +522,7 @@ export default {
               }
             });
           }
+
 
           if ((ov.k == "double" || ov.k == "both") && iaRow % 2 == 0) {
             // 单双行处理
@@ -562,35 +567,7 @@ export default {
       }
 
       return oneRow;
-    },
-
-    ///////////  2018 -07-08 整理
-    /* 
-    selectedDetail need
-    in:
-      aparts: 
-      1 按行分隔
-      2 根据 aparts 将行 转换成数组
-    out:
-      aRet=[[]]
-     
-    */
-
-    protoToArray: function() {
-      let self = this;
-      let aRet = [];
-      if (self.proto) {
-        $.each(self.proto.split("\n"), function(i, v) {
-          if (v) {
-            aRet.push(
-              v.split(eval("/[" + self.aparts + "]/ ")).filter(function(x) {
-                if (x) return true;
-              })
-            );
-          }
-        });
-      }
-      return aRet;
+    
     }
   },
   computed: {
@@ -612,11 +589,11 @@ export default {
     // 转换的入口函数
     selectedDetail: function() {
       //  计算属性 ，返回的是转换后的数组对象 :aRet
-      //  显示的是 aRet.templateOut;
+      //  显示的是 aRet.tempV;
       var self = this;
 
       var typesObj = {};
-      var protoLikeArray = []; // 二维数组    [  行[需要替换对象]] 从输入的原始数据（proto） 中依据分割符号，提取成二维数组的数据
+      var protoLikeObj = []; // 二维数组    [  行[需要替换对象]] 从输入的原始数据（proto） 中依据分割符号，提取成二维数组的数据
       var aRet = [];
 
       //↓↓↓↓↓↓↓↓↓↓↓ 因为 types 是数组 将 数组转成对象 (typesObj)方便获取 模板信息，
@@ -624,37 +601,42 @@ export default {
       $.each(self.types, function(index, v) {
         typesObj[v.value] = v;
       });
+
       //↑↑↑↑↑↑↑***************  处理完成
 
-       //↓↓↓↓↓↓↓↓↓↓↓ 将 proto 转换成 二维数组信息
+      //↓↓↓↓↓↓↓↓↓↓↓
+      // 需要转换的数据
       if (self.proto) {
-        protoLikeArray=self.protoToArray();
+        $.each(self.proto.split("\n"), function(i, v) {
+          if (v) {
+            protoLikeObj.push(
+              v.split(eval("/[" + self.aparts + "]/ ")).filter(function(x) {
+                if (x) return true;
+              })
+            );
+          }
+        });
       }
       //↑↑↑↑↑↑↑*************** 从输入的原始数据（proto） 中依据分割符号，提取成二维数组的数据
 
       $.each(self.selected, function(i, v) {
         // 循环选中模板
-        typesObj[v]["templateOut"] = ""; // 更改值,既每个模板的返回值
+        typesObj[v]["tempV"] = ""; // 更改值,既每个模板的返回值
 
         //↓↓↓↓↓↓↓*************** 行数据需要转换的模板开始处理———————————————————1———————
 
         if (typesObj[v].template) {
-          typesObj[v]["templateOut"] = [];
+          typesObj[v]["tempV"] = [];
           // 循环生成记录
-          $.each(protoLikeArray, function(protoLikeArrayi, protoLikeArrayv) {
+          $.each(protoLikeObj, function(protoLikeObji, protoLikeObjv) {
             // 模板  索引 替换值 将输入行（proto）通过分割符分割成数组 [1,2,3,4]
-            let oneRow = self.rowTransfer({
-              temp: typesObj[v],
-              iaRow: protoLikeArrayi,
-              aRow: protoLikeArrayv,
-              len: protoLikeArray.length
-            });
+            let oneRow = self.rowTransfer({ temp: typesObj[v], iaRow: protoLikeObji, aRow: protoLikeObjv, len: protoLikeObj.length });
 
-            typesObj[v]["templateOut"].push(oneRow);
+            typesObj[v]["tempV"].push(oneRow);
           });
           // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑     每行处理完的结果
           // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 行join :(\n) 行替换完后处理
-          typesObj[v]["templateOut"] = typesObj[v]["templateOut"].join("\n");
+          typesObj[v]["tempV"] = typesObj[v]["tempV"].join("\n");
         } else {
           // 没有模板的话说明 参数就是输出， 只是做必要转换，那时候就得配置fix  了 （对每行进行处理）
           // 处理逻辑跟 fixparam 一致，只不过挪用param 的位置
@@ -664,7 +646,7 @@ export default {
 
         //↓↓↓↓↓↓↓*************** 对处理完的数据再次处理，那时候应用的是 fix 对象————————————————————2——————
         if (typesObj[v].fix && (typesObj[v].fix.param || typesObj[v].fix.fixRoles || typesObj[v].fix.paramBefore)) {
-          let oAfter = { template: typesObj[v]["templateOut"] };
+          let oAfter = { template: typesObj[v]["tempV"] };
           if (typesObj[v].fix.fixRoles) {
             oAfter.fix = { roles: typesObj[v].fix.fixRoles };
           }
@@ -677,21 +659,21 @@ export default {
           // 整个模板当一行处理
           //fixparam 界面输入的参数
 
-          let protoLikeArrayv = [];
+          let protoLikeObjv = [];
           //single 参数目前只用于一行（template） is null 情况
           if (typesObj[v].single) {
-            protoLikeArrayv = [self.proto];
+            protoLikeObjv = [self.proto];
           } else if (!typesObj[v].template) {
-            protoLikeArrayv = self.proto.split(/[\n ]/).filter(function(x) {
+            protoLikeObjv = self.proto.split(/[\n ]/).filter(function(x) {
               if (x) return true;
             });
           } else {
-            protoLikeArrayv = self.fixparam.split(/[\n ]/).filter(function(x) {
+            protoLikeObjv = self.fixparam.split(/[\n ]/).filter(function(x) {
               if (x) return true;
             });
           }
 
-          typesObj[v]["templateOut"] = self.rowTransfer({ temp: oAfter, iaRow: 0, aRow: protoLikeArrayv, len: 1 });
+          typesObj[v]["tempV"] = self.rowTransfer({ temp: oAfter, iaRow: 0, aRow: protoLikeObjv, len: 1 });
         }
         //↑↑↑↑↑↑↑*************** 对处理完的数据再次处理，那时候应用的是 fix 对象————————————————————2——————
 
