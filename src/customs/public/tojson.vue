@@ -128,63 +128,33 @@ export default {
       self.template = o[values[0]].template;
       self.param = JSON.stringify(o[values[0]].param);
     },
-    // str 就是 调用前的输出
-    //  该对象配置项config  就是 配置的 param 里面的 [{key, v:[ {配置项}]}]
-    existsReplace: function({ str, config }) {
-      let retS = "";
-      // 将数组配置成 对象
-      let configO = {};
-      $.each(config.v, function(configk, configv) {
-        configO[configk] = configv;
-      });
-      if (str in configO) {
-        retS = configO[str];
-      }
-      if (config.or && config.or.length > 0) {
-        config.or.forEach(function(v, i) {
-          if (v == "number") {
-            var regIsNumber = /^[0-9]+$/g;
-            if (regIsNumber.exec(str) != null) {
-              retS = str;
-            }
-          }
-        });
-      }
-      return retS;
-    },
-    filterStr: function({ str, config, strLikeObject }) {
-      let retS = str;
-      config.v.forEach(function(oConfigV, i) {
-        if (oConfigV.k == "notNumber") {
-          var regIsNumber = /^[0-9]+$/g;
-          if (regIsNumber.exec(str) != null) {
-            debugger;
-            if (strLikeObject && strLikeObject.default) {
-              retS = strLikeObject.default;
-            } else {
-              retS = "";
-            }
-          }
-        }
-      });
-      return retS;
-    },
+
     /* ↓↓↓↓↓↓↓↓↓↓↓↓以下为转换的规则 */
-    // 只有包含的字符才替换 ，按顺序单个替换
-    // str 输入的值，  config 配置的规则 ，time 匹配几次, same 是否完全匹配
+    // 只有包含的字符才替换 ,按顺序单个替换
+    // retStr 输入的值,  rule.v 配置的规则 ,time 匹配几次, same 是否完全匹配
     //
-    containsReplace: function({ str, config, time = 0, same = true, aRow, strLikeObject }) {
+    /* 
+    输入按字符替换
+    default: same=true
+             time 无限制
+
+    */
+    paramItemContainsReplace: function({ retStr, rule,  aRow, strLikeObject }) {
       // s 是最后的返回值
       let s = "";
+debugger
+        let config=rule.v;
+        let same =rule.same || true;
+        let time=rule.time|| 0;
       let configO = {};
       $.each(config, function(configk, configv) {
         configO[configk] = 1;
       });
 
-      $.each(str.split(""), function(stri, strv) {
+      $.each(retStr.split(""), function(stri, strv) {
         // 如果不在替换范围内则不需要替换 ，或者转换次数大于
         if (same && (configO[strv] == undefined || (configO[strv] > time && time != 0))) {
-          s = "";
+            s = "";
           return false;
         }
 
@@ -192,7 +162,7 @@ export default {
           if (time == 0 || time >= configO[strv]) {
             if (config[strv].k) {
               if (config[strv].k == "fun") {
-                s = config[strv].v(aRow, strLikeObject);
+                s += config[strv].v(aRow, strLikeObject);
               }
             } else {
               s += config[strv];
@@ -315,10 +285,7 @@ export default {
             strLikeObject["key"] = str.match(re)[1];
             strLikeObject["default"] = str.match(re)[2];
 
-            let methodParam = {}; // 为了解构新加 ,函数调用function
-            methodParam["strLikeObject"] = strLikeObject;
-            methodParam["aRow"] = aRow;
-
+            // ↓↓↓↓↓↓↓↓↓↓↓↓  将 aRow 数据 与 模板数据 进行 合并，形成 输出
             //  大于 90 的 配置 是 从末尾开始取 ，配置 99 就是 最后一个 98 倒数第二个
             if (strLikeObject.key >= 90) {
               if (aRow.length > 99 - strLikeObject.key) {
@@ -332,87 +299,61 @@ export default {
               retStr = strLikeObject["default"];
             }
 
-            // 每一项返回值进行二次处理
+            // ↑↑↑↑↑↑↑↑↑↑↑↑  将 aRow 数据 与 模板数据 进行 合并，形成 输出
+
+            //  ↓↓↓↓↓↓↓↓↓↓↓↓  对于结合就的返回值进行二次处理
             if (type.param) {
-              $.each(type.param, function(ip, vp) {
+              $.each(type.param, function(oneParamI, oneParamV) {
                 // 同一序号处理完成后再处理其他序号
-                if (strLikeObject["key"] == vp.k) {
+                if (strLikeObject["key"] == oneParamV.k) {
                   //  vv 就是配置项
-                  $.each(vp.v, function(vi, vv) {
-                    // 参数的replace 功能 // 参数时是原样替换
-                    if (vv.k == "replace") {
-                      $.each(vv.v, function(vvVk, vvVv) {
-                        // 输入的值 是需要替换的，那么替换成配置的值
-                        if (retStr == vvVk) {
-                          // 如果需要替换的值时一个对象，那么按对象类型（目前只有一个fun）进行控制
-                          if (vvVv.k) {
-                            if (vvVv.k == "fun") {
-                              retStr = vvVv.v(aRow, strLikeObject);
-                            }
-                          } else {
-                            retStr = vvVv;
-                          }
-                        }
-                      });
+                  debugger;
+                  $.each(oneParamV.v, function(vi, rule) {
+                    let methodParam = {}; // 为了解构新加 ,函数调用function
+                    methodParam["strLikeObject"] = strLikeObject;
+                    methodParam["retStr"] = retStr;
+                    methodParam["aRow"] = aRow;
+                    methodParam["rule"] = rule;
+
+                    if (rule.k == "replace") {
+                      retStr = self.paramItemReplace(methodParam);
                     }
 
-                    if (vv.k == "copy") {
+                    if (rule.k == "copy") {
                       // (不为空的时候才复制,目前复制的是输入，而不是转换后的值 , scope 是在范围内的才复制 )
-                      $.each(vv.v, function(vvVk, vvVv) {
-                        //---
-
-                        if (vvVk && aRow[vvVk] != undefined) {
-                          if (vv.scope && $.inArray(aRow[vvVk], vv.scope) < 0) {
-                          } else {
-                            retStr = aRow[vvVk];
-                          }
-                        }
-                      });
-                    }
-                    if (vv.k == "containsReplace" && vv.v) {
-                      // s 输入的值，  vv.v 配置的规则 ，vv.time 匹配几次, vv.same 是否完全匹配
-                      // str,config,time,same=true
-                      let containsRQuery = {};
-                      containsRQuery["str"] = retStr;
-                      containsRQuery["config"] = vv.v;
-                      containsRQuery["time"] = vv.time;
-                      containsRQuery["same"] = vv.same;
-                      containsRQuery["aRow"] = methodParam.aRow;
-                      containsRQuery["strLikeObject"] = methodParam.strLikeObject;
-                      retStr = self.containsReplace(containsRQuery);
-                      // retStr = self.containsReplace(s, vv.v, vv.time, vv.same);
-                    }
-                    if (vv.k == "existsReplace" && vv.v) {
-                      let containsRQuery = {};
-                      containsRQuery["str"] = retStr;
-                      // containsRQuery["config"] = vv.v;
-                      containsRQuery["config"] = vv;
-                      retStr = self.existsReplace(containsRQuery);
+                      retStr = self.paramItemCopy(methodParam);
                     }
 
-                    if (vv.k == "filterStr" && vv.v) {
-                      let containsRQuery = {};
-                      containsRQuery["str"] = retStr;
-                      containsRQuery["config"] = vv;
-                      containsRQuery["strLikeObject"] = methodParam.strLikeObject;
-                      retStr = self.filterStr(containsRQuery);
+                    if (rule.k == "existsReplace" && rule.v) {
+                      retStr = self.paramItemExistsReplace(methodParam);
                     }
 
-                    if (vv.k == "transfer") {
-                      $.each(vv.v, function(vvVk, vvVv) {
-                        if (vvVk == "capitalize" && vvVv) {
+                    //  对数据 进行筛选
+                    if (rule.k == "filterStr" && rule.v) {
+                      retStr = self.paramItemfilterStr(methodParam);
+                    }
+
+                    if (rule.k == "containsReplace" && rule.v) {
+                      // s 输入的值，  rule.v 配置的规则 ，rule.time 匹配几次, rule.same 是否完全匹配
+                      //time=0,same=true
+                      retStr = self.paramItemContainsReplace(methodParam);
+                    }
+                    // 转换
+                    if (rule.k == "transfer") {
+                      $.each(rule.v, function(ruleVk, ruleVv) {
+                        if (ruleVk == "capitalize" && ruleVv) {
                           retStr = self.capitalize({ str: retStr });
                         }
-                        if (vvVk == "snake" && vvVv) {
+                        if (ruleVk == "snake" && ruleVv) {
                           retStr = self.snake({ str: retStr });
                         }
                       });
                     }
-
-                    if (vv.k == "append") {
-                      $.each(vv.v, function(vvVk, vvVv) {
-                        if (retStr == vvVk) {
-                          retStr += vvVv;
+                    //  添加
+                    if (rule.k == "append") {
+                      $.each(rule.v, function(ruleVk, ruleVv) {
+                        if (retStr == ruleVk) {
+                          retStr += ruleVv;
                         }
                       });
                     }
@@ -530,6 +471,100 @@ export default {
         });
       }
       return aRet;
+    },
+
+    /* 
+    rowTransfer need 
+    
+    replace 的配置规则 是 {k:replace,v:{str:string,
+                                    fun:{}}}
+    in:
+     
+    out:
+      
+     
+    */
+    paramItemReplace: function({ retStr, rule, strLikeObject, aRow }) {
+      let config = rule.v;
+      debugger;
+      $.each(config, function(configK, configV) {
+        // 输入的值 是需要替换的，那么替换成配置的值
+        if (retStr == configK) {
+          // 如果需要替换的值是一个对象，那么按对象类型（目前只有一个fun）进行控制
+          if (configV.k) {
+            if (configV.k == "fun") {
+              retStr = configV.v(aRow, strLikeObject);
+            }
+          } else {
+            retStr = configV;
+          }
+        }
+      });
+      return retStr;
+    },
+    //  scope 是在范围内的才复制
+    // { k: "copy", v: { "2": true }, scope: ["d", "c"] }
+    paramItemCopy: function({ retStr, rule, strLikeObject, aRow }) {
+      let config = rule.v;
+      let scope = rule.scope;
+      $.each(config, function(configK, configV) {
+        //---
+
+        if (configK && aRow[configK] != undefined) {
+          if (scope && $.inArray(aRow[configK], scope) < 0) {
+          } else {
+            retStr = aRow[configK];
+          }
+        }
+      });
+      return retStr;
+    },
+
+    // retStr 就是 调用前的输出
+    //  该对象配置项config  就是 配置的 param 里面的 [{key, v:[ {配置项}]}]
+    //  如果存在 替换，
+    // 不存在 ，输出空
+    paramItemExistsReplace: function({ retStr, rule }) {
+      let retS = "";
+      // 将数组配置成 对象
+      let config = rule.v;
+      let configO = {};
+
+      $.each(config, function(configK, configV) {
+        configO[configK] = configV;
+      });
+      if (retStr in configO) {
+        retS = configO[retStr];
+      }
+      if (rule.or && rule.or.length > 0) {
+        rule.or.forEach(function(v, i) {
+          if (v == "number") {
+            var regIsNumber = /^[0-9]+$/g;
+            if (regIsNumber.exec(retStr) != null) {
+              retS = retStr;
+            }
+          }
+        });
+      }
+      return retS;
+    },
+    /* 
+    
+    */
+    paramItemfilterStr: function({ retStr, rule, strLikeObject }) {
+      let config = rule.v;
+      config.forEach(function(oConfigV, i) {
+        if (oConfigV.k == "notNumber") {
+          if (/^[0-9]+$/g.exec(retStr) != null) {
+            if (strLikeObject && strLikeObject.default) {
+              retStr = strLikeObject.default;
+            } else {
+              retStr = "";
+            }
+          }
+        }
+      });
+      return retStr;
     }
   },
   computed: {
