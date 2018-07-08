@@ -51,14 +51,24 @@ o={
       }
 
     ],
-    
+    //  对处理完param 的 按行 的一维数组 ，进行二次处理
+    //  可以操作的权限 包括：
+    // single double both first end mod
+    // 其中 mod 是 万能配置
+    // single double 针对的是 数组的 下标 ，既从0 开始
+    // 目前只支持 replace
     fix: {
       roles: [
         // single double both ,end 修理行数据 在行的位置添加
         //  当符合条件时 配置余数
-        { k: "mod", config:{"k":3,"value":0}, v: [{ k: "replace", v: [{ "/^{/": "[{" }] }] },
-        { k: "mod", config:{"k":3,"value":1}, v: [{ k: "replace", v: [{ "/},$/": "},]," }] }] },
+        { k: "mod", config:{"k":3,"v":0}, v: [{ k: "replace", v: [{ "/^{/": "[{" }] }] },
+        { k: "mod", config:{"k":3,"v":1}, v: [{ k: "replace", v: [{ "/},$/": "},]," }] }] },
         { k: "end", v: [{ k: "replace", v: [{ "/},$/": "},]," }] }] }
+      ],
+      //  按行 再次应用规则，
+      // 可以用在， 在转换过程中 配置规则的时候 ，配置 "${1:table_name} ${0:} " 类型
+      param:[
+
       ],
       fixRoles: [
 
