@@ -166,6 +166,7 @@ export default {
     /* ↑↑↑↑↑↑↑↑↑↑↑↑以上为转换的规则 */
     /* ↓↓↓↓↓↓↓↓↓↓↓↓ protoRow 处理 */
     protoRowTranslate: function({ aRow, type }) {
+      let self=this;
       if (type.protoRowTranslate) {
         $.each(type.protoRowTranslate, function(vi, vv) {
           if (vv.k == "fun") {
