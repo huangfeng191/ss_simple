@@ -21,10 +21,35 @@ o={
       ] 
    */
     param: [
+      //  k >=90 倒叙 
       {
         k: "98",
         v: [{ k: "existsReplace", v: { int: "int", string: "string" },or:["number"] }]  // 全部存在的时候 ，才显示， 或者输入是数字
+      },
+      // 先复制，
+      // 在替换
+      {
+        k: "31",
+        v: [
+          { k: "copy", v: { "3": true }, scope: ["c"] },
+          {
+            k: "containsReplace",
+            v: {
+              c: {
+                k: "fun",
+                v: function(row, strLikeObject) {
+                  if (row[4]) {
+                    return row[4];
+                  } else {
+                    return "USER";
+                  }
+                }
+              }
+            }
+          }
+        ]
       }
+
     ],
     
     fix: {

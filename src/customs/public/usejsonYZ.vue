@@ -12,7 +12,7 @@ export default {
   data() {
     return {
       // selected: ["scada6crudcol", "scada6crudinputOne"],
-      selected: ["scada6crudinputThree","toRowSingle","scada6crudcol","scada6Input"],
+      selected: ["scada6crudinputThree", "toRowSingle", "scada6crudcol", "scada6Input"],
       selected: ["scada6crudinputThree"],
       // selected: ["scada6Quick"],
       types: [
@@ -39,7 +39,7 @@ export default {
           value: "scada6crudcol",
           label: "scada6crudcol",
           template:
-           '{ "field": "${1:nm}","title": "${0:nm}", "align": "center", "halign":"center","colspan": 1,"hidden": false, "rowspan": 1,"width": 100,${3} },',
+            '{ "field": "${1:nm}","title": "${0:nm}", "align": "center", "halign":"center","colspan": 1,"hidden": false, "rowspan": 1,"width": 100,${3} },',
           param: [
             {
               k: "3",
@@ -67,7 +67,7 @@ export default {
           ]
         },
 
-         {
+        {
           // 取第一个值 组成数组格式
           value: "toRowSingle",
           label: "toRowSingle",
@@ -86,27 +86,25 @@ export default {
                     })
                     .join(",");
                 }
-              },
+              }
               // { k: "first", v: [{ k: "replace", v: [{ "/^/": "[" }] }] },
               // { k: "end", v: [{ k: "replace", v: [{ "/$/": "]" }] }] }
             ]
           }
         },
 
-
-              {
+        {
           value: "scada6Input",
           label: "scada6Input",
           template: '"${1}": {"Names": [u"${0}"], "DataType": "${2:String}", "Ext": "","required":True},',
           param: [
-              {
+            {
               k: "2",
-              v: [
-                { k: "replace", v: { string: "String", int: "Number" , double: "Double" } }]
-            },
+              v: [{ k: "replace", v: { string: "String", int: "Number", double: "Double" } }]
+            }
           ]
         },
-      
+
         {
           value: "scada6crudinputThree",
           label: "scada6crudinputThree",
@@ -115,17 +113,36 @@ export default {
           param: [
             {
               k: "2",
-              v: [
-                { k: "replace", v: { string: "String", int: "Number" , double: "Number" } }]
+              v: [{ k: "replace", v: { string: "String", int: "Number", double: "Number" } }]
             },
             {
               k: "3",
               v: [
-                  { k: "filterStr", v:[{k:"notNumber",operate:"and" } ] },
-                  { k: "replace", v: { c: "combo", d: "datetime", a: "textarea", u: "upload", t: "text" } }
-                  ]
+                { k: "filterStr", v: [{ k: "notNumber", operate: "and" }] },
+                { k: "replace", v: { c: "combo", d: "datetime", a: "textarea", u: "upload", t: "text" } }
+              ]
+            },
+            {
+              k: "31",
+              v: [
+                { k: "copy", v: { "3": true }, scope: ["c"] },
+                {
+                  k: "containsReplace",
+                  v: {
+                    c: {
+                      k: "fun",
+                      v: function(row, strLikeObject) {
+                        if (row[4]) {
+                          return row[4];
+                        } else {
+                          return "USER";
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
             }
- 
           ],
           fix: {
             roles: [
