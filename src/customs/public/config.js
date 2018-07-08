@@ -27,7 +27,7 @@ o={
         v: [{ k: "existsReplace", v: { int: "int", string: "string" },or:["number"] }]  // 全部存在的时候 ，才显示， 或者输入是数字
       },
       // 先复制，
-      // 在替换
+      // 再替换
       {
         k: "31",
         v: [
