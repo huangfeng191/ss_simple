@@ -63,7 +63,7 @@ export default {
       //undo 添加是否存在不同处理逻辑
       //可以考虑添加截取功能
 
-      //paramBefore 事先对输入进行处理 目前只支持 function 方式
+      //protoRowTranslate 事先对输入进行处理 目前只支持 function 方式
       //  暂时参数 replace
       //先按行进行处理 先处理 param  然后处理 fix
       // 整个模板进行处理，对象放入 (fix.param (主要是替换参数用) 跟 fix.fixRoles（对模板进行处理）),处理模式与行一样，调用相同的函数
@@ -225,6 +225,28 @@ export default {
       return s.join("");
     },
     /* ↑↑↑↑↑↑↑↑↑↑↑↑以上为转换的规则 */
+    /* ↓↓↓↓↓↓↓↓↓↓↓↓ protoRow 处理 */
+    protoRowTranslate:function({aRow,type}){
+      if(type.protoRowTranslate){
+            $.each(type.protoRowTranslate, function(vi, vv) {
+
+              if (vv.k == "fun") {
+                if (aRow) {
+                  aRow = vv.v(aRow);
+                }
+              }
+              if (vv.k == "reg") {
+                // v 截取规则
+                if (aRow) {
+                  aRow = self.toFilter(aRow, vv.v);
+                }
+              }
+
+            });
+      }
+      return aRow
+    
+    },
     // 一个规则
     toFilter: function(arr, regO) {
       // regO  /g /i    role:  replace  match
@@ -251,62 +273,7 @@ export default {
       });
       return rArr;
     },
-    // temp 选中的单个模板
-    //row [] 需要转换的数据 ， irow 第几行（对行添加前缀后缀时需要） o 其他对象
-    // row 是一个一维数组，是用分隔符分割后的数据 ？
-
-    //  作为逻辑来讲，，1 模板，+proto 生成目标数据，对目标数据进行处理（fix）
-    /* 对行数据处理的核心方法
-处理逻辑：
-    找出模板中需要替换的字段，用用户输入的信息进行替换，
-    目前调用分两种情况，
-      1 对行数据进行处理，此时的规则配置为：param:[
-        {  替换字段按顺序执行
-              k: "2",
-              v: [   k规则名， 对每项的规则按顺序执行
-                   { k: "replace",  
-                    v: { c: "combo", d: "datetime", a: "textarea", u: "upload", f: "text" }}] 
-                    
-        },
-      ] 
-      2 对行数据处理完合并的数据，再次应用规则，此时的规则配置为：fix{
-          roles: [ 对数据进行处理
-              {
-                k: "both",
-                v: [{ k: "replace", v: [{ "/^{/": "[{", "/},$/": "}]," }] }]
-              }
-            ],
-
-           //  paramBefore: [  事先对输入进行处理 目前只支持 function 方式 (次方法应该也可在 方式1中使用)
-              { 
-                k: "fun",
-                v: function(arr) {
-                  return arr.filter(function(v, i, self) {
-                    if (v == "–") {
-                      return false;
-                    }
-                    return self.indexOf(v) === i;
-                  });
-                }
-              }
-            ],  
-
-            param: [] // 类似调用方式1 中的，param
-
-            fixRoles: [ // 就是方式1中的 fix.roles   roles:  single double both , first end 修理行数据 在行的位置添加
-              {
-                k: "fun",
-                v: function(str) {
-                  return str.split("\n").join(",");
-                }
-              }
-            ]
-
-
-
-      }
-    
-    */
+    /* ↑↑↑↑↑↑↑↑↑↑↑↑ protoRow 处理 */
     /* 
    temp: 模板：就是配置详细
    irow: proto  的第几行
@@ -317,21 +284,10 @@ export default {
    rowTransfer: function({ type, iaRow, aRow, len, o }) {
     let self = this;
     // 是对输入的字段按分隔符进行处理
-    if (type.paramBefore) {
+    if (type.protoRowTranslate) {
       // 处理分两类: 参数处理，模板处理，此部分是在 转换前
-      $.each(type.paramBefore, function(vi, vv) {
-        if (vv.k == "fun") {
-          if (aRow) {
-            aRow = vv.v(aRow);
-          }
-        }
-        if (vv.k == "reg") {
-          // v 截取规则
-          if (aRow) {
-            aRow = self.toFilter(aRow, vv.v);
-          }
-        }
-      });
+        self.protoRowTranslate({type,aRow})
+
     }
     // 找出可替换变量
     var reg = /\$\{{1}[0-9a-zA-Z\_\/:]+\}{1}/g;
@@ -639,7 +595,7 @@ export default {
         //↓↓↓↓↓↓↓*************** 行数据需要转换的模板开始处理———————————————————1———————
 
         if (typesObj[v].template) {
-          typesObj[v]["templateOut"] = [];
+          typesObj[v]["templateOutArray"] = [];
           // 循环生成记录
           $.each(protoLikeArray, function(protoLikeArrayi, protoLikeArrayv) {
             // 模板  索引 替换值 将输入行（proto）通过分割符分割成数组 [1,2,3,4]
@@ -650,11 +606,11 @@ export default {
               len: protoLikeArray.length
             });
 
-            typesObj[v]["templateOut"].push(oneRow);
+            typesObj[v]["templateOutArray"].push(oneRow);
           });
           // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑     每行处理完的结果
           // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 行join :(\n) 行替换完后处理
-          typesObj[v]["templateOut"] = typesObj[v]["templateOut"].join("\n");
+          typesObj[v]["templateOut"] = typesObj[v]["templateOutArray"].join("\n");
         } else {
           // 没有模板的话说明 参数就是输出， 只是做必要转换，那时候就得配置fix  了 （对每行进行处理）
           // 处理逻辑跟 fixparam 一致，只不过挪用param 的位置
@@ -663,7 +619,7 @@ export default {
         //↑↑↑↑↑↑↑*************** 行数据需要转换的模板处理完成————————————————————1——————
 
         //↓↓↓↓↓↓↓*************** 对处理完的数据再次处理，那时候应用的是 fix 对象————————————————————2——————
-        if (typesObj[v].fix && (typesObj[v].fix.param || typesObj[v].fix.fixRoles || typesObj[v].fix.paramBefore)) {
+        if (typesObj[v].fix && (typesObj[v].fix.param || typesObj[v].fix.fixRoles || typesObj[v].fix.protoRowTranslate)) {
           let oAfter = { template: typesObj[v]["templateOut"] };
           if (typesObj[v].fix.fixRoles) {
             oAfter.fix = { roles: typesObj[v].fix.fixRoles };
@@ -671,8 +627,8 @@ export default {
           if (typesObj[v].fix.param) {
             oAfter.param = typesObj[v].fix.param;
           }
-          if (typesObj[v].fix.paramBefore) {
-            oAfter.paramBefore = typesObj[v].fix.paramBefore;
+          if (typesObj[v].fix.protoRowTranslate) {
+            oAfter.protoRowTranslate = typesObj[v].fix.protoRowTranslate;
           }
           // 整个模板当一行处理
           //fixparam 界面输入的参数

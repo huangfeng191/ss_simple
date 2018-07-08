@@ -5,6 +5,14 @@ o={
     template: '${99:nm} ',
     single: true,
     desc: " ",
+    /* 
+    对 protoLikeArray one Row 处理
+    支持： 1 fun 支持自定义 数据处理
+           2 reg 通过正则方式 来过滤数据 
+    */
+    protoRowTranslate:[
+
+    ],
     param: [
       {
         k: "98",

@@ -212,10 +212,12 @@ export default {
                 v: [{ k: "transfer", v: { snake: true } }]
               }
             ],
-            paramBefore: [
+            protoRowTranslate: [
               {
                 k: "fun",
                 v: function(arr) {
+                    // v, i, self self 就是 arr
+                    // 对输入的数组 进行 筛选， 如果有相同元素，只去第一个元素，并且去除 输入数据是 - 的数组
                   return arr.filter(function(v, i, self) {
                     if (v == "–") {
                       return false;
@@ -385,7 +387,7 @@ export default {
           desc: " ",
           param: [],
           fix: {
-            paramBefore: [
+            protoRowTranslate: [
               {
                 k: "reg", // 匹配任意字符 \s \S
                 v: { role: "match", reg: "--data-binary '([\\s\\S]*)' --compresse", idx: 1 }

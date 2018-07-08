@@ -178,7 +178,7 @@ export default {
                 v: [{ k: "transfer", v: { snake: true } }]
               }
             ],
-            paramBefore: [
+            protoRowTranslate: [
               {
                 k: "fun",
                 v: function(arr) {
