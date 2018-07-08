@@ -139,13 +139,13 @@ export default {
              time 无限制
 
     */
-    paramItemContainsReplace: function({ retStr, rule,  aRow, strLikeObject }) {
+    paramItemContainsReplace: function({ retStr, rule, aRow, strLikeObject }) {
       // s 是最后的返回值
       let s = "";
-debugger
-        let config=rule.v;
-        let same =rule.same || true;
-        let time=rule.time|| 0;
+
+      let config = rule.v;
+      let same = rule.same || true;
+      let time = rule.time || 0;
       let configO = {};
       $.each(config, function(configk, configv) {
         configO[configk] = 1;
@@ -154,7 +154,7 @@ debugger
       $.each(retStr.split(""), function(stri, strv) {
         // 如果不在替换范围内则不需要替换 ，或者转换次数大于
         if (same && (configO[strv] == undefined || (configO[strv] > time && time != 0))) {
-            s = "";
+          s = "";
           return false;
         }
 
@@ -307,7 +307,7 @@ debugger
                 // 同一序号处理完成后再处理其他序号
                 if (strLikeObject["key"] == oneParamV.k) {
                   //  vv 就是配置项
-                  debugger;
+
                   $.each(oneParamV.v, function(vi, rule) {
                     let methodParam = {}; // 为了解构新加 ,函数调用function
                     methodParam["strLikeObject"] = strLikeObject;
@@ -366,74 +366,38 @@ debugger
         });
       } else {
         // 没有模板的时候，直接返回数据
+        // 此处的join 有问题，或者 iaRow =0
         oneRow = aRow.join("\n");
       }
       // 对格式化后的行数据进行二次格式化
       if (type.fix) {
         $.each(type.fix.roles, function(oi, ov) {
-          if ((ov.k == "single" || ov.k == "both") && iaRow % 2 == 1) {
-            // 单双行处理
-            $.each(ov.v, function(ovi, ovv) {
-              if (ovv.k == "replace") {
-                $.each(ovv.v, function(ovvVk, ovvVv) {
-                  $.each(ovvVv, function(k2, v2) {
-                    oneRow = oneRow.replace(eval(k2), v2);
-                  });
-                });
-              }
-            });
-          }
-          //  此处 考虑 利用 mod 提炼函数，将其他配置转换成此处配置 *************
+          let methodFix = {};
+          methodFix["role"] = Object.assign({}, ov);
+          methodFix["oneRow"] = oneRow;
+          methodFix["iaRow"] = iaRow;
 
-          if (ov.k == "mod" && ov.config && iaRow % ov.config.k == ov.config.value) {
-            debugger;
-            // 单双行处理
-            $.each(ov.v, function(ovi, ovv) {
-              if (ovv.k == "replace") {
-                $.each(ovv.v, function(ovvVk, ovvVv) {
-                  $.each(ovvVv, function(k2, v2) {
-                    oneRow = oneRow.replace(eval(k2), v2);
-                  });
-                });
-              }
-            });
-          }
+          if (ov.k == "mod") {
+            oneRow = self.fixRoleMode(methodFix);
+            //  此处的判断是针对 iaRow 行的索引 类型，而不是自然的行数
+          } else if (
+            ov.k == "single" ||
+            ov.k == "double" ||
+            ov.k == "both" ||
+            (ov.k == "first" && iaRow == 0) ||
+            (ov.k == "end" && iaRow == len - 1)
+          ) {
+            debugger
+            methodFix["role"]["k"] = "mod";
+            methodFix["role"]["condition"] = { k: 1, v: 0 };
 
-          if ((ov.k == "double" || ov.k == "both") && iaRow % 2 == 0) {
-            // 单双行处理
-            $.each(ov.v, function(ovi, ovv) {
-              if (ovv.k == "replace") {
-                $.each(ovv.v, function(ovvVk, ovvVv) {
-                  $.each(ovvVv, function(k2, v2) {
-                    oneRow = oneRow.replace(eval(k2), v2);
-                  });
-                });
-              }
-            });
-          }
-          if (ov.k == "end" && iaRow == len - 1) {
-            // 单双行处理
-            $.each(ov.v, function(ovi, ovv) {
-              if (ovv.k == "replace") {
-                $.each(ovv.v, function(ovvVk, ovvVv) {
-                  $.each(ovvVv, function(k2, v2) {
-                    oneRow = oneRow.replace(eval(k2), v2);
-                  });
-                });
-              }
-            });
-          }
-          if (ov.k == "first" && iaRow == 0) {
-            // 单双行处理
-            $.each(ov.v, function(ovi, ovv) {
-              if (ovv.k == "replace") {
-                $.each(ovv.v, function(ovvVk, ovvVv) {
-                  $.each(ovvVv, function(k2, v2) {
-                    oneRow = oneRow.replace(eval(k2), v2);
-                  });
-                });
-              }
-            });
+            if (ov.k == "single") {
+              methodFix["role"]["condition"] = { k: 2, v: 1 };
+            }
+            if (ov.k == "double") {
+              methodFix["role"]["condition"] = { k: 2, v: 0 };
+            }
+            oneRow = self.fixRoleMode(methodFix);
           }
           if (ov.k == "fun") {
             oneRow = ov.v(oneRow);
@@ -486,7 +450,7 @@ debugger
     */
     paramItemReplace: function({ retStr, rule, strLikeObject, aRow }) {
       let config = rule.v;
-      debugger;
+
       $.each(config, function(configK, configV) {
         // 输入的值 是需要替换的，那么替换成配置的值
         if (retStr == configK) {
@@ -565,6 +529,24 @@ debugger
         }
       });
       return retStr;
+    },
+    //  { k: "mod", condition: { k: 3, value: 0 }, v: [{ k: "replace", v: [{ "/^{/": "[{" }] }] },
+
+    fixRoleMode: function({ oneRow, role, iaRow }) {
+      let config = role.v;
+      if (role.k == "mod" && role.condition && iaRow % role.condition.k == role.condition.v) {
+        // 单双行处理
+        $.each(config, function(configI, configV) {
+          if (configV.k == "replace") {
+            $.each(configV.v, function(configVVk, configVVv) {
+              $.each(configVVv, function(k2, v2) {
+                oneRow = oneRow.replace(eval(k2), v2);
+              });
+            });
+          }
+        });
+      }
+      return oneRow;
     }
   },
   computed: {

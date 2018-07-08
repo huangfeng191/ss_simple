@@ -130,8 +130,8 @@ export default {
           fix: {
             roles: [
               // single double both ,end 修理行数据 在行的位置添加
-              { k: "mod", config: { k: 3, value: 0 }, v: [{ k: "replace", v: [{ "/^{/": "[{" }] }] },
-              { k: "mod", config: { k: 3, value: 2 }, v: [{ k: "replace", v: [{ "/},$/": "},]," }] }] },
+              { k: "mod", condition: { k: 3, v: 0 }, v: [{ k: "replace", v: [{ "/^{/": "[{" }] }] },
+              { k: "mod", condition: { k: 3, v: 2 }, v: [{ k: "replace", v: [{ "/},$/": "},]," }] }] },
               { k: "end", v: [{ k: "replace", v: [{ "/},$/": "},]," }] }] }
             ],
             param: []
