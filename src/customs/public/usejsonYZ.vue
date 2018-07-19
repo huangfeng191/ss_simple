@@ -57,7 +57,19 @@ export default {
                         }
                       }
                     },
-                    d: "formatter: DateFormatter,",
+                    d: {
+                      k: "fun",
+                      v: function(row, tempConfigO) {
+                        if (row[4]=="yyyy") {
+                          return 'formatter: YearFormatter,';
+                        } else  if (row[4]=="yyyy-MM") {
+                          return 'formatter: MonthFormatter,';
+                        } else {
+                          return 'formatter: DateFormatter,';
+                        }
+                      }
+                    },
+                    //  "formatter: DateFormatter,",
                     u: 'unit:"XXX",',
                     f: "formatter: function (v, r, i) {\n if (v){return v; \n}else {\n return v; \n}   },"
                   }
@@ -125,7 +137,7 @@ export default {
             {
               k: "31",
               v: [
-                { k: "copy", v: { "3": true }, scope: ["c"] },
+                { k: "copy", v: { "3": true }, scope: ["c","d"] },
                 {
                   k: "containsReplace",
                   v: {
@@ -136,6 +148,16 @@ export default {
                           return row[4];
                         } else {
                           return "USER";
+                        }
+                      }
+                    },
+                     d: {
+                      k: "fun",
+                      v: function(row, strLikeObject) {
+                        if (row[4] && /^[0-9]+$/g.exec(row[4]) == null) {
+                          return row[4];
+                        } else {
+                          return "yyyy-MM-dd";
                         }
                       }
                     }
