@@ -12,7 +12,9 @@ export default {
   data() {
     return {
       // selected: ["scada6crudcol", "scada6crudinputOne"],
-      selected: ["scada6crudinputThree", "toRowSingle", "scada6crudcol", "scada6Input"],
+      // selected: ["scada6crudinputThree", "toRowSingle", "scada6crudcol", "scada6Input"],
+      // selected: ["scada6crudinputThree", "toRowSingle", "CueColumns", "CueCrudInputThree"],
+      selected: [ "toRowSingle", "CueColumns", "CueCrudInputThree"],
       // selected: ["scada6crudinputThree"],
       // selected: ["scada6Quick"],
       types: [
@@ -25,11 +27,11 @@ export default {
           param: [
             {
               k: "98",
-              v: [{ k: "existsReplace", v: { int: "int", nt: "int", Int: "int", string: "string" }, or: ["number"] }]
+              v: [{ k: "existsReplace", v: { int: "int", nt: "int", Int: "int", string: "string", text: "text" }, or: ["number"] }]
             },
             {
               k: "97",
-              v: [{ k: "existsReplace", v: { int: "int", nt: "int", Int: "int", string: "string" }, or: ["number"] }]
+              v: [{ k: "existsReplace", v: { int: "int", nt: "int", Int: "int", string: "string", text: "text" }, or: ["number"] }]
             }
           ],
           fix: {}
@@ -70,7 +72,7 @@ export default {
                       }
                     },
                     //  "formatter: DateFormatter,",
-                    u: 'unit:"XXX",',
+                    // u: 'unit:"XXX",',
                     f: "formatter: function (v, r, i) {\n if (v){return v; \n}else {\n return v; \n}   },"
                   }
                 }
@@ -175,7 +177,124 @@ export default {
             ],
             param: []
           }
-        }
+        },
+//  cue 
+         {
+          value: "CueCrudInputThree",
+          label: "CueCrudInputThree",
+          template: 
+        '{title: "${0}", data: "${1}", required: false, dataType: "${2:String}", showType: "${3:text}" ${31},},',
+          param: [
+              {
+              k: "2",
+              v: [{ k: "replace", v: { string: "String", int: "Number", double: "Number", float: "Number" , text: "String" } }]
+            },
+              {
+              k: "3",
+              v: [
+                { k: "filterStr", v: [{ k: "notNumber", operate: "and" }] },
+                { k: "replace", v: { c: "combo", d: "datetime", a: "textarea", u: "upload", t: "text" } }
+              ]
+            },
+                        {
+              k: "31",
+              v: [
+                { k: "copy", v: { "3": true }, scope: ["c","d","a"] },
+                {
+                  k: "containsReplace",
+                  v: {
+                    c: {
+                      k: "fun",
+                      v: function(row, strLikeObject) {
+                        if (row[4]) {
+                          return ',format:"'+row[4]+'"';
+                        } else {
+                          return ',format:"USER"';
+                        }
+                      }
+                    },
+                     d: {
+                      k: "fun",
+                      v: function(row, strLikeObject) {
+                        if (row[4] && /^[0-9]+$/g.exec(row[4]) == null) {
+                          return ',format:"'+row[4]+'"';
+                        } else {
+                          return ',format:"yyyy-MM-dd"';
+                        }
+                      }
+                    },
+                      a: {
+                      k: "fun",
+                      v: function(row, strLikeObject) {
+                        return ',colSpan:3';
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+           fix: {
+            roles: [
+              // single double both ,end 修理行数据 在行的位置添加
+              { k: "mod", condition: { k: 3, v: 0 }, v: [{ k: "replace", v: [{ "/^{/": "[{" }] }] },
+              { k: "mod", condition: { k: 3, v: 2 }, v: [{ k: "replace", v: [{ "/},$/": "},]," }] }] },
+              { k: "end", v: [{ k: "replace", v: [{ "/},$/": "},]," }] }] }
+            ],
+            param: []
+          }
+        },
+
+
+        {
+          value: "CueColumns",
+          label: "CueColumns",
+          template: 
+          '{title: "${0}", data: "${1}","width": 100,${3}  },',
+          param: [
+                     {
+              k: "3",
+              v: [
+                {
+                  k: "containsReplace",
+                  v: {
+                    c: {
+                      k: "fun",
+                      v: function(row, tempConfigO) {
+                        if (row[4]) {
+                          return 'binding:"' + row[4] + '"';
+                          return 'format:"' + row[4] + '",';
+                        } else {
+                          return 'format:"USER",';
+                        }
+                      }
+                    },
+                    d: {
+                      k: "fun",
+                      v: function(row, tempConfigO) {
+                        if (row[4]=="yyyy") {
+                          return 'type: "date",format: "yyyy", ';
+                        } else  if (row[4]=="yyyy-MM") {
+                          return 'type: "date",format: "yyyy-MM", ';
+                        } else {
+                          return 'type: "date",format: "yyyy-MM-dd", ';
+                        }
+                      }
+                    },
+                  
+                    // u: 'unit:"XXX",',
+                    // f: "formatter: function (v, r, i) {\n if (v){return v; \n}else {\n return v; \n}   },"
+                  }
+                }
+              ]
+            }
+          ],
+           fix: {
+    
+          }
+        },
+
+
       ]
     };
   },
