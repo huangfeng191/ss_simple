@@ -262,7 +262,7 @@ export default {
                       k: "fun",
                       v: function(row, tempConfigO) {
                         if (row[4]) {
-                          return 'binding:"' + row[4] + '"';
+                          // return 'binding:"' + row[4] + '"';
                           return 'format:"' + row[4] + '",';
                         } else {
                           return 'format:"USER",';
