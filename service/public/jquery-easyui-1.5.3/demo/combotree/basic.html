@@ -42,7 +42,7 @@
     "state": "closed"
 }];
 
-debugger
+
 $("#cs111").combotree({
             data: Items,
             onSelect: function (record) {
@@ -55,7 +55,7 @@ $("#cs111").combotree({
                 var t = $(this);
                 if (data) {
                     $(data).each(function (index, d) {
-                    	debugger
+                    	
                         if (this.state == 'closed') {
                             t.tree('expandAll');
                         }

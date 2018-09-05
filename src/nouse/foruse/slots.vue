@@ -35,7 +35,7 @@ export default {
             "level"
         ],
         render: function (createElement) {
-            debugger
+            
             //this.$slots 获取slots  
         //    用来访问被插槽分发的内容。每个具名插槽 有其相应的属性 
         //    (例如：slot="foo" 中的内容将会在 vm.$slots.foo 中被找到)。

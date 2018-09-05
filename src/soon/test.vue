@@ -56,7 +56,7 @@ export default {
   mounted() {},
   methods: {
     showShijian1: function() {
-      debugger;
+      ;
       this.show1 = !this.show1;
     }
   },

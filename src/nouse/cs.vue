@@ -13,11 +13,15 @@
       <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
     </span>
   </el-dialog>
+
+  <import-temp url="www.baidu.com"></import-temp>
+
 </div>
 
 
 </template>
 <script>
+import importTemp from "./components/importtemp.vue"
 export default {
   data() {
 
@@ -26,6 +30,7 @@ export default {
       };
     },
     methods: {
+
       handleClose(done) {
         this.$confirm('确认关闭？')
           .then(_ => {
@@ -33,6 +38,9 @@ export default {
           })
           .catch(_ => {});
       }
+    },
+    components:{
+      importTemp
     }
   };
 

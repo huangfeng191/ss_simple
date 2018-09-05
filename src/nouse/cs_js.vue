@@ -41,12 +41,11 @@
             self.forInput +
           `  ;log.push("end;")}
          `;
-          debugger;
+          
           //  var ss = bb;
           var o = { getplay: eval("(" + strFunciton + ")") };
           o.getplay(self.print);
     
-          debugger;
           return a;
         }
       },

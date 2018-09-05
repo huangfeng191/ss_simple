@@ -14,7 +14,7 @@ export default {
       // selected: ["scada6crudcol", "scada6crudinputOne"],
       // selected: ["scada6crudinputThree", "toRowSingle", "scada6crudcol", "scada6Input"],
       // selected: ["scada6crudinputThree", "toRowSingle", "CueColumns", "CueCrudInputThree"],
-      selected: [ "toRowSingle", "CueColumns", "CueCrudInputThree"],
+      selected: [ "toRowSingle", "CueColumns", "CueCrudInputThree","interfaceUp"],
       // selected: ["scada6crudinputThree"],
       // selected: ["scada6Quick"],
       types: [
@@ -106,6 +106,24 @@ export default {
             ]
           }
         },
+
+
+ {
+          // 接口上传
+          value: "interfaceUp",
+          label: "interfaceUp",
+          template: '{"sn":"${0}","nm":"${4}","ty":"${2}", "len":"${3}"},' ,
+          param: {},
+          fix: {
+            roles: [],
+            fixRoles: [
+                { k: "first", v: [{ k: "replace", v: [{ "/^/": "[" }] }] },
+              { k: "end", v: [{ k: "replace", v: [{ "/$/": "]" }] }] }
+             
+            ]
+          }
+        },
+
 
         {
           value: "scada6Input",

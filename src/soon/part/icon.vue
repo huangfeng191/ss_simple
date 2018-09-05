@@ -20,7 +20,7 @@ export default {
   created() {},
   mounted() {
   
-      debugger
+      
   },
   methods: {},
   watch: {},

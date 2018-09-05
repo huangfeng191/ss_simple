@@ -158,7 +158,7 @@ export default {
           if(oConfigV.k=="notNumber"){
               var regIsNumber=/^[0-9]+$/g;
               if((regIsNumber.exec(str)!=null )){
-                debugger
+                
                   if(oModelItem &&oModelItem.default){
                       retS=oModelItem.default;
                   }else{
@@ -510,7 +510,7 @@ export default {
 //  此处 考虑 利用 mod 提炼函数，将其他配置转换成此处配置 *************
 
           if (ov.k == "mod"&&ov.config  && iaRow % ov.config.k == ov.config.value) {
-           debugger
+           
            // 单双行处理
             $.each(ov.v, function(ovi, ovv) {
               if (ovv.k == "replace") {
