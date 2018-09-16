@@ -14,10 +14,29 @@ export default {
       // selected: ["scada6crudcol", "scada6crudinputOne"],
       // selected: ["scada6crudinputThree", "toRowSingle", "scada6crudcol", "scada6Input"],
       // selected: ["scada6crudinputThree", "toRowSingle", "CueColumns", "CueCrudInputThree"],
-      selected: [ "toRowSingle", "CueColumns", "CueCrudInputThree","interfaceUp"],
+      selected: [ "toRowSingle", "CueColumns", "CueCrudInputThree","interfaceUp","mongoField"],
       // selected: ["scada6crudinputThree"],
-      // selected: ["scada6Quick"],
+      selected: ["mongoField"],
       types: [
+        {
+          // 取第一个值 组成数组格式
+          value: "mongoField",
+          label: "mongoField",
+          template: '"${0:nm}":1',
+          param: {},
+          fix: {
+            roles: [
+            ],
+            fixRoles: [
+              {
+                k: "fun",
+                v: function(str) {
+                  return str.split("\n").join(",");
+                }
+              }
+            ]
+          }
+        },
         {
           value: "testlast",
           label: "testlast",
