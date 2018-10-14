@@ -14,9 +14,9 @@ export default {
       // selected: ["scada6crudcol", "scada6crudinputOne"],
       // selected: ["scada6crudinputThree", "toRowSingle", "scada6crudcol", "scada6Input"],
       // selected: ["scada6crudinputThree", "toRowSingle", "CueColumns", "CueCrudInputThree"],
-      selected: [ "toRowSingle", "CueColumns", "CueCrudInputThree","interfaceUp","mongoField"],
+      selected: [ "toRowSingle","switch2and1", "CueColumns", "CueCrudInputThree","interfaceUp","mongoField"],
       // selected: ["scada6crudinputThree"],
-      selected: ["mongoField"],
+      // selected: ["mongoField"],
       types: [
         {
           // 取第一个值 组成数组格式
@@ -126,13 +126,33 @@ export default {
           }
         },
 
+        {
+          // 取第一个值 组成数组格式
+          value: "switch2and1",
+          label: "switch2and1",
+          template: '"${1:to2}" "${0:to1}"',
+          param: {},
+          fix: {
+            roles: [],
+            fixRoles: [
+           
+            ]
+          }
+        },
 
  {
           // 接口上传
           value: "interfaceUp",
           label: "interfaceUp",
-          template: '{"sn":"${0}","nm":"${4}","ty":"${2}", "len":"${3}"},' ,
-          param: {},
+          template: '{"sn":"${1}","nm":"${0}","ty":"${2}", "len":"${99}"},' ,
+          param:  [
+            { k: "2",
+              v: [{ k: "replace", v: { String: "string" } }],},
+               {
+              k: "99",
+              v: [{ k: "existsReplace", v: { int: "int", nt: "int", Int: "int", string: "string", text: "text" }, or: ["number"] }]
+            },
+          ],
           fix: {
             roles: [],
             fixRoles: [
