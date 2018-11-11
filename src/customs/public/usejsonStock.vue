@@ -40,7 +40,9 @@ export default {
               k: "3",
               v: [
                 { k: "filterStr", v: [{ k: "notNumber", operate: "and" }] },
+
                 { k: "replace", v: { c: "QCombox", d: "QDatetime", r: "QDatetimeRange",  t: "QText" } }
+
               ]
             },
             {

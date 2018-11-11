@@ -73,6 +73,18 @@ export default {
   },
   methods: {
     getTemp() {},
+    disposeBefore(proto){
+      let protoDisposeA=[];
+
+      // 将注释字符去掉 字符未 //
+      if(proto){
+        proto.split("\n").forEach(function(x){
+          protoDisposeA.push((x||"").split("//")[0]);
+        })
+      }
+      return protoDisposeA.join("\n")
+
+    },
     changeTemplate() {
       var self = this;
       if (self.selected.length > 0) {
@@ -393,8 +405,10 @@ export default {
     protoToArray: function() {
       let self = this;
       let aRet = [];
+      let protoDispose="";
       if (self.proto) {
-        $.each(self.proto.split("\n"), function(i, v) {
+        protoDispose=self.disposeBefore(self.proto);
+        $.each(protoDispose.split("\n"), function(i, v) {
           if (v) {
             aRet.push(
               v.split(eval("/[" + self.aparts + "]/ ")).filter(function(x) {
