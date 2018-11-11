@@ -12,7 +12,7 @@ export default {
   data() {
     return {
       // selected: ["scada6crudcol", "scada6crudinputOne"],
-      // selected: ["scada6crudinputThree", "toRowSingle", "scada6crudcol", "scada6Input"],
+      // selected: ["scada6crudinputThree", "toRowSingle", "scada6crudcol", "scada6Important"],
       // selected: ["scada6crudinputThree", "toRowSingle", "CueColumns", "CueCrudInputThree"],
       selected: [ "toRowSingle","switch2and1", "CueColumns", "CueCrudInputThree","interfaceUp","mongoField"],
       // selected: ["scada6crudinputThree"],
@@ -165,8 +165,8 @@ export default {
 
 
         {
-          value: "scada6Input",
-          label: "scada6Input",
+          value: "scada6Important",
+          label: "scada6Important",
           template: '"${1}": {"Names": [u"${0}"], "DataType": "${2:String}", "Ext": "","required":True},',
           param: [
             {
