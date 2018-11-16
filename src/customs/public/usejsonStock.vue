@@ -33,7 +33,7 @@ export default {
           value: "scada6crudquics",
           label: "scada6crudquics",
           template:
-            '{ "Field": "${1:nm}", "Label": "${0:nm}", "Type":  "QCombox",  TextField: "name", ValueField: "value", "Width": 90 ,${31} },',
+            '{ "Field": "${1:nm}", "Label": "${0:nm}", "Type":  "${3:QText}",  TextField: "name", ValueField: "value", "Width": 90 ,${31} },',
           param: [
             
             {
