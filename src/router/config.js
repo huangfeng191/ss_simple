@@ -20,15 +20,17 @@ import UseJsona from '../customs/public/usejsona.vue'
 import UseJsonYZ from '../customs/public/UseJsonYZ.vue'
 import ToJsonTest from '../customs/public/tojsontest.vue'
 import ToJsonStock from '../customs/public/UseJsonStock.vue'
+import UseJsonSS from '../customs/public/UseJsonSS.vue'
 export default{
 	routes:[
 		{path:'/cs', component:Cs},
 		{path:'/cs_js', component:SoonCsJs},
 		{path:'/usejson6', component:UseJson6},
 		{path:'/jsontest', component:ToJsonTest},
-		{path:'/usejson7', component:UseJson7},
+		// {path:'/usejson7', component:UseJson7},
 		{path:'/usejsona', component:UseJsona},
 		{path:'/usejsonyz', component:UseJsonYZ},
+		{path:'/usejsonss', component:UseJsonSS},
         {path:'/position', component:Position},
         {path:'/css', component:Css},
 		{path:'/news', component:News},

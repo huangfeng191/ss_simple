@@ -2,7 +2,6 @@
     <div id="app">
         <div style="height:25px;">
             <router-link to="/usejson6">usejson6</router-link>
-            <router-link to="/usejson7">usejson7</router-link>
             <router-link to="/usejsona">usejsonall</router-link>
             <router-link to="/jsontest">jsontest</router-link>
             <router-link to="/position">position</router-link>
@@ -14,6 +13,7 @@
             <router-link to="/mystock">维护页面</router-link>
             <router-link to="/usejsonyz">鄞州配置</router-link>
             <router-link to="/usejsonstock">stock配置</router-link>
+            <router-link to="/usejsonss">usejsonSS</router-link>
         </div>
         <router-view></router-view>
     </div>
