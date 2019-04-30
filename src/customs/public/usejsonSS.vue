@@ -69,7 +69,7 @@ export default {
           // 取第一个值 组成数组格式
           value: "ssBinding",
           label: "ssBinding",
-          template: '{"Name": "${0:nm}", "Value":"${0:""}" },',
+          template: '{"Name": "${0}", "Value":"${1}" },',
           param: [],
           fix: {
             roles: [
@@ -82,7 +82,7 @@ export default {
                     v: [
                       {
                         "/^/":
-                          '//${1:nm}\n${0:nm}:[\n'
+                          '${0:nm}:[//${1:nm}\n'
                       }
                     ]
                   }
