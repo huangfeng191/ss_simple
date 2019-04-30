@@ -18,20 +18,18 @@ export default {
       // selected: ["scada6crudinputThree", "toRowSingle", "ssForm", "scada6Important"],
       // selected: ["scada6crudinputThree", "toRowSingle", "CueColumns", "CueCrudInputThree"],
       // selected: ["toRowSingle", "switch2and1", "CueColumns", "CueCrudInputThree", "interfaceUp", "mongoField"],
-      selected: ["ssForm","ssButton"],
+      selected: ["ssForm", "ssButton","ssBinding"],
       // selected: ["mongoField"],
       types: [
-  
         {
           value: "ssForm",
           label: "ssForm",
           template:
             ' [{ "title": "${0:nm}","field": "${1:sn}",  "showType": "${2:text}", ${21} }],',
           param: [
-              { k: "2",
-               v: [{ k: "replace", v: { c: "select" } }],},
+            { k: "2", v: [{ k: "replace", v: { c: "select" } }] },
 
-              {
+            {
               k: "21",
               v: [
                 { k: "copy", v: { "2": true }, scope: ["c"] },
@@ -42,39 +40,62 @@ export default {
                       k: "fun",
                       v: function(row, tempConfigO) {
                         if (row[3]) {
-                          return  'binding:"'+row[3]+'"'  ;
+                          return 'binding:"' + row[3] + '"';
                         } else {
                           return 'binding:"XXX"';
                         }
                       }
                     }
-                  
                   }
                 }
-
-              
               ]
             }
-
-
-          ],
+          ]
         },
 
-
-           {
+        {
           // 取第一个值 组成数组格式
           value: "ssButton",
           label: "ssButton",
-          template: '{"Name": "${0:nm}", "Cmd": "${1:insert}",  "Class": "${2}" },',
-          param: [
-
-          ],
+          template:
+            '{"Name": "${0:nm}", "Cmd": "${1:insert}",  "Class": "${2}" },',
+          param: [],
           fix: {
             roles: [],
             fixRoles: []
           }
         },
-
+        {
+          // 取第一个值 组成数组格式
+          value: "ssBinding",
+          label: "ssBinding",
+          template: '{"Name": "${0:nm}", "Value":"${0:""}" },',
+          param: [],
+          fix: {
+            roles: [
+              // single double both ,end 修理行数据 在行的位置添加
+              {
+                k: "first",
+                v: [
+                  {
+                    k: "replace",
+                    v: [
+                      {
+                        "/^/":
+                          '//${1:nm}\n${0:nm}:[\n'
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                k: "end",
+                v: [{ k: "replace", v: [{ "/$/": "\n]" }] }]
+              }
+            ],
+            fixRoles: []
+          }
+        },
 
         {
           // 取第一个值 组成数组格式
@@ -114,9 +135,6 @@ export default {
           }
         },
 
-     
-
-    
         {
           value: "scada6crudinputThree",
           label: "scada6crudinputThree",
@@ -125,13 +143,27 @@ export default {
           param: [
             {
               k: "2",
-              v: [{ k: "replace", v: { string: "String", int: "Number", double: "Number" } }]
+              v: [
+                {
+                  k: "replace",
+                  v: { string: "String", int: "Number", double: "Number" }
+                }
+              ]
             },
             {
               k: "3",
               v: [
                 { k: "filterStr", v: [{ k: "notNumber", operate: "and" }] },
-                { k: "replace", v: { c: "combo", d: "datetime", a: "textarea", u: "upload", t: "text" } }
+                {
+                  k: "replace",
+                  v: {
+                    c: "combo",
+                    d: "datetime",
+                    a: "textarea",
+                    u: "upload",
+                    t: "text"
+                  }
+                }
               ]
             },
             {
@@ -169,14 +201,21 @@ export default {
           fix: {
             roles: [
               // single double both ,end 修理行数据 在行的位置添加
-              { k: "mod", condition: { k: 3, v: 0 }, v: [{ k: "replace", v: [{ "/^{/": "[{" }] }] },
-              { k: "mod", condition: { k: 3, v: 2 }, v: [{ k: "replace", v: [{ "/},$/": "},]," }] }] },
+              {
+                k: "mod",
+                condition: { k: 3, v: 0 },
+                v: [{ k: "replace", v: [{ "/^{/": "[{" }] }]
+              },
+              {
+                k: "mod",
+                condition: { k: 3, v: 2 },
+                v: [{ k: "replace", v: [{ "/},$/": "},]," }] }]
+              },
               { k: "end", v: [{ k: "replace", v: [{ "/},$/": "},]," }] }] }
             ],
             param: []
           }
-        },
-  
+        }
       ]
     };
   },
