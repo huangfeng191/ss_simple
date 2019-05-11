@@ -18,7 +18,7 @@ export default {
       // selected: ["scada6crudinputThree", "toRowSingle", "ssForm", "scada6Important"],
       // selected: ["scada6crudinputThree", "toRowSingle", "CueColumns", "CueCrudInputThree"],
       // selected: ["toRowSingle", "switch2and1", "CueColumns", "CueCrudInputThree", "interfaceUp", "mongoField"],
-      selected: ["ssForm", "ssButton","ssBinding"],
+      selected: ["ssForm", "ssButton", "ssBinding", "ssTable"],
       // selected: ["mongoField"],
       types: [
         {
@@ -52,6 +52,45 @@ export default {
             }
           ]
         },
+        {
+          value: "ssTable",
+          label: "ssTable",
+          template:
+            ' { "title": "${0:nm}","field": "${1:sn}",  "showType": "${2:text}", ${21} },',
+          param: [
+            { k: "2", v: [{ k: "replace", v: { b: "button" } }] },
+
+            {
+              k: "21",
+              v: [
+                { k: "copy", v: { "2": true }, scope: ["b"] },
+                {
+                  k: "containsReplace",
+                  v: {
+                    b: {
+                      k: "fun",
+                      v: function(row, tempConfigO) {
+                        if (row[3]) {
+                          return 'format:"' + row[3] + '"';
+                        } else {
+                          return 'format:"XXX"';
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          fix: {
+            roles: [],
+            fixRoles: [
+      
+              { k: "first", v: [{ k: "replace", v: [{ "/^/": "[" }] }] },
+              { k: "end", v: [{ k: "replace", v: [{ "/$/": "]" }] }] }
+            ]
+          }
+        },
 
         {
           // 取第一个值 组成数组格式
@@ -81,8 +120,7 @@ export default {
                     k: "replace",
                     v: [
                       {
-                        "/^/":
-                          '${0:nm}:[//${1:nm}\n'
+                        "/^/": "${0:nm}:[//${1:nm}\n"
                       }
                     ]
                   }
