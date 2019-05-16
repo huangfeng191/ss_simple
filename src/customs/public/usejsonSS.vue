@@ -55,10 +55,10 @@ export default {
         {
           value: "ssTable",
           label: "ssTable",
-          template:
-            ' { "title": "${0:nm}","field": "${1:sn}",  "showType": "${2:text}", ${21} },',
+          template:  // showType  : c select  v selectValue b:button
+            ' { "title": "${0:nm}","field": "${1:sn}",  "showType": "${2:text}", ${21}  ${22} },',
           param: [
-            { k: "2", v: [{ k: "replace", v: { b: "button" } }] },
+            { k: "2", v: [{ k: "replace", v: { b: "button",c:"select",v:"selectValue" } }] },
 
             {
               k: "21",
@@ -74,6 +74,37 @@ export default {
                           return 'format:"' + row[3] + '"';
                         } else {
                           return 'format:"XXX"';
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              k: "22",
+              v: [
+                { k: "copy", v: { "2": true }, scope: ["c","v"] },
+                {
+                  k: "containsReplace",
+                  v: {
+                    c: {
+                      k: "fun",
+                      v: function(row, tempConfigO) {
+                        if (row[3]) {
+                          return 'binding:"' + row[3] + '"';
+                        } else {
+                          return 'binding:"XXX"';
+                        }
+                      }
+                    },
+                     v: { // 输入为v
+                      k: "fun",
+                      v: function(row, tempConfigO) {
+                        if (row[3]) {
+                          return 'binding:"' + row[3] + '"';
+                        } else {
+                          return 'binding:"XXX"';
                         }
                       }
                     }
