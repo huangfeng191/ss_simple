@@ -18,7 +18,7 @@ export default {
       // selected: ["scada6crudinputThree", "toRowSingle", "ssForm", "scada6Important"],
       // selected: ["scada6crudinputThree", "toRowSingle", "CueColumns", "CueCrudInputThree"],
       // selected: ["toRowSingle", "switch2and1", "CueColumns", "CueCrudInputThree", "interfaceUp", "mongoField"],
-      selected: ["ssForm", "ssButton", "ssBinding", "ssTable"],
+      selected: ["tableRow","ssForm", "ssButton", "ssBinding", "ssTable"],
       // selected: ["mongoField"],
       types: [
         {
@@ -122,7 +122,75 @@ export default {
             ]
           }
         },
-
+{
+          value: "tableRow",
+          label: "tableRow",
+          template:  // showType  : c select  v selectValue b:button
+            ' { "title": "${0:nm}","field": "${1:sn}"${21}${22} },',
+          param: [
+            //  f  format   d  dateformatter  c binding 
+            {
+              k: "21",
+              v: [
+                { k: "copy", v: { "2": true }, scope: ["f","d"] },
+                {
+                  k: "containsReplace",
+                  v: {
+                    f: {
+                      k: "fun",
+                      v: function(row, tempConfigO) {
+                        if (row[3]) {
+                          return ',format:"' + row[3] + '"';
+                        } else {
+                          return ',format:"XXX"';
+                        }
+                      }
+                    }, 
+                    d: {
+                      k: "fun",
+                      v: function(row, tempConfigO) {
+                        if (row[3]) {
+                          return ',format:"' + row[3] + '"';
+                        } else {
+                          return ',format:"TimeFormatter"';
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              k: "22",
+              v: [
+                { k: "copy", v: { "2": true }, scope: ["c"] },
+                {
+                  k: "containsReplace",
+                  v: {
+                    c: {
+                      k: "fun",
+                      v: function(row, tempConfigO) {
+                        if (row[3]) {
+                          return ',binding:"' + row[3] + '"';
+                        } else {
+                          return ',binding:"XXX"';
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          fix: {
+            roles: [],
+            fixRoles: [
+      
+              { k: "first", v: [{ k: "replace", v: [{ "/^/": "[" }] }] },
+              { k: "end", v: [{ k: "replace", v: [{ "/$/": "]" }] }] }
+            ]
+          }
+        },
         {
           // 取第一个值 组成数组格式
           value: "ssButton",
