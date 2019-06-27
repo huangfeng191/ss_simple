@@ -19,7 +19,7 @@ export default {
       // selected: ["scada6crudinputThree", "toRowSingle", "CueColumns", "CueCrudInputThree"],
       // selected: ["toRowSingle", "switch2and1", "CueColumns", "CueCrudInputThree", "interfaceUp", "mongoField"],
       // selected: ["tableRow","ssForm", "ssButton", "ssBinding", "ssTable"],
-      selected: ["CommandForm"],
+      selected: ["CommandForm","ssBindingSame"],
       types: [
         {
           value: "ssForm",
@@ -56,22 +56,22 @@ export default {
           value: "CommandForm",
           label: "CommandForm",
           template:
-            ' [{ "title": "${0:nm}","field": "${1:sn}","command": "${2}",  "showType": "${3:text}", ${31} }],',
+            ' [{ "title": "${0:nm}","field": "${1:sn}","command": "${2}","key": "${3}","showType": "${4:text}", ${41} }],',
           param: [
-            { k: "3", v: [{ k: "replace", v: { c: "select" } }] },
+            { k: "4", v: [{ k: "replace", v: { c: "select" } }] },
 
             {
-              k: "31",
+              k: "41",
               v: [
-                { k: "copy", v: { "3": true }, scope: ["c"] },
+                { k: "copy", v: { "4": true }, scope: ["c"] },
                 {
                   k: "containsReplace",
                   v: {
                     c: {
                       k: "fun",
                       v: function(row, tempConfigO) {
-                        if (row[4]) {
-                          return 'binding:"' + row[4] + '"';
+                        if (row[5]) {
+                          return 'binding:"' + row[5] + '"';
                         } else {
                           return 'binding:"XXX"';
                         }
@@ -239,6 +239,49 @@ export default {
           value: "ssBinding",
           label: "ssBinding",
           template: '{"Name": "${0}", "Value":"${1}" },',
+          param: [],
+          fix: {
+            roles: [
+              // single double both ,end 修理行数据 在行的位置添加
+              {
+                k: "first",
+                v: [
+                  {
+                    k: "replace",
+                    v: [
+                      {
+                        "/^/": "${0:nm}:[//${1:nm}\n"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                k: "end",
+                v: [{ k: "replace", v: [{ "/$/": "\n]" }] }]
+              }
+            ],
+            fixRoles: []
+          }
+        },
+        {
+          // 取第一个值 组成数组格式
+          value: "ssBindingSame",
+          label: "ssBindingSame",
+          template: '{"Name": "${0}", "Value":"${0}" },',
+          dealProtoLikeArray:function(a){
+            var ret=[]
+            var b=a;
+            if(!a){
+              b=[]
+            }
+            b.forEach(function(x){
+                $.each(x,function(xi,xv){
+                  ret.push([xv])
+                })
+            })
+            return ret;
+          },
           param: [],
           fix: {
             roles: [

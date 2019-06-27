@@ -574,6 +574,10 @@ export default {
 
       $.each(self.selected, function(i, v) {
         // 循环选中模板
+         if(typesObj[v].dealProtoLikeArray){
+           protoLikeArray=typesObj[v].dealProtoLikeArray(protoLikeArray)
+         }
+
         typesObj[v]["templateOut"] = ""; // 更改值,既每个模板的返回值
 
         //↓↓↓↓↓↓↓*************** 行数据需要转换的模板开始处理———————————————————1———————
