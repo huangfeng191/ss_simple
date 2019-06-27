@@ -18,8 +18,8 @@ export default {
       // selected: ["scada6crudinputThree", "toRowSingle", "ssForm", "scada6Important"],
       // selected: ["scada6crudinputThree", "toRowSingle", "CueColumns", "CueCrudInputThree"],
       // selected: ["toRowSingle", "switch2and1", "CueColumns", "CueCrudInputThree", "interfaceUp", "mongoField"],
-      selected: ["tableRow","ssForm", "ssButton", "ssBinding", "ssTable"],
-      // selected: ["mongoField"],
+      // selected: ["tableRow","ssForm", "ssButton", "ssBinding", "ssTable"],
+      selected: ["CommandForm"],
       types: [
         {
           value: "ssForm",
@@ -41,6 +41,37 @@ export default {
                       v: function(row, tempConfigO) {
                         if (row[3]) {
                           return 'binding:"' + row[3] + '"';
+                        } else {
+                          return 'binding:"XXX"';
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          value: "CommandForm",
+          label: "CommandForm",
+          template:
+            ' [{ "title": "${0:nm}","field": "${1:sn}","command": "${2}",  "showType": "${3:text}", ${31} }],',
+          param: [
+            { k: "3", v: [{ k: "replace", v: { c: "select" } }] },
+
+            {
+              k: "31",
+              v: [
+                { k: "copy", v: { "3": true }, scope: ["c"] },
+                {
+                  k: "containsReplace",
+                  v: {
+                    c: {
+                      k: "fun",
+                      v: function(row, tempConfigO) {
+                        if (row[4]) {
+                          return 'binding:"' + row[4] + '"';
                         } else {
                           return 'binding:"XXX"';
                         }
