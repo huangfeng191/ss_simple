@@ -19,7 +19,9 @@ export default {
       // selected: ["scada6crudinputThree", "toRowSingle", "CueColumns", "CueCrudInputThree"],
       // selected: ["toRowSingle", "switch2and1", "CueColumns", "CueCrudInputThree", "interfaceUp", "mongoField"],
       // selected: ["tableRow","ssForm", "ssButton", "ssBinding", "ssTable"],
-      selected: ["CommandForm","ssBindingSame"],
+      // selected: ["CommandForm","ssBindingSame","CommandFormExtend"],
+      // selected: ["CommandForm", "CommandFormExtend"],
+      selected: [ "CommandFormExtend"],
       types: [
         {
           value: "ssForm",
@@ -84,12 +86,46 @@ export default {
           ]
         },
         {
+          value: "CommandFormExtend",
+          label: "CommandFormExtend",
+
+          //  title	qCommand	qOthers	qKey	qGroup
+          template:
+            ',"qCommand": "${1}","qKey": "${2}","qOthers": ${3},"qGroup": "${4}" ',
+          param: [],
+          protoRowTranslate: [
+            {
+              k: "fun",
+              v: function(arr) {
+               (arr||[]).forEach(function(a,i){
+                 if(a.split("=").length>1){
+                   var keyValue=a.split("=");
+                   arr[i]={}
+                   arr[i][keyValue[0]]=keyValue[1]
+                   arr[i]=JSON.stringify(arr[i])
+                 }
+               })
+                return arr;
+              }
+            }
+          ]
+        },
+        {
           value: "ssTable",
           label: "ssTable",
-          template:  // showType  : c select  v selectValue b:button
+          // showType  : c select  v selectValue b:button
+          template:
             ' { "title": "${0:nm}","field": "${1:sn}",  "showType": "${2:text}", ${21}  ${22} },',
           param: [
-            { k: "2", v: [{ k: "replace", v: { b: "button",c:"select",v:"selectValue" } }] },
+            {
+              k: "2",
+              v: [
+                {
+                  k: "replace",
+                  v: { b: "button", c: "select", v: "selectValue" }
+                }
+              ]
+            },
 
             {
               k: "21",
@@ -115,7 +151,7 @@ export default {
             {
               k: "22",
               v: [
-                { k: "copy", v: { "2": true }, scope: ["c","v"] },
+                { k: "copy", v: { "2": true }, scope: ["c", "v"] },
                 {
                   k: "containsReplace",
                   v: {
@@ -129,7 +165,8 @@ export default {
                         }
                       }
                     },
-                     v: { // 输入为v
+                    v: {
+                      // 输入为v
                       k: "fun",
                       v: function(row, tempConfigO) {
                         if (row[3]) {
@@ -147,23 +184,22 @@ export default {
           fix: {
             roles: [],
             fixRoles: [
-      
               { k: "first", v: [{ k: "replace", v: [{ "/^/": "[" }] }] },
               { k: "end", v: [{ k: "replace", v: [{ "/$/": "]" }] }] }
             ]
           }
         },
-{
+        {
           value: "tableRow",
           label: "tableRow",
-          template:  // showType  : c select  v selectValue b:button
-            ' { "title": "${0:nm}","field": "${1:sn}"${21}${22} },',
+          // showType  : c select  v selectValue b:button
+          template: ' { "title": "${0:nm}","field": "${1:sn}"${21}${22} },',
           param: [
-            //  f  format   d  dateformatter  c binding 
+            //  f  format   d  dateformatter  c binding
             {
               k: "21",
               v: [
-                { k: "copy", v: { "2": true }, scope: ["f","d"] },
+                { k: "copy", v: { "2": true }, scope: ["f", "d"] },
                 {
                   k: "containsReplace",
                   v: {
@@ -176,7 +212,7 @@ export default {
                           return ',format:"XXX"';
                         }
                       }
-                    }, 
+                    },
                     d: {
                       k: "fun",
                       v: function(row, tempConfigO) {
@@ -216,7 +252,6 @@ export default {
           fix: {
             roles: [],
             fixRoles: [
-      
               { k: "first", v: [{ k: "replace", v: [{ "/^/": "[" }] }] },
               { k: "end", v: [{ k: "replace", v: [{ "/$/": "]" }] }] }
             ]
@@ -269,17 +304,17 @@ export default {
           value: "ssBindingSame",
           label: "ssBindingSame",
           template: '{"Name": "${0}", "Value":"${0}" },',
-          dealProtoLikeArray:function(a){
-            var ret=[]
-            var b=a;
-            if(!a){
-              b=[]
+          dealProtoLikeArray: function(a) {
+            var ret = [];
+            var b = a;
+            if (!a) {
+              b = [];
             }
-            b.forEach(function(x){
-                $.each(x,function(xi,xv){
-                  ret.push([xv])
-                })
-            })
+            b.forEach(function(x) {
+              $.each(x, function(xi, xv) {
+                ret.push([xv]);
+              });
+            });
             return ret;
           },
           param: [],
