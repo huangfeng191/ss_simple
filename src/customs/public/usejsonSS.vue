@@ -21,7 +21,7 @@ export default {
       // selected: ["tableRow","ssForm", "ssButton", "ssBinding", "ssTable"],
       // selected: ["CommandForm","ssBindingSame","CommandFormExtend"],
       // selected: ["CommandForm", "CommandFormExtend"],
-      selected: [ "CommandFormExtend"],
+      selected: ["CommandFormExtend"],
       types: [
         {
           value: "ssForm",
@@ -91,20 +91,48 @@ export default {
 
           //  title	qCommand	qOthers	qKey	qGroup
           template:
-            ',"qCommand": "${1}","qKey": "${2}","qOthers": ${3},"qGroup": "${4}" ',
+            ',"qCommand": "${2}","qKey": "${1}","qOthers": ${3},"qGroup": "${4}" ${99} ',
           param: [],
           protoRowTranslate: [
             {
               k: "fun",
               v: function(arr) {
-               (arr||[]).forEach(function(a,i){
-                 if(a.split("=").length>1){
-                   var keyValue=a.split("=");
-                   arr[i]={}
-                   arr[i][keyValue[0]]=keyValue[1]
-                   arr[i]=JSON.stringify(arr[i])
-                 }
-               })
+                // 3 = 替换成词典  # 替换成 数组  
+              var isLast="";
+              if(arr.length>0){
+               
+                 if(arr[arr.length-1].split("#").length>1){
+                  isLast=arr[arr.length-1].split("#")[1]
+                  arr.splice(-1,1)
+                }
+              }
+
+                
+              
+
+                if (arr.length == 4) {
+                  if (arr[3].split("=").length == 1) {
+                    arr[4] = arr[3];
+                    arr[3] = '""';
+                  }
+                }
+                (arr || []).forEach(function(a, i) {
+                  if (a.split("=").length > 1) {
+                    var keyValue = a.split("=");
+                    arr[i] = {};
+                    arr[i][keyValue[0]] = keyValue[1];
+                    arr[i] = JSON.stringify(arr[i]);
+                  }
+                });
+                if(isLast){
+                  arr.push('')
+                  arr.push('')
+                  arr.push('')
+                  arr.push(',"qIndexKey":"'+isLast+'" ,"qIndexLevel":"2"')
+                }else{
+                    arr.push('')
+                }
+
                 return arr;
               }
             }
