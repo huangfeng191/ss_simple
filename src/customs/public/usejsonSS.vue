@@ -102,7 +102,7 @@ export default {
               if(arr.length>0){
                
                  if(arr[arr.length-1].split("#").length>1){
-                  isLast=arr[arr.length-1].split("#")[1]
+                  isLast=arr[arr.length-1].split("#")
                   arr.splice(-1,1)
                 }
               }
@@ -128,9 +128,19 @@ export default {
                   arr.push('')
                   arr.push('')
                   arr.push('')
-                  arr.push(',"qIndexKey":"'+isLast+'" ,"qIndexLevel":"2"')
+                  arr[1]=isLast[1]
+                  arr.push(',"qIndexKey":"'+isLast[0]+'" ,"qIndexLevel":"2"')
                 }else{
                     arr.push('')
+                }
+
+                if(arr.length<4){
+                  arr.push("")
+                  arr.push("")
+                  arr.push("")
+                }
+                if(!arr[3]){
+                  arr[3]="\"\"";
                 }
 
                 return arr;
