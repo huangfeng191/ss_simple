@@ -14,14 +14,16 @@ export default {
   props: {},
   data() {
     return {
-      // selected: ["ssForm", "scada6crudinputOne"],
+      // selected: ["ssForm"],
+      selected: ["ssTable"],
+    
       // selected: ["scada6crudinputThree", "toRowSingle", "ssForm", "scada6Important"],
       // selected: ["scada6crudinputThree", "toRowSingle", "CueColumns", "CueCrudInputThree"],
       // selected: ["toRowSingle", "switch2and1", "CueColumns", "CueCrudInputThree", "interfaceUp", "mongoField"],
       // selected: ["tableRow","ssForm", "ssButton", "ssBinding", "ssTable"],
       // selected: ["CommandForm","ssBindingSame","CommandFormExtend"],
       // selected: ["CommandForm", "CommandFormExtend"],
-      selected: ["CommandFormExtend"],
+      // selected: ["CommandFormExtend"],
       types: [
         {
           value: "ssForm",
@@ -91,7 +93,7 @@ export default {
 
           //  title	qCommand	qOthers	qKey	qGroup
           template:
-            ',"qCommand": "${2}","qKey": "${1}","qOthers": ${3},"qGroup": "${4}" ${99} ',
+            ',"qCommand": "${2}","qKey": "${1}","qOthers": ${3},"qGroup": "${4}"  ${98} ${99} ',
           param: [],
           protoRowTranslate: [
             {
@@ -99,10 +101,20 @@ export default {
               v: function(arr) {
                 // 3 = 替换成词典  # 替换成 数组  
               var isLast="";
-              if(arr.length>0){
+              
+              if(arr.length>0){ 
                
                  if(arr[arr.length-1].split("#").length>1){
                   isLast=arr[arr.length-1].split("#")
+                  arr.splice(-1,1)
+                }
+              }
+
+              var isPenult=""
+              if(arr.length>0){ 
+               
+                 if(arr[arr.length-1].split("?").length>1){
+                  isPenul=arr[arr.length-1].split("?")
                   arr.splice(-1,1)
                 }
               }
@@ -129,16 +141,23 @@ export default {
                   arr.push('')
                   arr.push('')
                   arr[1]=isLast[1]
-                  arr.push(',"qIndexKey":"'+isLast[0]+'" ,"qIndexLevel":"2"')
+                  var qIndexLevel="";
+                  if (isLast.length>2){
+                    qIndexLevel=isLast[2]
+                  }
+                  arr.push(',"qIndexKey":"'+isLast[0]+'" ,"qIndexLevel":"'+qIndexLevel+'"')
                 }else{
                     arr.push('')
+                    arr.push('')
+                    arr.push('')
+                }
+// 1 card 11 card businessId  2 port 21 port businessId
+ // 1 card   11 板卡业务名  2 cardPort  21 端口业务名 
+                if(isPenult){ // 查询时 aid 的规则
+                  arr.splice(-2,1,"qLevel:'"+isLast[1]+"'")
                 }
 
-                if(arr.length<4){
-                  arr.push("")
-                  arr.push("")
-                  arr.push("")
-                }
+                
                 if(!arr[3]){
                   arr[3]="\"\"";
                 }
@@ -160,7 +179,7 @@ export default {
               v: [
                 {
                   k: "replace",
-                  v: { b: "button", c: "select", v: "selectValue" }
+                  v: { b: "button", c: "select", v: "selectValue" , d: "dateTime" }
                 }
               ]
             },
@@ -168,7 +187,7 @@ export default {
             {
               k: "21",
               v: [
-                { k: "copy", v: { "2": true }, scope: ["b"] },
+                { k: "copy", v: { "2": true }, scope: ["b","d"] },
                 {
                   k: "containsReplace",
                   v: {
@@ -179,6 +198,16 @@ export default {
                           return 'format:"' + row[3] + '"';
                         } else {
                           return 'format:"XXX"';
+                        }
+                      }
+                    },
+                    d: {
+                      k: "fun",
+                      v: function(row, tempConfigO) {
+                        if (row[3]) {
+                          return 'format:"' + row[3] + '"';
+                        } else {
+                          return 'format:"yyyy-MM-dd"';
                         }
                       }
                     }
