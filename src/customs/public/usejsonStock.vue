@@ -14,7 +14,8 @@ export default {
       // selected: ["scada6crudcol", "scada6crudinputOne"],
       // selected: ["scada6crudinputThree", "toRowSingle", "scada6crudcol", "scada6Input"],
       // selected: ["scada6crudinputThree", "toRowSingle", "CueColumns", "CueCrudInputThree"],
-      selected: [ "proStockCol","scada6crudinputThree", "scada6crudcol","scada6crudprop","scada6crudquics"],
+      selected: [ "proStockCol","scada6crudinputThree","bindingSame"],
+      // selected: [ "proStockCol","scada6crudinputThree", "scada6crudcol","scada6crudprop","scada6crudquics"],
        
       types: [
             {
@@ -242,6 +243,80 @@ export default {
             }
           ]
         },
+        {
+          // 取第一个值 组成数组格式
+          value: "binding",
+          label: "binding",
+          template: '{"name": "${0}", "value":"${1}" },',
+          param: [],
+          fix: {
+            roles: [
+              // single double both ,end 修理行数据 在行的位置添加
+              {
+                k: "first",
+                v: [
+                  {
+                    k: "replace",
+                    v: [
+                      {
+                        "/^/": "${0:nm}:[//${1:nm}\n"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                k: "end",
+                v: [{ k: "replace", v: [{ "/$/": "\n]" }] }]
+              }
+            ],
+            fixRoles: []
+          }
+        },
+        {
+          // 取第一个值 组成数组格式
+          value: "bindingSame",
+          label: "bindingSame",
+          template: '{"name": "${0}", "value":"${0}" },',
+          dealProtoLikeArray: function(a) {
+            var ret = [];
+            var b = a;
+            if (!a) {
+              b = [];
+            }
+            b.forEach(function(x) {
+              $.each(x, function(xi, xv) {
+                ret.push([xv]);
+              });
+            });
+            return ret;
+          },
+          param: [],
+          fix: {
+            roles: [
+              // single double both ,end 修理行数据 在行的位置添加
+              {
+                k: "first",
+                v: [
+                  {
+                    k: "replace",
+                    v: [
+                      {
+                        "/^/": "${0:nm}:[//${1:nm}\n"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                k: "end",
+                v: [{ k: "replace", v: [{ "/$/": "\n]" }] }]
+              }
+            ],
+            fixRoles: []
+          }
+        },
+
       ]
     };
   },
