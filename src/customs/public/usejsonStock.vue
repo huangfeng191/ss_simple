@@ -14,8 +14,9 @@ export default {
       // selected: ["scada6crudcol", "scada6crudinputOne"],
       // selected: ["scada6crudinputThree", "toRowSingle", "scada6crudcol", "scada6Input"],
       // selected: ["scada6crudinputThree", "toRowSingle", "CueColumns", "CueCrudInputThree"],
-      selected: [ "proStockCol","scada6crudinputThree","bindingSame"],
+      // selected: [ "proStockCol","scada6crudinputThree","bindingSame"],
       // selected: [ "proStockCol","scada6crudinputThree", "scada6crudcol","scada6crudprop","scada6crudquics"],
+      selected: [ "proStockCol","scada6crudinputThree", "scada6crudcol","scada6crudprop","scada6crudquics"],
        
       types: [
             {
