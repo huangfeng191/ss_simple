@@ -217,7 +217,7 @@ export default {
                 k: "fun",
                 v: function(arr) {
                     // v, i, self self 就是 arr
-                    // 对输入的数组 进行 筛选， 如果有相同元素，只去第一个元素，并且去除 输入数据是 - 的数组
+                    // 对输入的数组 进行 筛选， 如果有相同元素，只取第一个元素，并且去除 输入数据是 - 的数组
                   return arr.filter(function(v, i, self) {
                     if (v == "–") {
                       return false;
