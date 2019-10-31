@@ -90,6 +90,21 @@ export default {
               ]
             }
           ],
+                  protoRowTranslate: [
+              {
+              k: "fun",
+              v: function(arr,index,self) {
+                 let MDParam= self.protoParam.MDTitle;
+                 if (MDParam.length>0){
+                    if(MDParam[index]&&MDParam[index][0]){
+                        arr[1]=MDParam[index][0]+"."+(arr[1]||"")
+                    }
+                 }
+                 
+                 return arr 
+              }
+              }
+            ],
         },
 
          {
@@ -141,6 +156,21 @@ export default {
               ]
             }
           ],
+             protoRowTranslate: [
+              {
+              k: "fun",
+              v: function(arr,index,self) {
+                 let MDParam= self.protoParam.MDTitle;
+                 if (MDParam.length>0){
+                    if(MDParam[index]&&MDParam[index][0]){
+                        arr[1]=MDParam[index][0]+"."+(arr[1]||"")
+                    }
+                 }
+                 
+                 return arr 
+              }
+              }
+            ],
         },
 
          {
@@ -192,6 +222,21 @@ export default {
               ]
             }
           ],
+             protoRowTranslate: [
+              {
+              k: "fun",
+              v: function(arr,index,self) {
+                 let MDParam= self.protoParam.MDTitle;
+                 if (MDParam.length>0){
+                    if(MDParam[index]&&MDParam[index][0]){
+                        arr[1]=MDParam[index][0]+"."+(arr[1]||"")
+                    }
+                 }
+                 
+                 return arr 
+              }
+              }
+            ],
           fix: {
             roles: [
               // single double both ,end 修理行数据 在行的位置添加
@@ -244,14 +289,14 @@ export default {
               ]
             }
           ],
-          protoRowTranslate: [
+         protoRowTranslate: [
               {
               k: "fun",
               v: function(arr,index,self) {
                  let MDParam= self.protoParam.MDTitle;
                  if (MDParam.length>0){
                     if(MDParam[index]&&MDParam[index][0]){
-                        arr[0]=MDParam[index][0]+"."+arr[0]
+                        arr[1]=MDParam[index][0]+"."+(arr[1]||"")
                     }
                  }
                  
