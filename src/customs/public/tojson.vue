@@ -66,7 +66,9 @@ export default {
       aparts: " ,	", //*** 对行处理的分割符， 也就是说 获取 ${?}信息
       fixparam: "",
       proto: "", //*** 输入的所有原始数据
-      protoParam:{}, // 根据输入的proto 提取的参数，目前是挂在markdown 的 行上的  {"rowId":[0,1,2,3 ]}  PS: #  base // 注释
+      protoParam:{ // 提供全局参数, 供后续调用
+        "MDTitle":[]
+      }, // 根据输入的proto 提取的参数，目前是挂在markdown 的 行上的  {"rowId":[0,1,2,3 ]}  PS: #  base // 注释
       lastSelect: "" //*** 暂时没用，记录最后一次选择的情况，可以考虑使用 lastSelect
       //up data
       //dowm for show
@@ -76,17 +78,28 @@ export default {
     getTemp() {},
     disposeBefore(proto){
       let protoDisposeA=[];
-
+      let self=this;
+      self.protoParam["MDTitle"]=[]         
  
       if(proto){
+          var rowParam=[]
           proto.split("\n").forEach(function(x){
        // 将注释字符去掉 字符未 //
           var parsed =(x||"").split("//")[0];
           // 去除 markDown annotation //
+          var matched=(parsed||"").match(/# (.*)/);
+           
+            if(matched){
+              var re=/ (\S+)/g
+              rowParam=(matched[1].match(re)||[]).map(function(x) {return x.replace(/^ /,"")})
+
+            }
+
               parsed=(parsed||"").replace(/# .*/,"")
           //  去除空白的行
               if(parsed){
                 protoDisposeA.push(parsed);
+                self.protoParam.MDTitle.push(rowParam)
               }
        
          
@@ -191,24 +204,27 @@ export default {
     },
     /* ↑↑↑↑↑↑↑↑↑↑↑↑以上为转换的规则 */
     /* ↓↓↓↓↓↓↓↓↓↓↓↓ protoRow 处理 */
-    protoRowTranslate: function({ aRow, type }) {
+    protoRowTranslate: function({ aRow, type,iaRow }) {
       let self=this;
+      var retRow=[]
+      Object.assign(retRow,aRow);
+      // unchecked  此处不应该 改变元素数据
       if (type.protoRowTranslate) {
         $.each(type.protoRowTranslate, function(vi, vv) {
           if (vv.k == "fun") {
-            if (aRow) {
-              aRow = vv.v(aRow);
+            if (retRow) {
+              retRow = vv.v(retRow,iaRow,self);
             }
           }
           if (vv.k == "reg") {
             // v 截取规则
-            if (aRow) {
-              aRow = self.toFilter(aRow, vv.v);
+            if (retRow) {
+              retRow = self.toFilter(retRow, vv.v);
             }
           }
         });
       }
-      return aRow;
+      return retRow;
     },
     // 一个规则
     toFilter: function(arr, regO) {
@@ -249,7 +265,7 @@ export default {
       // 是对输入的字段按分隔符进行处理
       if (type.protoRowTranslate) {
         // 处理分两类: 参数处理，模板处理，此部分是在 转换前
-        self.protoRowTranslate({ type, aRow });
+        aRow=self.protoRowTranslate({ type, aRow,iaRow });
       }
       // 找出可替换变量
       var reg = /\$\{{1}[0-9a-zA-Z\_\/:]+\}{1}/g;
