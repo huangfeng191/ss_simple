@@ -67,7 +67,9 @@ export default {
       fixparam: "",
       proto: "", //*** 输入的所有原始数据
       protoParam:{ // 提供全局参数, 供后续调用
-        "MDTitle":[]
+        "MDTitle":[], // #  1 2 3 , 可以有多个，如果最后一个 是 ?param1?... 方式 那么 可以理解为全局的，建议用在第一个
+        "MDParam":[], // title 的 last  放在 markdown title 中的定义，目前支持用(?param1) 模式 取值是 ? 
+        "MDParamO":[{}],// 值 
       }, // 根据输入的proto 提取的参数，目前是挂在markdown 的 行上的  {"rowId":[0,1,2,3 ]}  PS: #  base // 注释
       lastSelect: "" //*** 暂时没用，记录最后一次选择的情况，可以考虑使用 lastSelect
       //up data
@@ -80,6 +82,7 @@ export default {
       let protoDisposeA=[];
       let self=this;
       self.protoParam["MDTitle"]=[]         
+      self.protoParam["MDParam"]=[]         
  
       if(proto){
           var rowParam=[]
@@ -91,8 +94,19 @@ export default {
            
             if(matched){
               var re=/ (\S+)/g
+              // 用空格区分的markdown 参数 
               rowParam=(matched[1].match(re)||[]).map(function(x) {return x.replace(/^ /,"")})
+              if(rowParam&&rowParam.length>0){
+                  let lastRowParam=rowParam.slice(-1)[0];
+                  if(lastRowParam.match(/\?(.*)/)){
+                      let mdParam=lastRowParam.match(/\?(.*)/)[1].split("?").filter(function (v){return v })
+                      if(mdParam.length>0){
+                          self.protoParam["MDParam"]=mdParam;
+                      }
+                  }
+                  
 
+              }
             }
 
               parsed=(parsed||"").replace(/# .*/,"")
@@ -226,6 +240,7 @@ export default {
       }
       return retRow;
     },
+    
     // 一个规则
     toFilter: function(arr, regO) {
       // regO  /g /i    role:  replace  match
@@ -381,6 +396,21 @@ export default {
         // 此处的join 有问题，或者 iaRow =0
         oneRow = aRow.join("\n");
       }
+
+    //  2019-11-02 为了解决 markDown title ?param:default? 问题 ,将字段 对象化
+
+      if(oneRow && self.protoParam.MDParam.length>0){
+
+        
+          $.each(self.protoParam.MDParam,function(paramI,paramV){
+              
+              let re=`\?{paramV}:`
+          })
+
+      }
+
+
+
       // 对格式化后的行数据进行二次格式化
       if (type.fix) {
         $.each(type.fix.roles, function(oi, ov) {
@@ -436,17 +466,53 @@ export default {
       let self = this;
       let aRet = [];
       let protoDispose="";
+      self.protoParam.MDParamO={};
       if (self.proto) {
         protoDispose=self.disposeBefore(self.proto);
         $.each(protoDispose.split("\n"), function(i, v) {
+              let oneRowArray=v.split(eval("/[" + self.aparts + "]/ ")).filter(function(x) {
+                  if (x) return true;
+                })
+
+
+ // 2019-11-02 对于 MDparam 来说也是一次性的，所以需要放在 应用模板的 前面
+
+              if(self.protoParam.MDParam&&self.protoParam.MDParam.length>0 && oneRowArray.length>0){
+                let oneRowLast=oneRowArray.slice(-1)[0];
+                let  MDParam_row= oneRowLast.match(/^\?(.*)/)
+                if(MDParam_row){
+                  let oneParamO={}
+                  MDParam_row[1].split("?").forEach(function(v,i){
+                      if(self.protoParam.MDParam[i]){
+                          oneParamO[self.protoParam.MDParam[i]]=v
+                      }
+                  })
+                  self.protoParam.MDParamO[i]=oneParamO
+                  // 将 MDParam 参数从输入中去除。
+                  oneRowArray.splice(-1,1)
+                }
+
+              }
+            
+            /* 
+              此处后面的方法用到
+            let MDParam_re=/\?(.*)\?/
+            let oneRowLast_match=oneRowLast.match(MDParam_re);
+            if(oneRowLast_match){
+                oneRowLast_match[1] // 找到的匹配数据
+            } */
+
+       
             aRet.push(
-              v.split(eval("/[" + self.aparts + "]/ ")).filter(function(x) {
-                if (x) return true;
-              })
+              oneRowArray
             );
 
         });
       }
+
+
+    
+
       return aRet;
     },
 
@@ -600,6 +666,8 @@ export default {
         protoLikeArray = self.protoToArray();
       }
       //↑↑↑↑↑↑↑*************** 从输入的原始数据（proto） 中依据分割符号，提取成二维数组的数据
+   
+
 
       $.each(self.selected, function(i, v) {
         // 循环选中模板
@@ -608,6 +676,8 @@ export default {
          }
 
         typesObj[v]["templateOut"] = ""; // 更改值,既每个模板的返回值
+
+
 
         //↓↓↓↓↓↓↓*************** 行数据需要转换的模板开始处理———————————————————1———————
 

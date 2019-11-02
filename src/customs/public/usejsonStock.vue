@@ -247,6 +247,80 @@ export default {
             param: []
           }
         },
+        {
+          value: "crudinputThreeAuto",
+          label: "crudinputThreeAuto",
+          template:
+            '{ "Field": "${1}", "Name": "${0}", ShowType: "${3:text}", Ext: "${31}",DataType: "${2:String}", "Required": false, RowSpan: 1, ColSpan: 1 },',
+          param: [
+            {
+              k: "2",
+              v: [{ k: "replace", v: { string: "String", int: "Number", double: "Number" } }]
+            },
+            {
+              k: "3",
+              v: [
+                { k: "filterStr", v: [{ k: "notNumber", operate: "and" }] },
+                { k: "replace", v: { c: "combo", d: "datetime", a: "textarea", u: "upload", t: "text" } }
+              ]
+            },
+            {
+              k: "31",
+              v: [
+                { k: "copy", v: { "3": true }, scope: ["c","d"] },
+                {
+                  k: "containsReplace",
+                  v: {
+                    c: {
+                      k: "fun",
+                      v: function(row, strLikeObject) {
+                        if (row[4]) {
+                          return row[4];
+                        } else {
+                          return "USER";
+                        }
+                      }
+                    },
+                     d: {
+                      k: "fun",
+                      v: function(row, strLikeObject) {
+                        if (row[4] && /^[0-9]+$/g.exec(row[4]) == null) {
+                          return row[4];
+                        } else {
+                          return "yyyy-MM-dd";
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+             protoRowTranslate: [
+              {
+              k: "fun",
+              v: function(arr,index,self) {
+                 let MDParam= self.protoParam.MDTitle;
+                 if (MDParam.length>0){
+                    if(MDParam[index]&&MDParam[index][0]){
+                        arr[1]=MDParam[index][0]+"."+(arr[1]||"")
+                    }
+                 }
+                 
+                 return arr 
+              }
+              }
+            ],
+          fix: {
+            roles: [
+              // single double both ,end 修理行数据 在行的位置添加
+              { k: "mod", condition: { k: 3, v: 0 }, v: [{ k: "replace", v: [{ "/^{/": "[{" }] }] },
+              { k: "mod", condition: { k: 3, v: 2 }, v: [{ k: "replace", v: [{ "/},$/": "},]," }] }] },
+              { k: "end", v: [{ k: "replace", v: [{ "/},$/": "},]," }] }] }
+            ],
+            param: []
+          }
+        },
           {
           value: "scada6crudcol",
           label: "scada6crudcol",
