@@ -77,6 +77,7 @@ export default {
     };
   },
   methods: {
+    
     getTemp() {},
     disposeBefore(proto){
       let protoDisposeA=[];
@@ -728,6 +729,13 @@ export default {
 
             typesObj[v]["templateOutArray"].push(oneRow);
           });
+
+          if (typesObj[v].deakTemplateLikeArray){
+            typesObj[v]["templateOutArray"]=typesObj[v].deakTemplateLikeArray(typesObj[v]["templateOutArray"],self);
+          }
+
+
+
           // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑     每行处理完的结果
           // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ 行join :(\n) 行替换完后处理
           typesObj[v]["templateOut"] = typesObj[v]["templateOutArray"].join("\n");

@@ -1,6 +1,9 @@
 <template>
   <div class="usejson">
-    <to-json :types="types" :selected="selected"></to-json>
+    <to-json
+      :types="types"
+      :selected="selected"
+    ></to-json>
   </div>
 
 </template>
@@ -17,42 +20,40 @@ export default {
       // selected: [ "proStockCol","scada6crudinputThree","bindingSame"],
       // selected: [ "proStockCol","scada6crudinputThree", "scada6crudcol","scada6crudprop","scada6crudquics"],
       // selected: [ "proStockCol","scada6crudinputThree", "scada6crudcol","scada6crudprop","scada6crudquics"],
-      selected: [ "crudinputThreeMD"],
-       
+      selected: ["crudinputThreeMD"],
+
       types: [
-            {
+        {
           value: "proStockCol",
           label: "proStockCol",
           template: "${0:nm},${1:nm},${2:nm} ",
           single: true,
           desc: " ",
           param: [],
-     
+
           fix: {
             roles: [],
             fixRoles: []
           }
         },
-         {
+        {
           value: "scada6crudquics",
           label: "scada6crudquics",
           template:
             '{ "Field": "${1:nm}", "Label": "${0:nm}", "Type":  "${3:QText}",  TextField: "name", ValueField: "value", "Width": 90 ,${31} },',
           param: [
-            
             {
               k: "3",
               v: [
                 { k: "filterStr", v: [{ k: "notNumber", operate: "and" }] },
 
-                { k: "replace", v: { c: "QCombox", d: "QDatetime", r: "QDatetimeRange",  t: "QText" } }
-
+                { k: "replace", v: { c: "QCombox", d: "QDatetime", r: "QDatetimeRange", t: "QText" } }
               ]
             },
             {
               k: "31",
               v: [
-                { k: "copy", v: { "3": true }, scope: ["c","d","r"] },
+                { k: "copy", v: { "3": true }, scope: ["c", "d", "r"] },
                 {
                   k: "containsReplace",
                   v: {
@@ -60,29 +61,37 @@ export default {
                       k: "fun",
                       v: function(row, strLikeObject) {
                         if (row[4]) {
-                          return ' Ext: "'+row[4]+'", Source: "'+row[4]+'", ' ;
+                          return ' Ext: "' + row[4] + '", Source: "' + row[4] + '", ';
                         } else {
                           return ' Ext: "USER", Source: "USER", ';
                         }
                       }
                     },
-                     d: {
+                    d: {
                       k: "fun",
                       v: function(row, strLikeObject) {
                         if (row[4] && /^[0-9]+$/g.exec(row[4]) == null) {
-                          return 'Ext: "{Format:\"'+row[4]+'\"}", Value: new Date().FormatString("'+row[4]+'")';
+                          return 'Ext: "{Format:"' + row[4] + '"}", Value: new Date().FormatString("' + row[4] + '")';
                         } else {
-                          return 'Ext: "{Format:\"yyyy-MM-dd\"}", Value: new Date().FormatString("yyyy-MM-dd")';
+                          return 'Ext: "{Format:"yyyy-MM-dd"}", Value: new Date().FormatString("yyyy-MM-dd")';
                         }
                       }
                     },
-                     r: {
+                    r: {
                       k: "fun",
                       v: function(row, strLikeObject) {
                         if (row[4] && /^[0-9]+$/g.exec(row[4]) == null) {
-                          return 'Ext: "{Format:\"'+row[4]+'\"}",Begin: new Date().AddMonths(-1).FormatString("'+row[4]+'"), End: new Date().FormatString("'+row[4]+'")'   ;
+                          return (
+                            'Ext: "{Format:"' +
+                            row[4] +
+                            '"}",Begin: new Date().AddMonths(-1).FormatString("' +
+                            row[4] +
+                            '"), End: new Date().FormatString("' +
+                            row[4] +
+                            '")'
+                          );
                         } else {
-                          return 'Ext: "{Format:\"yyyy-MM-dd\"}",Begin: new Date().AddMonths(-1).FormatString("yyyy-MM-dd"), End: new Date().FormatString("yyyy-MM-dd")';
+                          return 'Ext: "{Format:"yyyy-MM-dd"}",Begin: new Date().AddMonths(-1).FormatString("yyyy-MM-dd"), End: new Date().FormatString("yyyy-MM-dd")';
                         }
                       }
                     }
@@ -91,24 +100,24 @@ export default {
               ]
             }
           ],
-                  protoRowTranslate: [
-              {
+          protoRowTranslate: [
+            {
               k: "fun",
-              v: function(arr,index,self) {
-                 let MDParam= self.protoParam.MDTitle;
-                 if (MDParam.length>0){
-                    if(MDParam[index]&&MDParam[index][0]){
-                        arr[1]=MDParam[index][0]+"."+(arr[1]||"")
-                    }
-                 }
-                 
-                 return arr 
+              v: function(arr, index, self) {
+                let MDParam = self.protoParam.MDTitle;
+                if (MDParam.length > 0) {
+                  if (MDParam[index] && MDParam[index][0]) {
+                    arr[1] = MDParam[index][0] + "." + (arr[1] || "");
+                  }
+                }
+
+                return arr;
               }
-              }
-            ],
+            }
+          ]
         },
 
-         {
+        {
           value: "scada6crudprop",
           label: "scada6crudprop",
           template:
@@ -128,7 +137,7 @@ export default {
             {
               k: "31",
               v: [
-                { k: "copy", v: { "3": true }, scope: ["c","d"] },
+                { k: "copy", v: { "3": true }, scope: ["c", "d"] },
                 {
                   k: "containsReplace",
                   v: {
@@ -142,7 +151,7 @@ export default {
                         }
                       }
                     },
-                     d: {
+                    d: {
                       k: "fun",
                       v: function(row, strLikeObject) {
                         if (row[4] && /^[0-9]+$/g.exec(row[4]) == null) {
@@ -157,24 +166,24 @@ export default {
               ]
             }
           ],
-             protoRowTranslate: [
-              {
+          protoRowTranslate: [
+            {
               k: "fun",
-              v: function(arr,index,self) {
-                 let MDParam= self.protoParam.MDTitle;
-                 if (MDParam.length>0){
-                    if(MDParam[index]&&MDParam[index][0]){
-                        arr[1]=MDParam[index][0]+"."+(arr[1]||"")
-                    }
-                 }
-                 
-                 return arr 
+              v: function(arr, index, self) {
+                let MDParam = self.protoParam.MDTitle;
+                if (MDParam.length > 0) {
+                  if (MDParam[index] && MDParam[index][0]) {
+                    arr[1] = MDParam[index][0] + "." + (arr[1] || "");
+                  }
+                }
+
+                return arr;
               }
-              }
-            ],
+            }
+          ]
         },
 
-         {
+        {
           value: "scada6crudinputThree",
           label: "scada6crudinputThree",
           template:
@@ -194,7 +203,7 @@ export default {
             {
               k: "31",
               v: [
-                { k: "copy", v: { "3": true }, scope: ["c","d"] },
+                { k: "copy", v: { "3": true }, scope: ["c", "d"] },
                 {
                   k: "containsReplace",
                   v: {
@@ -208,7 +217,7 @@ export default {
                         }
                       }
                     },
-                     d: {
+                    d: {
                       k: "fun",
                       v: function(row, strLikeObject) {
                         if (row[4] && /^[0-9]+$/g.exec(row[4]) == null) {
@@ -223,21 +232,21 @@ export default {
               ]
             }
           ],
-             protoRowTranslate: [
-              {
+          protoRowTranslate: [
+            {
               k: "fun",
-              v: function(arr,index,self) {
-                 let MDParam= self.protoParam.MDTitle;
-                 if (MDParam.length>0){
-                    if(MDParam[index]&&MDParam[index][0]){
-                        arr[1]=MDParam[index][0]+"."+(arr[1]||"")
-                    }
-                 }
-                 
-                 return arr 
+              v: function(arr, index, self) {
+                let MDParam = self.protoParam.MDTitle;
+                if (MDParam.length > 0) {
+                  if (MDParam[index] && MDParam[index][0]) {
+                    arr[1] = MDParam[index][0] + "." + (arr[1] || "");
+                  }
+                }
+
+                return arr;
               }
-              }
-            ],
+            }
+          ],
           fix: {
             roles: [
               // single double both ,end 修理行数据 在行的位置添加
@@ -248,11 +257,11 @@ export default {
             param: []
           }
         },
-        { 
+        {
           value: "crudinputThreeMD",
           label: "crudinputThreeMD",
           template:
-            '{ "Field": "${1}", "Name": "${0}", ShowType: "${3:text}", Ext: "${31}",DataType: "${2:String}", "Required": false, RowSpan: 1, ColSpan: "$?colSpan:1?" },',
+            '{ "Field": "${1}", "Name": "${0}", ShowType: "${3:text}", Ext: "${31}",DataType: "${2:String}", "Required": false, RowSpan: 1, ColSpan: "$?ColSpan:1?" },',
           param: [
             {
               k: "2",
@@ -268,7 +277,7 @@ export default {
             {
               k: "31",
               v: [
-                { k: "copy", v: { "3": true }, scope: ["c","d"] },
+                { k: "copy", v: { "3": true }, scope: ["c", "d"] },
                 {
                   k: "containsReplace",
                   v: {
@@ -282,7 +291,7 @@ export default {
                         }
                       }
                     },
-                     d: {
+                    d: {
                       k: "fun",
                       v: function(row, strLikeObject) {
                         if (row[4] && /^[0-9]+$/g.exec(row[4]) == null) {
@@ -297,32 +306,53 @@ export default {
               ]
             }
           ],
-             protoRowTranslate: [
-              {
+          protoRowTranslate: [
+            {
               k: "fun",
-              v: function(arr,index,self) {
-                 let MDParam= self.protoParam.MDTitle;
-                 if (MDParam.length>0){
-                    if(MDParam[index]&&MDParam[index][0]){
-                        arr[1]=MDParam[index][0]+"."+(arr[1]||"")
-                    }
-                 }
-                 
-                 return arr 
+              v: function(arr, index, self) {
+                let MDParam = self.protoParam.MDTitle;
+                if (MDParam.length > 0) {
+                  if (MDParam[index] && MDParam[index][0]) {
+                    arr[1] = MDParam[index][0] + "." + (arr[1] || "");
+                  }
+                }
+
+                return arr;
               }
+            }
+          ],
+          deakTemplateLikeArray: function(a, self) { // 行列处理
+            let ids=[];
+            let o=self.protoParam.MDParamO;
+            (a||[]).forEach(function(v,i){
+                let colSpan=1
+                if(o[i]){
+                  colSpan=o[i].ColSpan||1
+                }
+                ids.push(colSpan);
+            })
+            let group=0
+            ids.forEach(function(v,i){
+              if(group==0){
+                a[i]=a[i].replace(/^{/,"[{");
               }
-            ],
+              group+=Number(v);
+              if(i==ids.length-1 || group+ids[i+1]>3){
+                a[i]=a[i].replace(/},$/,"},],");
+                group=0
+              }
+             
+            })
+            return a;
+          },
           fix: {
             roles: [
-              // single double both ,end 修理行数据 在行的位置添加
-              { k: "mod", condition: { k: 3, v: 0 }, v: [{ k: "replace", v: [{ "/^{/": "[{" }] }] },
-              { k: "mod", condition: { k: 3, v: 2 }, v: [{ k: "replace", v: [{ "/},$/": "},]," }] }] },
-              { k: "end", v: [{ k: "replace", v: [{ "/},$/": "},]," }] }] }
+            
             ],
             param: []
           }
         },
-          {
+        {
           value: "scada6crudcol",
           label: "scada6crudcol",
           template:
@@ -347,12 +377,12 @@ export default {
                     d: {
                       k: "fun",
                       v: function(row, tempConfigO) {
-                        if (row[4]=="yyyy") {
-                          return 'formatter: YearFormatter,';
-                        } else  if (row[4]=="yyyy-MM") {
-                          return 'formatter: MonthFormatter,';
+                        if (row[4] == "yyyy") {
+                          return "formatter: YearFormatter,";
+                        } else if (row[4] == "yyyy-MM") {
+                          return "formatter: MonthFormatter,";
                         } else {
-                          return 'formatter: DateFormatter,';
+                          return "formatter: DateFormatter,";
                         }
                       }
                     },
@@ -364,21 +394,21 @@ export default {
               ]
             }
           ],
-         protoRowTranslate: [
-              {
+          protoRowTranslate: [
+            {
               k: "fun",
-              v: function(arr,index,self) {
-                 let MDParam= self.protoParam.MDTitle;
-                 if (MDParam.length>0){
-                    if(MDParam[index]&&MDParam[index][0]){
-                        arr[1]=MDParam[index][0]+"."+(arr[1]||"")
-                    }
-                 }
-                 
-                 return arr 
+              v: function(arr, index, self) {
+                let MDParam = self.protoParam.MDTitle;
+                if (MDParam.length > 0) {
+                  if (MDParam[index] && MDParam[index][0]) {
+                    arr[1] = MDParam[index][0] + "." + (arr[1] || "");
+                  }
+                }
+
+                return arr;
               }
-              }
-            ],
+            }
+          ]
         },
         {
           // 取第一个值 组成数组格式
@@ -452,8 +482,7 @@ export default {
             ],
             fixRoles: []
           }
-        },
-
+        }
       ]
     };
   },
