@@ -16,7 +16,8 @@ export default {
       // selected: ["scada6crudinputThree", "toRowSingle", "CueColumns", "CueCrudInputThree"],
       // selected: [ "proStockCol","scada6crudinputThree","bindingSame"],
       // selected: [ "proStockCol","scada6crudinputThree", "scada6crudcol","scada6crudprop","scada6crudquics"],
-      selected: [ "proStockCol","scada6crudinputThree", "scada6crudcol","scada6crudprop","scada6crudquics"],
+      // selected: [ "proStockCol","scada6crudinputThree", "scada6crudcol","scada6crudprop","scada6crudquics"],
+      selected: [ "crudinputThreeMD"],
        
       types: [
             {
@@ -247,11 +248,11 @@ export default {
             param: []
           }
         },
-        {
-          value: "crudinputThreeAuto",
-          label: "crudinputThreeAuto",
+        { 
+          value: "crudinputThreeMD",
+          label: "crudinputThreeMD",
           template:
-            '{ "Field": "${1}", "Name": "${0}", ShowType: "${3:text}", Ext: "${31}",DataType: "${2:String}", "Required": false, RowSpan: 1, ColSpan: 1 },',
+            '{ "Field": "${1}", "Name": "${0}", ShowType: "${3:text}", Ext: "${31}",DataType: "${2:String}", "Required": false, RowSpan: 1, ColSpan: "$?colSpan:1?" },',
           param: [
             {
               k: "2",

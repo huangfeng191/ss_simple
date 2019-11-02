@@ -400,12 +400,52 @@ export default {
     //  2019-11-02 为了解决 markDown title ?param:default? 问题 ,将字段 对象化
 
       if(oneRow && self.protoParam.MDParam.length>0){
+// iaRow
+
+        let mdParam=self.protoParam.MDParamO
+
+          $.each(self.protoParam.MDParam,function(paramI,paramV){
+              // replaceAll 
+              let toV=""  
+              var re_str="/\\$\\?"+paramV+"(:[0-9a-zA-Z_/]+)*\\?/";
+              var re=eval( re_str);
+              var  matched_param=oneRow.match(re)
+              if(matched_param){
+                toV= matched_param[1].substring(1)  
+                if (mdParam && mdParam[iaRow] && mdParam[iaRow][paramV]){
+                    toV=mdParam[iaRow][paramV]
+                }
+                // 配置项正则;
+                re=/\$\?[:0-9a-zA-Z\_\/]+\?/g 
+                oneRow=oneRow.replace(re,toV);
+              }
+          // 如果没有设置的话 显示默认值
+          // 将MD 参数设置成默认值
+           oneRow=oneRow.replace(/\$\?[0-9a-zA-Z_/]+:([0-9a-zA-Z_/]*)\?/,'$1')
+           oneRow=oneRow.replace(/\$\?[0-9a-zA-Z_/]+\?/,"");
+
+           
+// 找到定义的参数
+// re=/\$\?[0-9a-zA-Z\_\/:]+\?/g
+
+
+          })
+
+
+  /* 
+              此处后面的方法用到
+            let MDParam_re=/\?(.*)\?/
+            let oneRowLast_match=oneRowLast.match(MDParam_re);
+            if(oneRowLast_match){
+                oneRowLast_match[1] // 找到的匹配数据
+            } */
+
 
         
-          $.each(self.protoParam.MDParam,function(paramI,paramV){
+          // $.each(self.protoParam.MDParam,function(paramI,paramV){
               
-              let re=`\?{paramV}:`
-          })
+          //     let re=`\?{paramV}:`
+          // })
 
       }
 
@@ -494,14 +534,7 @@ export default {
 
               }
             
-            /* 
-              此处后面的方法用到
-            let MDParam_re=/\?(.*)\?/
-            let oneRowLast_match=oneRowLast.match(MDParam_re);
-            if(oneRowLast_match){
-                oneRowLast_match[1] // 找到的匹配数据
-            } */
-
+          
        
             aRet.push(
               oneRowArray
