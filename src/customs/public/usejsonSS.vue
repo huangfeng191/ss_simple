@@ -15,7 +15,8 @@ export default {
   data() {
     return {
       // selected: ["ssForm"],
-      selected: ["ssTable"],
+      // selected: ["ssTable"],
+      selected: ["ssOldForm"],
     
       // selected: ["scada6crudinputThree", "toRowSingle", "ssForm", "scada6Important"],
       // selected: ["scada6crudinputThree", "toRowSingle", "CueColumns", "CueCrudInputThree"],
@@ -525,6 +526,46 @@ export default {
                 v: [{ k: "replace", v: [{ "/},$/": "},]," }] }]
               },
               { k: "end", v: [{ k: "replace", v: [{ "/},$/": "},]," }] }] }
+            ],
+            param: []
+          }
+        },
+        {
+          value: "ssOldForm",
+          label: "ssOldForm",
+          template:
+            '{"name":"${0}","field":"${1}","showType":"${2:text}",},',
+          param: [
+              {
+                k: "2",
+                v: [
+                  {
+                    k: "replace",
+                    v: { s: "select", t: "text" }
+                  }
+                ]
+            }, 
+       
+
+          ],
+          protoRowTranslate: [
+
+          ],
+          fix: {
+            roles: [
+            
+              { k: "mod", condition: { k: 2, v: 0 }, v: [{ k: "replace", v: [{ "/^{/": "[{" }] }] },
+              { k: "mod", condition: { k: 2, v: 1 }, v: [{ k: "replace", v: [{ "/},$/": "},]," }] }] },
+              { k: "end", v: [{ k: "replace", v: [{ "/},$/": "},]," }] }] }
+            ],
+                fixRoles: [
+              {
+                k: "fun",
+                v: function(str) {
+                 return  str.replace(/\[{/g ,"[\n{")
+                // return str 
+                }
+              }
             ],
             param: []
           }
