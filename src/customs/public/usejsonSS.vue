@@ -17,7 +17,7 @@ export default {
       // selected: ["ssForm"],
       // selected: ["ssTable"],
       selected: ["ssOldForm"],
-    
+
       // selected: ["scada6crudinputThree", "toRowSingle", "ssForm", "scada6Important"],
       // selected: ["scada6crudinputThree", "toRowSingle", "CueColumns", "CueCrudInputThree"],
       // selected: ["toRowSingle", "switch2and1", "CueColumns", "CueCrudInputThree", "interfaceUp", "mongoField"],
@@ -100,28 +100,23 @@ export default {
             {
               k: "fun",
               v: function(arr) {
-                // 3 = 替换成词典  # 替换成 数组  
-              var isLast="";
-              
-              if(arr.length>0){ 
-               
-                 if(arr[arr.length-1].split("#").length>1){
-                  isLast=arr[arr.length-1].split("#")
-                  arr.splice(-1,1)
-                }
-              }
+                // 3 = 替换成词典  # 替换成 数组
+                var isLast = "";
 
-              var isPenult=""
-              if(arr.length>0){ 
-               
-                 if(arr[arr.length-1].split("?").length>1){
-                  isPenul=arr[arr.length-1].split("?")
-                  arr.splice(-1,1)
+                if (arr.length > 0) {
+                  if (arr[arr.length - 1].split("#").length > 1) {
+                    isLast = arr[arr.length - 1].split("#");
+                    arr.splice(-1, 1);
+                  }
                 }
-              }
 
-                
-              
+                var isPenult = "";
+                if (arr.length > 0) {
+                  if (arr[arr.length - 1].split("?").length > 1) {
+                    isPenul = arr[arr.length - 1].split("?");
+                    arr.splice(-1, 1);
+                  }
+                }
 
                 if (arr.length == 4) {
                   if (arr[3].split("=").length == 1) {
@@ -137,30 +132,36 @@ export default {
                     arr[i] = JSON.stringify(arr[i]);
                   }
                 });
-                if(isLast){
-                  arr.push('')
-                  arr.push('')
-                  arr.push('')
-                  arr[1]=isLast[1]
-                  var qIndexLevel="";
-                  if (isLast.length>2){
-                    qIndexLevel=isLast[2]
+                if (isLast) {
+                  arr.push("");
+                  arr.push("");
+                  arr.push("");
+                  arr[1] = isLast[1];
+                  var qIndexLevel = "";
+                  if (isLast.length > 2) {
+                    qIndexLevel = isLast[2];
                   }
-                  arr.push(',"qIndexKey":"'+isLast[0]+'" ,"qIndexLevel":"'+qIndexLevel+'"')
-                }else{
-                    arr.push('')
-                    arr.push('')
-                    arr.push('')
+                  arr.push(
+                    ',"qIndexKey":"' +
+                      isLast[0] +
+                      '" ,"qIndexLevel":"' +
+                      qIndexLevel +
+                      '"'
+                  );
+                } else {
+                  arr.push("");
+                  arr.push("");
+                  arr.push("");
                 }
-// 1 card 11 card businessId  2 port 21 port businessId
- // 1 card   11 板卡业务名  2 cardPort  21 端口业务名 
-                if(isPenult){ // 查询时 aid 的规则
-                  arr.splice(-2,1,"qLevel:'"+isLast[1]+"'")
+                // 1 card 11 card businessId  2 port 21 port businessId
+                // 1 card   11 板卡业务名  2 cardPort  21 端口业务名
+                if (isPenult) {
+                  // 查询时 aid 的规则
+                  arr.splice(-2, 1, "qLevel:'" + isLast[1] + "'");
                 }
 
-                
-                if(!arr[3]){
-                  arr[3]="\"\"";
+                if (!arr[3]) {
+                  arr[3] = '""';
                 }
 
                 return arr;
@@ -180,7 +181,12 @@ export default {
               v: [
                 {
                   k: "replace",
-                  v: { b: "button", c: "select", v: "selectValue" , d: "dateTime" }
+                  v: {
+                    b: "button",
+                    c: "select",
+                    v: "selectValue",
+                    d: "dateTime"
+                  }
                 }
               ]
             },
@@ -188,7 +194,7 @@ export default {
             {
               k: "21",
               v: [
-                { k: "copy", v: { "2": true }, scope: ["b","d"] },
+                { k: "copy", v: { "2": true }, scope: ["b", "d"] },
                 {
                   k: "containsReplace",
                   v: {
@@ -533,20 +539,17 @@ export default {
         {
           value: "ssOldForm",
           label: "ssOldForm",
-          template:
-            '{"name":"${0}","field":"${1}","showType":"${2:text}",},',
+          template: '{"name":"${0}","field":"${1}","showType":"${2:text}",},',
           param: [
-              {
-                k: "2",
-                v: [
-                  {
-                    k: "replace",
-                    v: { s: "select", t: "text" }
-                  }
-                ]
-            }, 
-       
-
+            {
+              k: "2",
+              v: [
+                {
+                  k: "replace",
+                  v: { s: "select", t: "text" }
+                }
+              ]
+            }
           ],
           protoRowTranslate: [
             {
@@ -555,8 +558,21 @@ export default {
                 let MDParam = self.protoParam.MDTitle;
                 if (MDParam.length > 0) {
                   if (MDParam[index] && MDParam[index][0]) {
-                    arr[0] = MDParam[index][0] + "-" + (arr[0] || "");
-                    arr[1] = MDParam[index][0] + "-" + (arr[1] || "");
+                    if (arr.length > 1) {
+                      if (arr[1] == arr[0] || arr[1] == "s") {
+                        // 如果 field != name , name don`t add prefix ;
+                        arr[0] = MDParam[index][0] + "-" + (arr[0] || "");
+                        if (arr[1] == "s") {
+                          arr[2] = "s";
+                        }
+                        arr[1] = arr[0];
+                      } else {
+                        arr[1] = MDParam[index][0] + "-" + (arr[1] || "");
+                      }
+                    } else {
+                      arr[0] = MDParam[index][0] + "-" + (arr[0] || "");
+                      arr[1] = arr[0];
+                    }
                   }
                 }
 
@@ -566,17 +582,24 @@ export default {
           ],
           fix: {
             roles: [
-            
-              { k: "mod", condition: { k: 2, v: 0 }, v: [{ k: "replace", v: [{ "/^{/": "[{" }] }] },
-              { k: "mod", condition: { k: 2, v: 1 }, v: [{ k: "replace", v: [{ "/},$/": "},]," }] }] },
+              {
+                k: "mod",
+                condition: { k: 2, v: 0 },
+                v: [{ k: "replace", v: [{ "/^{/": "[{" }] }]
+              },
+              {
+                k: "mod",
+                condition: { k: 2, v: 1 },
+                v: [{ k: "replace", v: [{ "/},$/": "},]," }] }]
+              },
               { k: "end", v: [{ k: "replace", v: [{ "/},$/": "},]," }] }] }
             ],
-                fixRoles: [
+            fixRoles: [
               {
                 k: "fun",
                 v: function(str) {
-                 return  str.replace(/\[{/g ,"[\n{")
-                // return str 
+                  return str.replace(/\[{/g, "[\n{");
+                  // return str
                 }
               }
             ],
