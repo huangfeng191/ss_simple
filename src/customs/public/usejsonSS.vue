@@ -444,7 +444,7 @@ export default {
         },
 
         {
-          // 取第一个值 组成数组格式
+          // 取第一个值 组成数组格式 
           value: "switch2and1",
           label: "switch2and1",
           template: '"${1:to2}" "${0:to1}"',
@@ -539,7 +539,7 @@ export default {
         {
           value: "ssOldForm",
           label: "ssOldForm",
-          template: '{"name":"${0}","field":"${1}","showType":"${2:text}",},',
+          template: '{"name":"${0}","field":"${1}","showType":"${2:text}",foreign: "$?foreign:1?",},',
           param: [
             {
               k: "2",

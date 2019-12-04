@@ -68,8 +68,13 @@ export default {
       proto: "", //*** 输入的所有原始数据
       protoParam:{ // 提供全局参数, 供后续调用
         "MDTitle":[], // #  1 2 3 , 可以有多个，如果最后一个 是 ?param1?... 方式 那么 可以理解为全局的，建议用在第一个
-        "MDParam":[], // title 的 last  放在 markdown title 中的定义，目前支持用(?param1) 模式 取值是 ? 
-        "MDParamO":[{}],// 值 
+        "MDParam":[], // title 的 最后一个值  放在 markdown title 中的定义，目前支持用(?param1) 模式 取值是 ? 
+        "MDParamO":[{}],// 值 按行绑定的参数， {0:{},1:{} }
+// ps         
+// # link 
+// #  base ?ColSpan? // 注释 
+// 描述 desc String a ?3
+
       }, // 根据输入的proto 提取的参数，目前是挂在markdown 的 行上的  {"rowId":[0,1,2,3 ]}  PS: #  base // 注释
       lastSelect: "" //*** 暂时没用，记录最后一次选择的情况，可以考虑使用 lastSelect
       //up data
@@ -511,29 +516,39 @@ export default {
       if (self.proto) {
         protoDispose=self.disposeBefore(self.proto);
         $.each(protoDispose.split("\n"), function(i, v) {
+
+
+ // 2019-11-02 对于 MDparam 来说也是一次性的，所以需要放在 应用模板的 前面
+ // 2019-12-02 为了支持含空格的参数 做的调整
+
+              if(self.protoParam.MDParam&&self.protoParam.MDParam.length>0){
+                var MDParamArray=[];
+                if(v.split("?").length>1){
+                  MDParamArray=v.split("?").slice(1);
+                   v=v.split("?")[0]
+                
+                  let oneParamO={}
+                  MDParamArray.forEach(function(vJ,j){
+                      if(self.protoParam.MDParam[j]){
+                          oneParamO[self.protoParam.MDParam[j]]=vJ
+                      }
+                  })
+                  // 按行解析的参数 
+                  self.protoParam.MDParamO[i]=oneParamO
+                }
+
+              
+
+              }
+
+
+
               let oneRowArray=v.split(eval("/[" + self.aparts + "]/ ")).filter(function(x) {
                   if (x) return true;
                 })
 
 
- // 2019-11-02 对于 MDparam 来说也是一次性的，所以需要放在 应用模板的 前面
 
-              if(self.protoParam.MDParam&&self.protoParam.MDParam.length>0 && oneRowArray.length>0){
-                let oneRowLast=oneRowArray.slice(-1)[0];
-                let  MDParam_row= oneRowLast.match(/^\?(.*)/)
-                if(MDParam_row){
-                  let oneParamO={}
-                  MDParam_row[1].split("?").forEach(function(v,i){
-                      if(self.protoParam.MDParam[i]){
-                          oneParamO[self.protoParam.MDParam[i]]=v
-                      }
-                  })
-                  self.protoParam.MDParamO[i]=oneParamO
-                  // 将 MDParam 参数从输入中去除。
-                  oneRowArray.splice(-1,1)
-                }
-
-              }
             
           
        
