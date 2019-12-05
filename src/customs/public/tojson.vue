@@ -68,8 +68,8 @@ export default {
       proto: "", //*** 输入的所有原始数据
       protoParam:{ // 提供全局参数, 供后续调用
         "MDTitle":[], // #  1 2 3 , 可以有多个，如果最后一个 是 ?param1?... 方式 那么 可以理解为全局的，建议用在第一个
-        "MDParam":[], // title 的 最后一个值  放在 markdown title 中的定义，目前支持用(?param1) 模式 取值是 ? 
-        "MDParamO":[{}],// 值 按行绑定的参数， {0:{},1:{} }
+        "MDParam":[], // title 的 最后一个值  放在 markdown title 中的定义，目前支持用(?param1) 模式 取值是 ?  ?ColSpan?br  
+        "MDParamO":[{}],// 值 按行绑定的参数， {0:{ColSpan:"","br":"" },1:{} }
 // ps         
 // # link 
 // #  base ?ColSpan? // 注释 
@@ -115,7 +115,7 @@ export default {
               }
             }
 
-              parsed=(parsed||"").replace(/# .*/,"")
+              parsed=(parsed||"").replace(/#{1,} .*/,"")
           //  去除空白的行
               if(parsed){
                 protoDisposeA.push(parsed);
@@ -514,6 +514,7 @@ export default {
       let protoDispose="";
       self.protoParam.MDParamO={};
       if (self.proto) {
+        // 将数据的 MD 参数提取出来
         protoDispose=self.disposeBefore(self.proto);
         $.each(protoDispose.split("\n"), function(i, v) {
 
@@ -525,7 +526,7 @@ export default {
                 var MDParamArray=[];
                 if(v.split("?").length>1){
                   MDParamArray=v.split("?").slice(1);
-                   v=v.split("?")[0]
+                   v=v.split("?")[0] // 删除MD 参数
                 
                   let oneParamO={}
                   MDParamArray.forEach(function(vJ,j){

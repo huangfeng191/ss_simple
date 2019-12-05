@@ -11,6 +11,7 @@ o = {
               2 reg 通过正则方式 来过滤数据 
         */
     //    对每行数据 进行二次处理 可以配合 protoParam 来使用
+    // 每一行数据已经拆分成数组了
         protoRowTranslate: [
 
         ],
