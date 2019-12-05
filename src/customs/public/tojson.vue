@@ -566,7 +566,7 @@ export default {
       return aRet;
     },
     dealProtoLikeArrayBefore:(tmp,protoLikeArray)=>{
-
+      return protoLikeArray;
     },
     /* 
     rowTransfer need 
