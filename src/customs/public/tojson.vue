@@ -566,6 +566,7 @@ export default {
       return aRet;
     },
     dealProtoLikeArrayBefore:(tmp,protoLikeArray)=>{
+      // TODO:
       return protoLikeArray;
     },
     /* 
