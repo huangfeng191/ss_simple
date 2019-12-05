@@ -565,7 +565,9 @@ export default {
 
       return aRet;
     },
+    dealProtoLikeArrayBefore:(tmp,protoLikeArray)=>{
 
+    },
     /* 
     rowTransfer need 
     
@@ -720,6 +722,9 @@ export default {
 
 
       $.each(self.selected, function(i, v) {
+        // 处理模板中的MDParam 
+        protoLikeArray=self.dealProtoLikeArrayBefore(v,protoLikeArray);
+
         // 循环选中模板
          if(typesObj[v].dealProtoLikeArray){
            protoLikeArray=typesObj[v].dealProtoLikeArray(protoLikeArray)
