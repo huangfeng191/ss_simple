@@ -67,9 +67,9 @@ export default {
       fixparam: "",
       proto: "", //*** 输入的所有原始数据
       protoParam:{ // 提供全局参数, 供后续调用
-        "MDTitle":[], // #  1 2 3 , 可以有多个，如果最后一个 是 ?param1?... 方式 那么 可以理解为全局的，建议用在第一个
-        "MDParam":[], // title 的 最后一个值  放在 markdown title 中的定义，目前支持用(?param1) 模式 取值是 ?  ?ColSpan?br  
-        "MDParamO":[{}],// 值 按行绑定的参数， {0:{ColSpan:"","br":"" },1:{} }
+        "MDTitle":[], 
+        "MDParam":[],   
+        "MDParamO":{},
 // ps         
 // # link 
 // #  base ?ColSpan? // 注释 
@@ -404,6 +404,7 @@ export default {
       }
 
     //  2019-11-02 为了解决 markDown title ?param:default? 问题 ,将字段 对象化
+// 2019-12-06 解读： 对于 空格模式处理好后 ，处理包含参数的情况， 
 
       if(oneRow && self.protoParam.MDParam.length>0){
 // iaRow
@@ -438,20 +439,6 @@ export default {
           })
 
 
-  /* 
-              此处后面的方法用到
-            let MDParam_re=/\?(.*)\?/
-            let oneRowLast_match=oneRowLast.match(MDParam_re);
-            if(oneRowLast_match){
-                oneRowLast_match[1] // 找到的匹配数据
-            } */
-
-
-        
-          // $.each(self.protoParam.MDParam,function(paramI,paramV){
-              
-          //     let re=`\?{paramV}:`
-          // })
 
       }
 
@@ -519,8 +506,7 @@ export default {
         $.each(protoDispose.split("\n"), function(i, v) {
 
 
- // 2019-11-02 对于 MDparam 来说也是一次性的，所以需要放在 应用模板的 前面
- // 2019-12-02 为了支持含空格的参数 做的调整
+
 
               if(self.protoParam.MDParam&&self.protoParam.MDParam.length>0){
                 var MDParamArray=[];
@@ -565,8 +551,28 @@ export default {
 
       return aRet;
     },
-    dealProtoLikeArrayBefore:(tmp,protoLikeArray)=>{
+    dealProtoLikeArrayBefore:function(protoLikeArray,tmpO){
       // TODO:
+      
+
+      // 从模板中解析 MD 参数,设置默认值
+      let self=this;
+      if(tmpO){
+  let tempStr=tmpO.template;
+      let re=/\$\?([0-9a-zA-Z_/]+)+(:[0-9a-zA-Z_/]+)*\\?/g;  // 获取所有的MD 参数参数
+      if(tempStr.match(re)){
+          tempStr.match(re).forEach(function(suit){
+            let suitField=suit.split(":")[0].replace("$?","");
+
+            if(suitField&& !self.protoParam.MDParam.includes(suitField)){
+                self.protoParam.MDParam.push(suitField);
+            }
+          })
+      }
+
+      }
+    
+
       return protoLikeArray;
     },
     /* 
@@ -724,7 +730,7 @@ export default {
 
       $.each(self.selected, function(i, v) {
         // 处理模板中的MDParam 
-        protoLikeArray=self.dealProtoLikeArrayBefore(v,protoLikeArray);
+        protoLikeArray=self.dealProtoLikeArrayBefore(protoLikeArray,typesObj[v]);
 
         // 循环选中模板
          if(typesObj[v].dealProtoLikeArray){

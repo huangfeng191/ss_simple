@@ -489,6 +489,7 @@ export default {
 {
     value: "InputThreeMD",
     label: "InputThreeMD",
+    desc:"# cell setting  ?ColSpan?br?",
     template:
       '{ "Field": "${1}", "Name": "${0}",DataType: "${2:String}", ShowType: "${3:text}", Ext: "${31}", "Required": false, RowSpan: 1, ColSpan: "$?ColSpan:1?" },',
     param: [
