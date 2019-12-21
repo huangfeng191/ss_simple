@@ -1,5 +1,5 @@
 <template>
-  <div id="tojson">
+  <div id="tojson" @keyup.f7="gotoProto" >
     <el-row>
       <el-col :span="7">
         <el-select @change="selectTp" class="selfw" v-model="selected" multiple filterable allow-create placeholder="请选择文章标签">
@@ -19,7 +19,7 @@
     </el-row>
     <el-row class="content">
       <el-col :span="4">
-        <el-input class="selfw" type="textarea" :autosize="{ minRows: 10}" placeholder="原始" v-model="proto">
+        <el-input class="selfw" v-focus-area type="textarea" :autosize="{ minRows: 10}" placeholder="原始" v-model="proto">
         </el-input>
       </el-col>
       <el-col :span="10" v-for="r in selectedDetail" :key="r.value">
@@ -82,7 +82,9 @@ export default {
     };
   },
   methods: {
-    
+    gotoProto(){
+      document.getElementsByClassName("content")[0].getElementsByTagName("textarea")[0].focus();
+    },
     getTemp() {},
     disposeBefore(proto){
       let protoDisposeA=[];

@@ -16,7 +16,8 @@ export default {
     return {
       // selected: ["ssForm"],
       // selected: ["ssTable"],
-      selected: ["ssOldForm"],
+      selected: ["newMenu"],
+      // selected: ["ssOldForm"],
 
       // selected: ["scada6crudinputThree", "toRowSingle", "ssForm", "scada6Important"],
       // selected: ["scada6crudinputThree", "toRowSingle", "CueColumns", "CueCrudInputThree"],
@@ -26,6 +27,47 @@ export default {
       // selected: ["CommandForm", "CommandFormExtend"],
       // selected: ["CommandFormExtend"],
       types: [
+{
+          value: "newMenu",
+          label: "newMenu",
+          template: '{"name":"${0}","id":"${1}",parentId: "${2}",},',
+          param: [
+          ],
+          protoRowTranslate: [
+            {
+              k: "fun",
+              v: function(arr, index, self) {
+                let MDParam = self.protoParam.MDTitle;
+                let rowParam = self.protoParam.MDParamO;
+                if (MDParam.length > 0) {
+                  if (MDParam[index] && MDParam[index][1]) {
+                    
+                    if(MDParam[index][1]!=arr[1]){
+                      
+                    arr[1] = MDParam[index][1] + "-" + (arr[1] || "");
+                    if(rowParam[index]&&rowParam[index]["button"]){
+                    arr[1]=arr[1]+"_"+rowParam[index]["button"].trim()
+                    }
+                    arr[2] = MDParam[index][1]
+
+                    }
+                  }
+                }
+
+                return arr;
+              }
+            }
+          ],
+          fix: {
+            roles: [
+            ],
+            fixRoles: [
+              {
+              }
+            ],
+            param: []
+          }
+        },
         {
           value: "ssForm",
           label: "ssForm",
