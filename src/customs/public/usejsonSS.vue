@@ -16,7 +16,8 @@ export default {
     return {
       // selected: ["ssForm"],
       // selected: ["ssTable"],
-      selected: ["newMenu"],
+      // selected: ["newMenu"],
+      selected: ["ssButtonRecord"],
       // selected: ["ssOldForm"],
 
       // selected: ["scada6crudinputThree", "toRowSingle", "ssForm", "scada6Important"],
@@ -27,12 +28,11 @@ export default {
       // selected: ["CommandForm", "CommandFormExtend"],
       // selected: ["CommandFormExtend"],
       types: [
-{
+        {
           value: "newMenu",
           label: "newMenu",
           template: '{"name":"${0}","id":"${1}",parentId: "${2}",},',
-          param: [
-          ],
+          param: [],
           protoRowTranslate: [
             {
               k: "fun",
@@ -41,15 +41,13 @@ export default {
                 let rowParam = self.protoParam.MDParamO;
                 if (MDParam.length > 0) {
                   if (MDParam[index] && MDParam[index][1]) {
-                    
-                    if(MDParam[index][1]!=arr[1]){
-                      
-                    arr[1] = MDParam[index][1] + "-" + (arr[1] || "");
-                    if(rowParam[index]&&rowParam[index]["button"]){
-                    arr[1]=arr[1]+"_"+rowParam[index]["button"].trim()
-                    }
-                    arr[2] = MDParam[index][1]
-
+                    if (MDParam[index][1] != arr[1]) {
+                      arr[1] = MDParam[index][1] + "-" + (arr[1] || "");
+                      if (rowParam[index] && rowParam[index]["button"]) {
+                        arr[1] =
+                          arr[1] + "_" + rowParam[index]["button"].trim();
+                      }
+                      arr[2] = MDParam[index][1];
                     }
                   }
                 }
@@ -59,12 +57,67 @@ export default {
             }
           ],
           fix: {
-            roles: [
-            ],
-            fixRoles: [
-              {
+            roles: [],
+            fixRoles: [{}],
+            param: []
+          }
+        },
+        {
+          value: "ssButtonRecord",
+          label: "ssButtonRecord",
+          template:
+            '{"name":"${0}","id":"${1}","operate":"${2:view}",options: null,},',
+          param: [],
+          protoRowTranslate: [
+            {
+              k: "fun",
+              v: function(arr, index, self) {
+                let MDParam = self.protoParam.MDTitle;
+                let rowParam = self.protoParam.MDParamO;
+                if (MDParam.length > 0) {
+                  if (MDParam[index] && MDParam[index][1]) {
+                    if (MDParam[index][1] != arr[1]) {
+                      arr[1] = MDParam[index][1] + "-" + (arr[1] || "");
+                    }
+                    arr[2] = arr[2] || "view";
+                  }
+                }
+
+                return arr;
               }
-            ],
+            }
+          ],
+          deakTemplateLikeArray: function(a, self) {
+            // 对生成后的行数据数组,再次处理
+            
+            let o = self.protoParam.MDParamO;
+            
+            (a||[]).forEach(function(v,i){
+                let options=[];
+                if(o[i]){
+                  if(o[i].Options){
+                    debugger
+                    o[i].Options.split(",").forEach(function(v){
+                      let [title,field] = v.split(":");
+                      if(field){
+                        options.push({"title":title.trim(),"field":field.trim()})
+                      }
+                      })
+                      if(options.length>0){
+                        a[i]=v.replace("null",JSON.stringify(options))
+                        
+                      }
+                  }
+                  
+                }
+            
+            })
+
+            return a;
+          },
+          fix: {
+            roles: [],
+            fixRoles: [{}],
             param: []
           }
         },
@@ -486,7 +539,7 @@ export default {
         },
 
         {
-          // 取第一个值 组成数组格式 
+          // 取第一个值 组成数组格式
           value: "switch2and1",
           label: "switch2and1",
           template: '"${1:to2}" "${0:to1}"',
@@ -581,7 +634,8 @@ export default {
         {
           value: "ssOldForm",
           label: "ssOldForm",
-          template: '{"name":"${0}","field":"${1}","showType":"${2:text}",foreign: "$?foreign:1?",},',
+          template:
+            '{"name":"${0}","field":"${1}","showType":"${2:text}",foreign: "$?foreign:1?",},',
           param: [
             {
               k: "2",

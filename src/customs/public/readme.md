@@ -44,6 +44,23 @@
             }
           ]
 
+
+<!-- 将MD 参数应用于 字符串模板中 -->
+deakTemplateLikeArray: function(a, self) { // 对生成后的行数据数组,再次处理
+      
+      let o=self.protoParam.MDParamO;
+      (a||[]).forEach(function(v,i){
+          let colSpan=1
+          if(o[i]){ // 输入的MD 对象
+            colSpan=o[i].ColSpan||1 
+          }
+      // 修改输入    
+      })
+     
+
+      return a;
+    }
+
 # 2019-12-21  Saturday 
 F7 将焦点移动到输入文本处
 >PS:
