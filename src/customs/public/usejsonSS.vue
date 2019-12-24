@@ -16,8 +16,8 @@ export default {
     return {
       // selected: ["ssForm"],
       // selected: ["ssTable"],
-      // selected: ["newMenu"],
-      selected: ["ssButtonRecord"],
+      selected: ["newMenu", "newMenu_element"],
+      // selected: ["ssButtonRecord"],
       // selected: ["ssOldForm"],
 
       // selected: ["scada6crudinputThree", "toRowSingle", "ssForm", "scada6Important"],
@@ -63,6 +63,52 @@ export default {
           }
         },
         {
+          value: "newMenu_element",
+          label: "newMenu_element",
+          template: 'level="${1}"',
+          param: [],
+          protoRowTranslate: [
+            {
+              k: "fun",
+              v: function(arr, index, self) {
+                let MDParam = self.protoParam.MDTitle;
+                let rowParam = self.protoParam.MDParamO;
+                if (MDParam.length > 0) {
+                  if (MDParam[index] && MDParam[index][1]) {
+                    if (MDParam[index][1] != arr[1]) {
+                      arr[1] = MDParam[index][1] + "-" + (arr[1] || "");
+                      if (rowParam[index] && rowParam[index]["button"]) {
+                        arr[1] =
+                          arr[1] + "_" + rowParam[index]["button"].trim();
+                      }
+                      arr[2] = MDParam[index][1];
+                    }
+                  }
+                }
+                return arr;
+              }
+            }
+          ],
+          deakTemplateLikeArray: function(a, self) {
+            // 对生成后的行数据数组,再次处理
+            // debugger
+            a=a.filter(function(v){
+              if(v&&v.indexOf("_")>=0){
+                return false;
+              }else{
+                return true;
+              }
+            })
+
+            return a;
+          },
+          fix: {
+            roles: [],
+            fixRoles: [{}],
+            param: []
+          }
+        },
+        {
           value: "ssButtonRecord",
           label: "ssButtonRecord",
           template:
@@ -89,29 +135,29 @@ export default {
           ],
           deakTemplateLikeArray: function(a, self) {
             // 对生成后的行数据数组,再次处理
-            
+
             let o = self.protoParam.MDParamO;
-            
-            (a||[]).forEach(function(v,i){
-                let options=[];
-                if(o[i]){
-                  if(o[i].Options){
-                    debugger
-                    o[i].Options.split(",").forEach(function(v){
-                      let [title,field] = v.split(":");
-                      if(field){
-                        options.push({"title":title.trim(),"field":field.trim()})
-                      }
-                      })
-                      if(options.length>0){
-                        a[i]=v.replace("null",JSON.stringify(options))
-                        
-                      }
+
+            (a || []).forEach(function(v, i) {
+              let options = [];
+              if (o[i]) {
+                if (o[i].Options) {
+                  debugger;
+                  o[i].Options.split(",").forEach(function(v) {
+                    let [title, field] = v.split(":");
+                    if (field) {
+                      options.push({
+                        title: title.trim(),
+                        field: field.trim()
+                      });
+                    }
+                  });
+                  if (options.length > 0) {
+                    a[i] = v.replace("null", JSON.stringify(options));
                   }
-                  
                 }
-            
-            })
+              }
+            });
 
             return a;
           },
