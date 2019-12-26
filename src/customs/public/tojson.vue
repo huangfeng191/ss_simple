@@ -425,13 +425,10 @@ export default {
                     toV=mdParam[iaRow][paramV]
                 }
                 // 配置项正则;
-                re=/\$\?[:0-9a-zA-Z\_\/]+\?/g 
+                // re=/\$\?[:0-9a-zA-Z\_\/]+\?/g 
                 oneRow=oneRow.replace(re,toV);
               }
-          // 如果没有设置的话 显示默认值
-          // 将MD 参数设置成默认值
-           oneRow=oneRow.replace(/\$\?[0-9a-zA-Z_/]+:([0-9a-zA-Z_/]*)\?/,'$1')
-           oneRow=oneRow.replace(/\$\?[0-9a-zA-Z_/]+\?/,"");
+   
 
            
 // 找到定义的参数
@@ -439,6 +436,10 @@ export default {
 
 
           })
+                 // 如果没有设置的话 显示默认值
+          // 将MD 参数设置成默认值
+           oneRow=oneRow.replace(/\$\?[0-9a-zA-Z_/]+:([0-9a-zA-Z_/]*)\?/,'$1')
+           oneRow=oneRow.replace(/\$\?[0-9a-zA-Z_/]+\?/,"");
 
 
 

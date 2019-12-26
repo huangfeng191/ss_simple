@@ -20,15 +20,16 @@ export default {
       // selected: [ "proStockCol","bindingSame"],
    
       // selected: [ "proStockCol", "CrudColumns","CrudProp"],
-      selected: ["CrudInputs3","CrudColumns","CrudProp","CrudQueries"],
+      // selected: ["CrudInputs3","CrudColumns","CrudProp","CrudQueries"],
+      selected: ["CrudInputs3"],
 
       types: [
 {
     value: "CrudInputs3",
     label: "CrudInputs3",
-    desc:"# cell setting  ?ColSpan?br?",
+    desc:"# cell setting  ?ColSpan?Required?br?",
     template:
-      '{ "Field": "${1}", "Name": "${0}",DataType: "${2:String}", ShowType: "${3:text}", Ext: "${31}", "Required": false, RowSpan: 1, ColSpan: "$?ColSpan:1?" },',
+      '{ "Field": "${1}", "Name": "${0}",DataType: "${2:String}", ShowType: "${3:text}", Ext: "${31}", "Required": $?Required:false?, RowSpan: 1, ColSpan: "$?ColSpan:1?" },',
     param: [
       {
         k: "2",
@@ -92,12 +93,14 @@ export default {
       }
     ],
     deakTemplateLikeArray: function(a, self) { // 对生成后的行数据数组,再次处理
-      let ids=[];
+     debugger
+     let ids=[];
       let o=self.protoParam.MDParamO;
       (a||[]).forEach(function(v,i){
           let colSpan=1
           if(o[i]){
             colSpan=o[i].ColSpan||1
+            
           }
           ids.push(colSpan);
       })

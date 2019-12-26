@@ -31,7 +31,7 @@ export default {
         {
           value: "newMenu",
           label: "newMenu",
-          template: '{"name":"${0}","id":"${1}",parentId: "${2}",},',
+          template: '{"name":"${0}","id":"${1}","parentId": "${2}",},',
           param: [],
           protoRowTranslate: [
             {
@@ -42,12 +42,18 @@ export default {
                 if (MDParam.length > 0) {
                   if (MDParam[index] && MDParam[index][1]) {
                     if (MDParam[index][1] != arr[1]) {
+                      if(arr[1].split("-").length==2){
+                        arr[2]=MDParam[index][1]+"-"+ arr[1].split("-")[0]
+                      }else{
+                        arr[2] = MDParam[index][1];
+                      }
                       arr[1] = MDParam[index][1] + "-" + (arr[1] || "");
                       if (rowParam[index] && rowParam[index]["button"]) {
+                        arr[2]=arr[1]
                         arr[1] =
                           arr[1] + "_" + rowParam[index]["button"].trim();
+
                       }
-                      arr[2] = MDParam[index][1];
                     }
                   }
                 }
@@ -65,7 +71,7 @@ export default {
         {
           value: "newMenu_element",
           label: "newMenu_element",
-          template: 'level="${1}"',
+          template: 'level2="${1}"',
           param: [],
           protoRowTranslate: [
             {
@@ -76,12 +82,18 @@ export default {
                 if (MDParam.length > 0) {
                   if (MDParam[index] && MDParam[index][1]) {
                     if (MDParam[index][1] != arr[1]) {
+                      if(arr[1].split("-").length==2){
+                        arr[2]=MDParam[index][1]+"-"+ arr[1].split("-")[0]
+                      }else{
+                        arr[2] = MDParam[index][1];
+                      }
                       arr[1] = MDParam[index][1] + "-" + (arr[1] || "");
                       if (rowParam[index] && rowParam[index]["button"]) {
+                        arr[2]=arr[1]
                         arr[1] =
                           arr[1] + "_" + rowParam[index]["button"].trim();
+
                       }
-                      arr[2] = MDParam[index][1];
                     }
                   }
                 }
