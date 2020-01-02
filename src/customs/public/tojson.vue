@@ -737,7 +737,7 @@ export default {
 
         // 循环选中模板
          if(typesObj[v].dealProtoLikeArray){
-           protoLikeArray=typesObj[v].dealProtoLikeArray(protoLikeArray)
+           protoLikeArray=typesObj[v].dealProtoLikeArray(protoLikeArray,self)
          }
 
         typesObj[v]["templateOut"] = ""; // 更改值,既每个模板的返回值

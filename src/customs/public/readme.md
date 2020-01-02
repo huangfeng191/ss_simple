@@ -67,3 +67,6 @@ F7 将焦点移动到输入文本处
   1. 自定义全局指令 focus-textarea
   2. 定义全局快捷键 F7 ,
   3. gotoProto() realize let proto get focus 
+
+
+

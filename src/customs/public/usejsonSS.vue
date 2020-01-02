@@ -15,8 +15,8 @@ export default {
   data() {
     return {
       // selected: ["ssForm"],
-      // selected: ["ssTable"],
-      selected: ["newMenu", "newMenu_element"],
+      selected: ["ssButton_log"],
+      // selected: ["newMenu", "newMenu_element"],
       // selected: ["ssButtonRecord"],
       // selected: ["ssOldForm"],
 
@@ -42,17 +42,16 @@ export default {
                 if (MDParam.length > 0) {
                   if (MDParam[index] && MDParam[index][1]) {
                     if (MDParam[index][1] != arr[1]) {
-                      if(arr[1].split("-").length==2){
-                        arr[2]=MDParam[index][1]+"-"+ arr[1].split("-")[0]
-                      }else{
+                      if (arr[1].split("-").length == 2) {
+                        arr[2] = MDParam[index][1] + "-" + arr[1].split("-")[0];
+                      } else {
                         arr[2] = MDParam[index][1];
                       }
                       arr[1] = MDParam[index][1] + "-" + (arr[1] || "");
                       if (rowParam[index] && rowParam[index]["button"]) {
-                        arr[2]=arr[1]
+                        arr[2] = arr[1];
                         arr[1] =
                           arr[1] + "_" + rowParam[index]["button"].trim();
-
                       }
                     }
                   }
@@ -82,17 +81,16 @@ export default {
                 if (MDParam.length > 0) {
                   if (MDParam[index] && MDParam[index][1]) {
                     if (MDParam[index][1] != arr[1]) {
-                      if(arr[1].split("-").length==2){
-                        arr[2]=MDParam[index][1]+"-"+ arr[1].split("-")[0]
-                      }else{
+                      if (arr[1].split("-").length == 2) {
+                        arr[2] = MDParam[index][1] + "-" + arr[1].split("-")[0];
+                      } else {
                         arr[2] = MDParam[index][1];
                       }
                       arr[1] = MDParam[index][1] + "-" + (arr[1] || "");
                       if (rowParam[index] && rowParam[index]["button"]) {
-                        arr[2]=arr[1]
+                        arr[2] = arr[1];
                         arr[1] =
                           arr[1] + "_" + rowParam[index]["button"].trim();
-
                       }
                     }
                   }
@@ -104,13 +102,13 @@ export default {
           deakTemplateLikeArray: function(a, self) {
             // 对生成后的行数据数组,再次处理
             // debugger
-            a=a.filter(function(v){
-              if(v&&v.indexOf("_")>=0){
+            a = a.filter(function(v) {
+              if (v && v.indexOf("_") >= 0) {
                 return false;
-              }else{
+              } else {
                 return true;
               }
-            })
+            });
 
             return a;
           },
@@ -496,6 +494,39 @@ export default {
             fixRoles: []
           }
         },
+
+        {
+          // 取第一个值 组成数组格式
+          value: "ssButton_log",
+          label: "ssButton_log",
+          template: 'data.push({"name":"${0}","value":${1}||""});',
+          param: [],
+          fix: {
+            roles: [],
+            fixRoles: []
+          },
+
+          dealProtoLikeArray: function(a,self ) {
+        
+       
+            let MDParam = self.protoParam;
+            if (MDParam.MDTitle.length > 0) {
+
+              a.forEach(function(v,i){
+                if(MDParam.MDParamO[i]&&MDParam.MDParamO[i].select.trim()=="s"){
+                  v[1]=v[1].replace(
+                ".val()",
+                '.find("option:selected").text()'
+              );
+                }
+              })
+            }
+      
+            
+            return a ;
+          }
+        },
+
         {
           // 取第一个值 组成数组格式
           value: "ssBinding",
