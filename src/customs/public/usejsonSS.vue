@@ -513,6 +513,9 @@ export default {
             if (MDParam.MDTitle.length > 0) {
 
               a.forEach(function(v,i){
+                if(v[1].indexOf("val()")==-1){
+                  v[1]=`$('#${v[1]}').val()`;
+                }
                 if(MDParam.MDParamO[i]&&MDParam.MDParamO[i].select.trim()=="s"){
                   v[1]=v[1].replace(
                 ".val()",
