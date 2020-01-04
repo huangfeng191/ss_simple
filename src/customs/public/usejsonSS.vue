@@ -419,6 +419,7 @@ export default {
           label: "tableRow",
           // showType  : c select  v selectValue b:button
           template: ' { "title": "${0:nm}","field": "${1:sn}"${21}${22} },',
+          MdTitle:'# 模块   ?select?tp', // TODO: 
           param: [
             //  f  format   d  dateformatter  c binding
             {
@@ -514,7 +515,12 @@ export default {
 
               a.forEach(function(v,i){
                 if(v[1].indexOf("val()")==-1){
+                  if(MDParam.MDParamO[i]&&
+                  (MDParam.MDParamO[i].tp||"").trim()=="q"){
+                  v[1]=`$('[qfield=${v[1]}]').val()`;
+                  }else{
                   v[1]=`$('#${v[1]}').val()`;
+                  }
                 }
                 if(MDParam.MDParamO[i]&&MDParam.MDParamO[i].select.trim()=="s"){
                   v[1]=v[1].replace(
