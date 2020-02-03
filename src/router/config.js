@@ -21,6 +21,7 @@ import UseJsonYZ from '../customs/public/UseJsonYZ.vue'
 import ToJsonTest from '../customs/public/tojsontest.vue'
 import ToJsonStock from '../customs/public/UseJsonStock.vue'
 import UseJsonSS from '../customs/public/UseJsonSS.vue'
+import UseJsonTide from '../customs/public/UseJsonTide.vue'
 export default{
 	routes:[
 		{path:'/cs', component:Cs},
@@ -38,6 +39,7 @@ export default{
 		{path:'/mystock', component:Mystock},
 		{path:'/mycolor', component:Mycolor},
 		{path:'/usejsonstock', component:ToJsonStock},
+		{path:'/usejsonTide', component:UseJsonTide},
 		{path:'*', redirect:'/mystock'}
 	]
 }

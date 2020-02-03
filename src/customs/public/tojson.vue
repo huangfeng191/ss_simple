@@ -412,7 +412,6 @@ export default {
 // iaRow
 
         let mdParam=self.protoParam.MDParamO
-
           $.each(self.protoParam.MDParam,function(paramI,paramV){
               // replaceAll 
               let toV=""  
@@ -420,10 +419,19 @@ export default {
               var re=eval( re_str);
               var  matched_param=oneRow.match(re)
               if(matched_param){
-                toV= matched_param[1].substring(1)  
+                toV= ((matched_param)[1]||"").substring(1)  
                 if (mdParam && mdParam[iaRow] && mdParam[iaRow][paramV]){
                     toV=mdParam[iaRow][paramV]
                 }
+
+  
+              if (type.mDParamHandleBefore) {
+                //  aRow 表示proto 单行的数组
+                      toV=type.mDParamHandleBefore({ param:paramV ,v:toV,aRow:aRow});
+                 }
+
+
+
                 // 配置项正则;
                 // re=/\$\?[:0-9a-zA-Z\_\/]+\?/g 
                 oneRow=oneRow.replace(re,toV);

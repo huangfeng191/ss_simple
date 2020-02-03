@@ -14,6 +14,7 @@
             <router-link to="/usejsonyz">鄞州配置</router-link>
             <router-link to="/usejsonstock">stock配置</router-link>
             <router-link to="/usejsonss">usejsonSS</router-link>
+                   <router-link to="/usejsonTide">usejsonTide</router-link>
         </div>
         <router-view></router-view>
     </div>

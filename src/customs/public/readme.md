@@ -16,9 +16,9 @@
     : 不需要，因为模板只有一个,一类的配置需要考虑兼容性,对于模板的选择 可以考虑添加一个分组的概念
 
 ``` js
- protoParam:{ // 提供全局参数, 供后续调用
-        "MDTitle":[], // #  1 2 3 , 可以有多个，如果最后一个 是 ?param1?... 方式 那么 可以理解为全局的，建议用在第一个
-        "MDParam":[], // title 的 最后一个值  放在 markdown title 中的定义，目前支持用(?param1) 模式 取值是 ?  ?ColSpan?br  
+ protoParam:{ // 提供全局参数, 供后续调用 , 数据在生成单个模板前 ，全局处理一次 
+        "MDTitle":[], // #  1 2 3 , 可以有多个，
+        "MDParam":[], // MDTitle 如果最后一个 是 ?param1?... 方式 那么 可以理解为全局的，建议用在第一个  放在 markdown title 中的定义，目前支持用(?param1) 模式 取值是 ?  ?ColSpan?br  
         "MDParamO":{},// 值 按行绑定的参数， {0:{ColSpan:"","br":"" },1:{} }
  }
 
@@ -32,10 +32,10 @@
             {
               k: "fun",
               v: function(arr, index, self) {
-                let MDParam = self.protoParam.MDTitle;
-                if (MDParam.length > 0) {
-                  if (MDParam[index] && MDParam[index][0]) {
-                    arr[1] = MDParam[index][0] + "." + (arr[1] || "");
+                let MDTitle = self.protoParam.MDTitle;
+                if (MDTitle.length > 0) {
+                  if (MDTitle[index] && MDTitle[index][0]) {
+                    arr[1] = MDTitle[index][0] + "." + (arr[1] || "");
                   }
                 }
 
@@ -46,6 +46,8 @@
 
 
 <!-- 将MD 参数应用于 字符串模板中 -->
+```js 
+
 deakTemplateLikeArray: function(a, self) { // 对生成后的行数据数组,再次处理
       
       let o=self.protoParam.MDParamO;
@@ -61,6 +63,9 @@ deakTemplateLikeArray: function(a, self) { // 对生成后的行数据数组,再
       return a;
     }
 
+
+```
+
 # 2019-12-21  Saturday 
 F7 将焦点移动到输入文本处
 >PS:
@@ -70,3 +75,12 @@ F7 将焦点移动到输入文本处
 
 
 
+# 处理顺序 
+
+- 解析 MDParam 
+- 将数组行前添加MDTitle protoRowTranslate
+- 循环处理模板
+     - param
+     - MDParam 
+       - 替换前调用函数先处理  mDParamHandleBefore({ param:paramV ,v:toV,aRow:aRow}
+     - deakTemplateLikeArray
