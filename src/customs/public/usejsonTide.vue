@@ -14,7 +14,7 @@ export default {
   props: {},
   data() {
     return {
-      selected: ["CrudInputs3", "CrudColumns", "CrudProp", "CrudQueries"],
+      selected: [ "CrudColumns","CrudInputs3", "CrudProp", "CrudQueries"],
 
       types: [
         {
@@ -38,7 +38,7 @@ export default {
           ],
           mDParamHandleBefore: function({ param, v, aRow }) {
             if (param == "param1" && aRow.length > 2 && aRow[2] == "d") {
-              if (!v) {
+              if (!v || v=="yyyyMMdd") {
                 v = "formatter: DateFormatter,";
               } else if (v == "yyyy") {
                 v = "formatter: YearFormatter,";
@@ -149,7 +149,7 @@ export default {
           value: "CrudProp",
           label: "CrudProp",
           template:
-            '{ "Field": "${1}", "Name": "${0}", ShowType: "${2:text}", Ext: "$?param1?",DataType: "$?dataType:String?" },',
+            '{ "Field": "${1}", "Name": "${0}", ShowType: "${2:text}", Ext: "$?param1?",DataType: "$?dataType:String?","FilterEnabled": true, },',
 
           param: [
             {
