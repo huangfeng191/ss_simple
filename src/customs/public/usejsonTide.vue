@@ -149,7 +149,7 @@ export default {
           value: "CrudProp",
           label: "CrudProp",
           template:
-            '{ "Field": "${1}", "Name": "${0}", ShowType: "${2:text}", Ext: "$?param1?",DataType: "$?dataType:String?","FilterEnabled": true, },',
+            '{ "Field": "${1}", "Name": "${0}", ShowType: "${2:text}", Ext: "$?param1?",DataType: "$?dataType:String?","FilterEnabled": true,"OrderEnabled":true },',
 
           param: [
             {
