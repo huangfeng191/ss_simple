@@ -15,10 +15,10 @@ export default {
   data() {
     return {
       // selected: ["ssForm"],
-      selected: ["ssButton_log"],
+      // selected: ["ssButton_log"],
       // selected: ["newMenu", "newMenu_element"],
       // selected: ["ssButtonRecord"],
-      // selected: ["ssOldForm"],
+      selected: ["ssOldForm_1","ssBinding_1"],
 
       // selected: ["scada6crudinputThree", "toRowSingle", "ssForm", "scada6Important"],
       // selected: ["scada6crudinputThree", "toRowSingle", "CueColumns", "CueCrudInputThree"],
@@ -568,6 +568,35 @@ export default {
         },
         {
           // 取第一个值 组成数组格式
+          value: "ssBinding_1",
+          label: "ssBinding",
+          template: '{"name": "${0}", "value":"${1}" },',
+          param: [],
+          fix: {
+            roles: [
+              {
+                k: "first",
+                v: [
+                  {
+                    k: "replace",
+                    v: [
+                      {
+                        "/^/": "${0:nm}:[//${1:nm}\n"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                k: "end",
+                v: [{ k: "replace", v: [{ "/$/": "\n]" }] }]
+              }
+            ],
+            fixRoles: []
+          }
+        },
+        {
+          // 取第一个值 组成数组格式
           value: "ssBindingSame",
           label: "ssBindingSame",
           template: '{"Name": "${0}", "Value":"${0}" },',
@@ -765,6 +794,77 @@ export default {
                       }
                     } else {
                       arr[0] = MDParam[index][0] + "-" + (arr[0] || "");
+                      arr[1] = arr[0];
+                    }
+                  }
+                }
+
+                return arr;
+              }
+            }
+          ],
+          fix: {
+            roles: [
+              {
+                k: "mod",
+                condition: { k: 2, v: 0 },
+                v: [{ k: "replace", v: [{ "/^{/": "[{" }] }]
+              },
+              {
+                k: "mod",
+                condition: { k: 2, v: 1 },
+                v: [{ k: "replace", v: [{ "/},$/": "},]," }] }]
+              },
+              { k: "end", v: [{ k: "replace", v: [{ "/},$/": "},]," }] }] }
+            ],
+            fixRoles: [
+              {
+                k: "fun",
+                v: function(str) {
+                  return str.replace(/\[{/g, "[\n{");
+                  // return str
+                }
+              }
+            ],
+            param: []
+          }
+        },
+        {
+          value: "ssOldForm_1",
+          label: "ssOldForm_1",
+          template:
+            '{"name":"${0}","field":"${1}","showType":"${2:text}",foreign: "$?foreign:?",options:[]},',
+          param: [
+            {
+              k: "2",
+              v: [
+                {
+                  k: "replace",
+                  v: { s: "select", t: "text" }
+                }
+              ]
+            }
+          ],
+          protoRowTranslate: [
+            {
+              k: "fun",
+              v: function(arr, index, self) {
+                let MDParam = self.protoParam.MDTitle;
+                if (MDParam.length > 0) {
+                  if (MDParam[index] && MDParam[index][0]) {
+                    if (arr.length > 1) {
+                      if (arr[1] == arr[0] || arr[1] == "s") {
+                        // 如果 field != name , name don`t add prefix ;
+                        arr[0] = MDParam[index][0] + "." + (arr[0] || "");
+                        if (arr[1] == "s") {
+                          arr[2] = "s";
+                        }
+                        arr[1] = arr[0];
+                      } else {
+                        arr[1] = MDParam[index][0] + "." + (arr[1] || "");
+                      }
+                    } else {
+                      arr[0] = MDParam[index][0] + "." + (arr[0] || "");
                       arr[1] = arr[0];
                     }
                   }
