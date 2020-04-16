@@ -855,16 +855,16 @@ export default {
                     if (arr.length > 1) {
                       if (arr[1] == arr[0] || arr[1] == "s") {
                         // 如果 field != name , name don`t add prefix ;
-                        arr[0] = MDParam[index][0] + "." + (arr[0] || "");
+                        arr[0] = MDParam[index][0] + "-" + (arr[0] || "");
                         if (arr[1] == "s") {
                           arr[2] = "s";
                         }
                         arr[1] = arr[0];
                       } else {
-                        arr[1] = MDParam[index][0] + "." + (arr[1] || "");
+                        arr[1] = MDParam[index][0] + "-" + (arr[1] || "");
                       }
                     } else {
-                      arr[0] = MDParam[index][0] + "." + (arr[0] || "");
+                      arr[0] = MDParam[index][0] + "-" + (arr[0] || "");
                       arr[1] = arr[0];
                     }
                   }
