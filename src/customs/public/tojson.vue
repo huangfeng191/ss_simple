@@ -415,7 +415,7 @@ export default {
           $.each(self.protoParam.MDParam,function(paramI,paramV){
               // replaceAll 
               let toV=""  
-              var re_str="/\\$\\?"+paramV+"(:[0-9a-zA-Z_/]+)*\\?/";
+              var re_str="/\\$\\?"+paramV+"(:[0-9a-zA-Z_/\\s]+)*\\?/";
               var re=eval( re_str);
               var  matched_param=oneRow.match(re)
               if(matched_param){
@@ -446,8 +446,8 @@ export default {
           })
                  // 如果没有设置的话 显示默认值
           // 将MD 参数设置成默认值
-           oneRow=oneRow.replace(/\$\?[0-9a-zA-Z_/]+:([0-9a-zA-Z_/]*)\?/,'$1')
-           oneRow=oneRow.replace(/\$\?[0-9a-zA-Z_/]+\?/,"");
+           oneRow=oneRow.replace(/\$\?[0-9a-zA-Z_/\s]+:([0-9a-zA-Z_/\s]*)\?/,'$1')
+           oneRow=oneRow.replace(/\$\?[0-9a-zA-Z_/\s]+\?/,"");
 
 
 

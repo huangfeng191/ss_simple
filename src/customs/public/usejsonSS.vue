@@ -833,7 +833,7 @@ export default {
           value: "ssOldForm_1",
           label: "ssOldForm_1",
           template:
-            '{"name":"${0}","field":"${1}","showType":"${2:text}",foreign: "$?foreign:?",options:[]},',
+            '{"name":"${0}","field":"${1}","showType":"${2:text}",foreign: "$?foreign:?" ,option:[$?option: ?]},',
           param: [
             {
               k: "2",
@@ -874,6 +874,22 @@ export default {
               }
             }
           ],
+          mDParamHandleBefore: function({ param, v, aRow }) {
+             if (param == "option"  && v){
+               var ret=v.split("|").map(function(opt){
+                let op=opt.split("-")
+                 return {
+                   "name":op[0],
+                   "value":  op.length>1?op[1]:op[1]
+                 }
+               })
+               v=ret.map(function(r){
+                 return JSON.stringify(r)
+               }).join(",")
+             }
+
+            return v;
+          },
           fix: {
             roles: [
               {
